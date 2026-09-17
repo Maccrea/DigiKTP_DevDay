@@ -74,49 +74,69 @@ class NfcScanController extends GetxController {
   }
 
   void startNfcSession() async {
-    bool isAvailable = await NfcManager.instance.isAvailable();
+  bool isAvailable = await NfcManager.instance.isAvailable();
 
-    if (!isAvailable) {
-      errorMessage.value = 'Perangkat tidak mendukung atau belum mengaktifkan NFC.';
-      return;
-    }
+  if (!isAvailable) {
+    errorMessage.value = 'NFC tidak tersedia atau belum diaktifkan pada HP ini.';
+    return;
+  }
 
-    isScanning.value = true;
-    errorMessage.value = '';
+  isScanning.value = true;
+  errorMessage.value = '';
 
-    NfcManager.instance.startSession(
-      pollingOptions: {
-        NfcPollingOption.iso14443,
-        NfcPollingOption.iso15693,
-        NfcPollingOption.iso18092,
-      },
-      onDiscovered: (NfcTag tag) async {
+  NfcManager.instance.startSession(
+    pollingOptions: {
+      NfcPollingOption.iso14443,
+      NfcPollingOption.iso15693,
+      NfcPollingOption.iso18092,
+    },
+    onDiscovered: (NfcTag tag) async {
+      try {
+        List<int> identifier = [];
+        dynamic tagData = tag.data;
+
         try {
-          List<int>? identifier;
-          final tagData = Map<String, dynamic>.from(tag.data as Map);
-
-          if (tagData.containsKey('isodep') && tagData['isodep'] is Map) {
-            identifier = List<int>.from((tagData['isodep'] as Map)['identifier'] ?? []);
-          } else if (tagData.containsKey('nfca') && tagData['nfca'] is Map) {
-            identifier = List<int>.from((tagData['nfca'] as Map)['identifier'] ?? []);
+          if (tagData.id != null) {
+            identifier = List<int>.from(tagData.id);
           }
+        } catch (_) {}
 
-          if (identifier != null && identifier.isNotEmpty) {
-            scannedUid.value = identifier
-                .map((e) => e.toRadixString(16).padLeft(2, '0').toUpperCase())
-                .join(':');
-            isScanning.value = false;
-            NfcManager.instance.stopSession();
-            currentStep.value = ScanStep.result;
-          } else {
-            errorMessage.value = 'Kartu NFC tidak memiliki ID yang valid.';
-            isScanning.value = false;
-          }
-        } catch (e) {
-          errorMessage.value = 'Gagal membaca kartu: ${e.toString()}';
+        if (identifier.isEmpty) {
+          try {
+            identifier = List<int>.from(tagData.nfca.identifier);
+          } catch (_) {}
+        }
+
+        if (identifier.isEmpty) {
+          try {
+            identifier = List<int>.from(tagData.isodep.identifier);
+          } catch (_) {}
+        }
+
+        if (identifier.isEmpty) {
+          try {
+            identifier = List<int>.from(tagData.mifare.identifier);
+          } catch (_) {}
+        }
+
+        if (identifier.isNotEmpty) {
+          String uidString = identifier
+              .map((e) => e.toRadixString(16).padLeft(2, '0').toUpperCase())
+              .join(':');
+
+          scannedUid.value = uidString;
+          isScanning.value = false;
+          await NfcManager.instance.stopSession();
+          currentStep.value = ScanStep.result;
+        } else {
+          errorMessage.value = 'KTP terdeteksi, tetapi UID gagal diekstrak.';
           isScanning.value = false;
         }
-      },
-    );
-  }
+      } catch (e) {
+        errorMessage.value = 'Gagal membaca KTP: ${e.toString()}';
+        isScanning.value = false;
+      }
+    },
+  );
+}
 }
