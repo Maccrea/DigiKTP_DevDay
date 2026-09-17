@@ -1,62 +1,175 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:digiktp/app/modules/nfc_scan/nfc_scan_controller.dart';
+import '../nfc_scan_controller.dart';
 
 class SuccessWidget extends GetView<NfcScanController> {
   const SuccessWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        children: [
-          const SizedBox(height: 30),
-          const CircleAvatar(
-            radius: 36,
-            backgroundColor: Color(0xFF52C41A),
-            child: Icon(Icons.check, color: Colors.white, size: 40),
-          ),
-          const SizedBox(height: 16),
-          const Text('Pencatatan Audit Sukses', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          const SizedBox(height: 8),
-          const Text(
-            'Data transaksi pembacaan chip telah dienkripsi penuh dan diteruskan ke database server.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.black54, fontSize: 12),
-          ),
-          const SizedBox(height: 24),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Text('RESI PEMINDAIAN', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 10)),
-                    Text('TERKIRIM', style: TextStyle(color: Color(0xFF52C41A), fontWeight: FontWeight.bold, fontSize: 10)),
-                  ],
-                ),
-                const Divider(height: 16),
-                const Text('NOMOR REFERENSI AUDIT', style: TextStyle(fontSize: 10, color: Colors.grey)),
-                const Text('TX-9871239-0129-DKI', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-              ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight - 32.0,
+            ),
+            child: IntrinsicHeight(
+              child: Column(
+                children: [
+                  const Spacer(),
+
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFDCFCE7),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.check_circle_rounded,
+                            size: 56,
+                            color: Color(0xFF16A34A),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Verifikasi & Registrasi Berhasil!',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Color(0xFF0F172A),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Data e-KTP dan verifikasi kontak warga telah resmi tersimpan di dalam sistem.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color(0xFF64748B),
+                            fontSize: 13,
+                            height: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF8FAFC),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFFE2E8F0)),
+                          ),
+                          child: Column(
+                            children: const [
+                              Text(
+                                'ID REGISTRASI POSKO',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF64748B),
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'REG-2026-NFC9802',
+                                style: TextStyle(
+                                  fontFamily: 'Monospace',
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2563EB),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const Spacer(),
+
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2563EB),
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            onPressed: () => Get.back(),
+                            child: const Text(
+                              'KEMBALI KE BERANDA',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                letterSpacing: 0.5,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            onPressed: () {
+                              controller.startNfcSession();
+                              controller.goToStep(ScanStep.prompt);
+                            },
+                            child: const Text(
+                              'Scan e-KTP Lainnya',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Color(0xFF2563EB),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          const Spacer(),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2F66F6), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-              onPressed: () => Get.back(), // Mengarahkan kembali ke dashboard
-              child: const Text('KEMBALI KE DASHBOARD', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

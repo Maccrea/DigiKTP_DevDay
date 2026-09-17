@@ -1,64 +1,247 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:digiktp/app/modules/nfc_scan/nfc_scan_controller.dart';
+import '../nfc_scan_controller.dart';
 
 class ConfirmationWidget extends GetView<NfcScanController> {
   const ConfirmationWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('RINGKASAN FORMULIR', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 11)),
-                const Divider(height: 20),
-                _rowDetail('Nama Warga', 'Siti Rahmawati'),
-                _rowDetail('NIK Warga', '3171012345670003'),
-                _rowDetail('UID Kartu NFC', controller.scannedUid.value),
-                _rowDetail('Posko Kerja', 'Kelurahan Gambir'),
-                _rowDetail('Layanan', 'Bansos BPJS PBI'),
-              ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight - 32.0,
+            ),
+            child: IntrinsicHeight(
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFEFF6FF),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.assignment_turned_in_outlined,
+                                color: Color(0xFF2563EB),
+                                size: 22,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Konfirmasi Pengajuan',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                  SizedBox(height: 2),
+                                  Text(
+                                    'Periksa kembali kelengkapan data warga',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFF64748B),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Divider(height: 24, color: Color(0xFFF1F5F9)),
+
+                        _buildSummaryItem(
+                          icon: Icons.person_outline,
+                          label: 'Nama Lengkap',
+                          value: 'Siti Rahmawati',
+                        ),
+                        const SizedBox(height: 12),
+                        _buildSummaryItem(
+                          icon: Icons.badge_outlined,
+                          label: 'NIK Warga',
+                          value: '3171012345670003',
+                        ),
+                        const SizedBox(height: 12),
+                        _buildSummaryItem(
+                          icon: Icons.nfc_outlined,
+                          label: 'UID e-KTP (Chip)',
+                          value: controller.scannedUid.value.isEmpty
+                              ? 'E004123456789A'
+                              : controller.scannedUid.value,
+                          isMonospace: true,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildSummaryItem(
+                          icon: Icons.mark_email_read_outlined,
+                          label: 'Email Verifikasi OTP',
+                          value: 'sitirahmawati@gmail.com',
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Icon(Icons.shield_outlined, color: Color(0xFF2563EB), size: 20),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Dengan memproses data ini, Anda menyatakan bahwa data pembacaan fisik e-KTP dan verifikasi pemilik telah sesuai.',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Color(0xFF64748B),
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const Spacer(),
+
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2563EB),
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            onPressed: () => controller.goToStep(ScanStep.success),
+                            child: const Text(
+                              'PROSES & SIMPAN DATA',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                letterSpacing: 0.5,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Color(0xFFCBD5E1)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            onPressed: () => controller.goToStep(ScanStep.validation),
+                            child: const Text(
+                              'Ubah Data Kontak',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: Color(0xFF475569),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 16),
-          Obx(() => CheckboxListTile(
-            value: controller.isAgreed.value,
-            onChanged: (val) => controller.isAgreed.value = val!,
-            title: const Text('Saya menyatakan telah memvalidasi fisik kartu e-KTP warga secara langsung.', style: TextStyle(fontSize: 11)),
-            controlAffinity: ListTileControlAffinity.leading,
-            contentPadding: EdgeInsets.zero,
-          )),
-          const SizedBox(height: 20),
-          Obx(() => SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2F66F6), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-              onPressed: controller.isAgreed.value ? () => controller.goToStep(ScanStep.success) : null,
-              child: const Text('KONFIRMASI & PROSES', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-            ),
-          )),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _rowDetail(String title, String val) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+  Widget _buildSummaryItem({
+    required IconData icon,
+    required String label,
+    required String value,
+    bool isMonospace = false,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: const TextStyle(color: Colors.black54, fontSize: 12)),
-          Text(val, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          Icon(icon, size: 20, color: const Color(0xFF64748B)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Color(0xFF64748B),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF0F172A),
+                    fontFamily: isMonospace ? 'Monospace' : null,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

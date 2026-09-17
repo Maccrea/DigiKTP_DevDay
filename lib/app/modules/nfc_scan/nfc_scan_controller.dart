@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nfc_manager/nfc_manager.dart';
+import 'dart:async';
 
 enum ScanStep {
   prompt,       // Step 1: Scan e-KTP
@@ -18,16 +19,41 @@ class NfcScanController extends GetxController {
   final scannedUid = ''.obs;
   final errorMessage = ''.obs;
   
-  // Selection & Form State
   final selectedContact = 0.obs;
   final isAgreed = false.obs;
 
-  // Controllers untuk input OTP (6 Digit)
   final List<TextEditingController> otpControllers = List.generate(6, (_) => TextEditingController());
   final List<FocusNode> otpFocusNodes = List.generate(6, (_) => FocusNode());
 
+  final RxInt countdown = 60.obs;
+  final RxBool canResend = false.obs;
+  Timer? _timer;
+
+void startOtpTimer() {
+  countdown.value = 60;
+  canResend.value = false;
+  _timer?.cancel();
+  
+  _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    if (countdown.value > 0) {
+      countdown.value--;
+    } else {
+      canResend.value = true;
+      timer.cancel();
+    }
+  });
+}
+
+void resendOtp() {
+  if (!canResend.value) return;
+  
+  // eksekusi api dan timer 
+  startOtpTimer();
+}
+
   @override
   void onClose() {
+    _timer?.cancel(); 
     NfcManager.instance.stopSession();
     for (var c in otpControllers) {
       c.dispose();
@@ -42,17 +68,15 @@ class NfcScanController extends GetxController {
     currentStep.value = step;
   }
 
-  // Bypass NFC untuk testing di emulator
   void bypassScan() {
     scannedUid.value = 'E004123456789A';
     currentStep.value = ScanStep.result;
   }
 
-  // Menangani penekanan tombol Back HP
   bool handleBack() {
     switch (currentStep.value) {
       case ScanStep.success:
-        return false; // Mencegah back setelah transaksi sukses
+        return false; 
       case ScanStep.confirmation:
         currentStep.value = ScanStep.inputOtp;
         return false;
@@ -69,7 +93,7 @@ class NfcScanController extends GetxController {
         currentStep.value = ScanStep.prompt;
         return false;
       case ScanStep.prompt:
-        return true; // Keluar dari halaman
+        return true;
     }
   }
 
