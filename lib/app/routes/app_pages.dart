@@ -1,11 +1,14 @@
 import 'package:digiktp/app/modules/auth/auth_binding.dart';
 import 'package:digiktp/app/modules/auth/views/login_view.dart';
 import 'package:digiktp/app/modules/auth/views/switch_posko_view.dart';
+import 'package:digiktp/app/modules/nfc_scan/nfc_scan_binding.dart';
+import 'package:digiktp/app/modules/nfc_scan/views/nfc_scan_view.dart';
+
 import 'package:get/get.dart';
 import 'app_routes.dart';
 
 class AppPages {
-  static const INITIAL = Routes.LOGIN;
+  static const INITIAL = Routes.NFC_SCAN;
 
   static final routes = [
     // GetPage(
@@ -28,21 +31,11 @@ class AppPages {
     //   page: () => const DashboardView(),
     //   binding: DashboardBinding(),
     // ),
-    // GetPage(
-    //   name: Routes.NFC_SCAN,
-    //   page: () => const ScanPromptView(),
-    //   binding: NfcScanBinding(),
-    // ),
-    // GetPage(
-    //   name: Routes.NFC_PROGRESS,
-    //   page: () => const ScanProgressView(),
-    //   binding: NfcScanBinding(),
-    // ),
-    // GetPage(
-    //   name: Routes.NFC_RESULT,
-    //   page: () => const ScanResultView(),
-    //   binding: NfcScanBinding(),
-    // ),
+    GetPage(
+      name: Routes.NFC_SCAN,
+      page: () => const NfcScanView(),
+      binding: NfcScanBinding(),
+    ),
     // GetPage(
     //   name: Routes.OTP_CHANNEL,
     //   page: () => const OtpChannelView(),
