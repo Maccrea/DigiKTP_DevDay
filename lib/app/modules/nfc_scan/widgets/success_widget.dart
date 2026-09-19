@@ -51,7 +51,7 @@ class SuccessWidget extends GetView<NfcScanController> {
             height: 50,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2F66F6), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-              onPressed: () => Get.back(), // Mengarahkan kembali ke dashboard
+              onPressed: () => Get.back(),
               child: const Text('KEMBALI KE DASHBOARD', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
             ),
           ),

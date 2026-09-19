@@ -49,7 +49,7 @@ class InputOtpWidget extends GetView<NfcScanController> {
 
           const Text('Kirim Ulang Kode (01:45)', style: TextStyle(color: Color(0xFF2F66F6), fontWeight: FontWeight.bold, fontSize: 12)),
           
-          const SizedBox(height: 40), // Ganti Spacer() dengan SizedBox agar tidak error di SingleChildScrollView
+          const SizedBox(height: 40), 
 
           SizedBox(
             width: double.infinity,

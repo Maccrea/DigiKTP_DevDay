@@ -18,11 +18,9 @@ class NfcScanController extends GetxController {
   final scannedUid = ''.obs;
   final errorMessage = ''.obs;
   
-  // Selection & Form State
   final selectedContact = 0.obs;
   final isAgreed = false.obs;
 
-  // Controllers untuk input OTP (6 Digit)
   final List<TextEditingController> otpControllers = List.generate(6, (_) => TextEditingController());
   final List<FocusNode> otpFocusNodes = List.generate(6, (_) => FocusNode());
 
@@ -42,17 +40,15 @@ class NfcScanController extends GetxController {
     currentStep.value = step;
   }
 
-  // Bypass NFC untuk testing di emulator
   void bypassScan() {
     scannedUid.value = 'E004123456789A';
     currentStep.value = ScanStep.result;
   }
 
-  // Menangani penekanan tombol Back HP
   bool handleBack() {
     switch (currentStep.value) {
       case ScanStep.success:
-        return false; // Mencegah back setelah transaksi sukses
+        return false; 
       case ScanStep.confirmation:
         currentStep.value = ScanStep.inputOtp;
         return false;
@@ -69,7 +65,7 @@ class NfcScanController extends GetxController {
         currentStep.value = ScanStep.prompt;
         return false;
       case ScanStep.prompt:
-        return true; // Keluar dari halaman
+        return true;
     }
   }
 
