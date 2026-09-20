@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 class DashboardController extends GetxController {
   final RxInt currentBottomNavIndex = 0.obs;
+  final List<int> _tabHistory = [0];
 
   final RxString userName = 'Budi Santoso'.obs;
   final RxString userNip = 'NIP. 199408122020121002'.obs;
@@ -10,8 +11,9 @@ class DashboardController extends GetxController {
   final RxInt eKtpScannedCount = 142.obs;
   final RxInt dukcapilValidCount = 138.obs;
 
+  final selectedTimeFilter = 'Semua'.obs;
+  final selectedStatusFilter = 'Semua'.obs;
   final RxString searchQuery = ''.obs;
-  final RxString selectedFilter = 'Semua'.obs;
 
   final RxList<Map<String, dynamic>> recentActivities = <Map<String, dynamic>>[
     {
@@ -67,7 +69,20 @@ class DashboardController extends GetxController {
   ].obs;
 
   void changeBottomNavIndex(int index) {
-    currentBottomNavIndex.value = index;
+    if (currentBottomNavIndex.value != index) {
+      _tabHistory.remove(index); 
+      _tabHistory.add(index);    
+      currentBottomNavIndex.value = index;
+    }
+  }
+
+  bool handleBackAction() {
+    if (_tabHistory.length > 1) {
+      _tabHistory.removeLast(); 
+      currentBottomNavIndex.value = _tabHistory.last; 
+      return false; 
+    }
+    return true; 
   }
 
   void goToNfcScan() {
@@ -76,5 +91,38 @@ class DashboardController extends GetxController {
 
   void logout() {
     Get.offAllNamed('/login');
+  }
+
+  void resetFilters() {
+    selectedTimeFilter.value = 'Semua';
+    selectedStatusFilter.value = 'Semua';
+    searchQuery.value = '';
+  }
+
+  List<Map<String, dynamic>> get filteredActivities {
+    return recentActivities.where((item) {
+      final searchLower = searchQuery.value.toLowerCase();
+      final nameMatches = (item['name'] ?? '').toLowerCase().contains(searchLower);
+      final nikMatches = (item['nik'] ?? '').toLowerCase().contains(searchLower);
+      final matchesSearch = searchLower.isEmpty || nameMatches || nikMatches;
+
+      bool matchesStatus = true;
+      if (selectedStatusFilter.value == 'Berhasil') {
+        matchesStatus = item['isSuccess'] == true;
+      } else if (selectedStatusFilter.value == 'Gagal') {
+        matchesStatus = item['isSuccess'] == false;
+      }
+
+      bool matchesTime = true;
+      if (selectedTimeFilter.value != 'Semua') {
+        if (selectedTimeFilter.value == 'Hari Ini') {
+          matchesTime = item['date_group'] == 'Hari Ini';
+        } else if (selectedTimeFilter.value == 'Kemarin') {
+          matchesTime = item['date_group'] == 'Kemarin';
+        }
+      }
+
+      return matchesSearch && matchesStatus && matchesTime;
+    }).toList();
   }
 }

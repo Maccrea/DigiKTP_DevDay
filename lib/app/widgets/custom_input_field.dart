@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; 
 import '../theme/app_colors.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -8,6 +9,11 @@ class CustomTextField extends StatefulWidget {
   final bool isPassword;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
+  
+  // Parameter tambahan untuk mendukung fungsi di LoginView
+  final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
+  final Function(String)? onChanged;
 
   const CustomTextField({
     super.key,
@@ -17,6 +23,9 @@ class CustomTextField extends StatefulWidget {
     this.isPassword = false,
     this.controller,
     this.validator,
+    this.keyboardType,
+    this.inputFormatters,
+    this.onChanged,
   });
 
   @override
@@ -45,6 +54,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
           controller: widget.controller,
           obscureText: widget.isPassword ? _obscureText : false,
           validator: widget.validator,
+          keyboardType: widget.keyboardType, // Ditambahkan ke sini
+          inputFormatters: widget.inputFormatters, // Ditambahkan ke sini
+          onChanged: widget.onChanged, // Ditambahkan ke sini
           style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: widget.hintText,

@@ -1,5 +1,6 @@
 import 'package:digiktp/app/modules/auth/auth_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; 
 import 'package:get/get.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/custom_input_field.dart';
@@ -16,7 +17,71 @@ class LoginView extends GetView<AuthController> {
         showBackButton: true,
         showInfoButton: true,
         onInfoTap: () {
-          // Bantuan / Info BottomSheet
+          Get.bottomSheet(
+            Container(
+              padding: const EdgeInsets.all(24.0),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.info_outline, color: AppColors.accent),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Informasi Aplikasi',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Aplikasi DigiKTP digunakan khusus oleh petugas resmi untuk melakukan verifikasi data kependudukan melalui pembacaan sensor NFC pada e-KTP.',
+                    style: TextStyle(fontSize: 14, color: AppColors.textSecondary, height: 1.5),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Versi Aplikasi : 1.0.0 (Beta)', style: TextStyle(fontWeight: FontWeight.w600)),
+                        SizedBox(height: 4),
+                        Text('Sistem Inti : Dukcapil Terpusat'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Get.back(),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text('Tutup'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            isScrollControlled: true,
+          );
         },
       ),
       body: SingleChildScrollView(
@@ -61,6 +126,10 @@ class LoginView extends GetView<AuthController> {
               hintText: 'Contoh: 199408122020121002',
               prefixIcon: Icons.person_outline,
               controller: controller.nipController,
+              keyboardType: TextInputType.number, 
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly, 
+              ],
             ),
             const SizedBox(height: 16),
 
@@ -70,7 +139,41 @@ class LoginView extends GetView<AuthController> {
               prefixIcon: Icons.lock_outline,
               isPassword: true,
               controller: controller.passwordController,
+              onChanged: (val) => controller.checkPasswordStrength(val), 
             ),
+            
+            Obx(() {
+              if (controller.passwordStrengthText.value.isEmpty) {
+                return const SizedBox.shrink();
+              }
+              return Padding(
+                padding: const EdgeInsets.only(top: 8.0, left: 4.0, right: 4.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: controller.passwordStrength.value,
+                          backgroundColor: Colors.grey.shade300,
+                          color: controller.passwordStrengthColor.value,
+                          minHeight: 6,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      controller.passwordStrengthText.value,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: controller.passwordStrengthColor.value,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
             const SizedBox(height: 16),
 
             Obx(() => CustomDropdownField<String>(
@@ -88,15 +191,36 @@ class LoginView extends GetView<AuthController> {
             )),
             const SizedBox(height: 28),
 
-            ElevatedButton(
-              onPressed: () => controller.goToSetPosko(),
-              child: const Text('MASUK & ATUR LOKASI'),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: Obx(() => ElevatedButton(
+                onPressed: controller.isLoading.value ? null : () => controller.goToSetPosko(),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: controller.isLoading.value
+                    ? const SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
+                      )
+                    : const Text(
+                        'MASUK & ATUR LOKASI',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      ),
+              )),
             ),
             const SizedBox(height: 16),
 
             Center(
               child: TextButton(
-                onPressed: () {},
+                onPressed: () => controller.contactAdmin(),
                 child: const Text(
                   'Lupa Kata Sandi Petugas?',
                   style: TextStyle(

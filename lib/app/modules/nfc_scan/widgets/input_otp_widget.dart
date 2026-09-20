@@ -1,67 +1,192 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:digiktp/app/modules/nfc_scan/nfc_scan_controller.dart';
+import '../nfc_scan_controller.dart';
 
 class InputOtpWidget extends GetView<NfcScanController> {
   const InputOtpWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView( 
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          const Text('Masukkan Kode OTP', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          const SizedBox(height: 8),
-          const Text('Silakan masukkan 6 digit kode yang telah dikirimkan.', style: TextStyle(color: Colors.black54, fontSize: 12)),
-          const SizedBox(height: 24),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight - 32.0,
+            ),
+            child: IntrinsicHeight(
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(6, (index) {
-              return SizedBox(
-                width: 45,
-                height: 50,
-                child: TextField(
-                  controller: controller.otpControllers[index],
-                  focusNode: controller.otpFocusNodes[index],
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  maxLength: 1,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  decoration: InputDecoration(
-                    counterText: '',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFEFF6FF),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.pin_outlined,
+                            size: 40,
+                            color: Color(0xFF2563EB),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Masukkan Kode OTP',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Color(0xFF0F172A),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Kode 6 digit telah dikirimkan ke email\nsitirahmawati@gmail.com',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color(0xFF64748B),
+                            fontSize: 12,
+                            height: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: List.generate(
+                            6,
+                            (index) => SizedBox(
+                              width: 44,
+                              height: 52,
+                              child: TextField(
+                                autofocus: index == 0,
+                                onChanged: (value) {
+                                  if (value.length == 1 && index < 5) {
+                                    FocusScope.of(context).nextFocus();
+                                  } else if (value.isEmpty && index > 0) {
+                                    FocusScope.of(context).previousFocus();
+                                  }
+                                },
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.number,
+                                maxLength: 1,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF0F172A),
+                                ),
+                                decoration: InputDecoration(
+                                  counterText: '',
+                                  filled: true,
+                                  fillColor: const Color(0xFFF8FAFC),
+                                  contentPadding: EdgeInsets.zero,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.8),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 28),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Tidak menerima kode? ',
+                              style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                            ),
+                            Obx(() {
+                              final canResend = controller.canResend.value;
+                              final seconds = controller.countdown.value.toString().padLeft(2, '0');
+
+                            return GestureDetector(
+                              onTap: canResend ? () => controller.resendOtp() : null,
+                              child: Text(
+                                canResend ? 'Kirim Ulang' : 'Kirim Ulang (00:$seconds)',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: canResend ? const Color(0xFF2563EB) : const Color(0xFF94A3B8),
+                                ),
+                              ),
+                            );
+                          })
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  onChanged: (val) {
-                    if (val.isNotEmpty && index < 5) {
-                      controller.otpFocusNodes[index + 1].requestFocus();
-                    } else if (val.isEmpty && index > 0) {
-                      controller.otpFocusNodes[index - 1].requestFocus();
-                    }
-                  },
-                ),
-              );
-            }),
-          ),
-          const SizedBox(height: 20),
 
-          const Text('Kirim Ulang Kode (01:45)', style: TextStyle(color: Color(0xFF2F66F6), fontWeight: FontWeight.bold, fontSize: 12)),
-          
-          const SizedBox(height: 40), 
+                  const Spacer(),
 
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2F66F6), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-              onPressed: () => controller.goToStep(ScanStep.confirmation),
-              child: const Text('VERIFIKASI & SIMPAN', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2563EB),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        onPressed: () => controller.goToStep(ScanStep.confirmation),
+                        child: const Text(
+                          'VERIFIKASI & LANJUTKAN',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            letterSpacing: 0.5,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

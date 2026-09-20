@@ -110,48 +110,72 @@ class SwitchPoskoView extends GetView<AuthController> {
             ),
             const SizedBox(height: 20),
 
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Row(
-                    children: [
-                      Icon(Icons.developer_board, size: 20, color: AppColors.textSecondary),
-                      SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('PERANGKAT DETEKSI', style: TextStyle(fontSize: 9, color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
-                          Text('NFC Reader Internal', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                        ],
+            Obx(() {
+              final bool isActive = controller.isNfcActive.value;
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: isActive ? AppColors.border : const Color(0xFFFCA5A5)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.developer_board, 
+                          size: 20, 
+                          color: isActive ? AppColors.textSecondary : const Color(0xFFEF4444)
+                        ),
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'PERANGKAT DETEKSI', 
+                              style: TextStyle(fontSize: 9, color: AppColors.textSecondary, fontWeight: FontWeight.bold)
+                            ),
+                            Text(
+                              'NFC Reader Internal', 
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isActive ? const Color(0xFFDCFCE7) : const Color(0xFFFEF2F2),
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                    ],
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFDCFCE7),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: const Text(
-                      'SIAP AKTIF',
-                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.success),
-                    ),
-                  )
-                ],
-              ),
-            ),
+                      child: Text(
+                        isActive ? 'SIAP AKTIF' : 'TIDAK AKTIF',
+                        style: TextStyle(
+                          fontSize: 10, 
+                          fontWeight: FontWeight.bold, 
+                          color: isActive ? AppColors.success : const Color(0xFFEF4444)
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            }),
             const SizedBox(height: 28),
 
-            ElevatedButton(
-              onPressed: () => controller.submitLoginAndPosko(),
-              child: const Text('TERAPKAN POSKO'),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                onPressed: () => controller.submitLoginAndPosko(),
+                child: const Text('TERAPKAN POSKO', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
             ),
           ],
         ),

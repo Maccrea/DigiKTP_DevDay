@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:digiktp/app/modules/dashboard/dashboard_controller.dart';
+import 'package:digiktp/app/modules/dashboard/widget/activity_tile.dart';
 
 class ActivityTabView extends GetView<DashboardController> {
   const ActivityTabView({Key? key}) : super(key: key);
@@ -54,31 +55,46 @@ class ActivityTabView extends GetView<DashboardController> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => _showFilterBottomSheet(context),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: const Icon(Icons.tune_rounded, color: Color(0xFF2563EB), size: 20),
+                      ),
                     ),
-                    child: const Icon(Icons.tune_rounded, color: Color(0xFF2563EB), size: 20),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
 
               Expanded(
-                child: Obx(
-                  () => ListView.separated(
+                child: Obx(() {
+                  final activities = controller.filteredActivities;
+                  
+                  if (activities.isEmpty) {
+                    return const Center(
+                      child: Text('Tidak ada riwayat yang sesuai.', style: TextStyle(color: Colors.grey)),
+                    );
+                  }
+
+                  return ListView.separated(
                     physics: const BouncingScrollPhysics(),
-                    itemCount: controller.recentActivities.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 10),
+                    itemCount: activities.length, 
+                    separatorBuilder: (context, index) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
-                      final item = controller.recentActivities[index];
-                      return _buildActivityTile(context, item);
+                      final item = activities[index];
+                      return ActivityTile(item: item); 
                     },
-                  ),
-                ),
+                  );
+                }),
               ),
             ],
           ),
@@ -87,135 +103,88 @@ class ActivityTabView extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildActivityTile(BuildContext context, Map<String, dynamic> item) {
-    final bool isSuccess = item['isSuccess'] ?? false;
-    return Container(
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE2E8F0))),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          onTap: () => _showAuditLogDetailBottomSheet(context, item),
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: isSuccess ? const Color(0xFFEFF6FF) : const Color(0xFFFFFBEB),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    isSuccess ? Icons.badge_rounded : Icons.warning_amber_rounded,
-                    color: isSuccess ? const Color(0xFF2563EB) : const Color(0xFFD97706),
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(item['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A))),
-                      const SizedBox(height: 2),
-                      Text('NIK: ${item['nik']} • ${item['service']}', style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
-                    ],
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: isSuccess ? const Color(0xFFDCFCE7) : const Color(0xFFFEF3C7),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        item['status'] ?? '',
-                        style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: isSuccess ? const Color(0xFF15803D) : const Color(0xFFD97706)),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(item['time'] ?? '', style: const TextStyle(fontSize: 10, color: Color(0xFF94A3B8))),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showAuditLogDetailBottomSheet(BuildContext context, Map<String, dynamic> item) {
+  void _showFilterBottomSheet(BuildContext context) {
     Get.bottomSheet(
       Container(
         padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Detail Audit Log', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-            const SizedBox(height: 14),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: const Color(0xFF0F172A), borderRadius: BorderRadius.circular(14)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('ID LOG AKTIVITAS: ${item['log_id']}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF38BDF8))),
-                  const SizedBox(height: 4),
-                  Text('Warga: ${item['name']} (${item['nik']})', style: const TextStyle(fontSize: 12, color: Colors.white)),
-                ],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Filter Riwayat', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                TextButton(
+                  onPressed: () {
+                    controller.resetFilters();
+                    Get.back();
+                  },
+                  child: const Text('Reset', style: TextStyle(color: Colors.red)),
+                )
+              ],
             ),
             const SizedBox(height: 16),
-            const Text('KRONOLOGI VALIDASI NFC', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+            const Text('Waktu Pemindaian', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
             const SizedBox(height: 10),
-            _buildLogStep('09:39:12 WIB', 'Scan NFC Diinisiasi', 'UID fisik kartu e-KTP terbaca oleh sensor internal.'),
-            _buildLogStep('09:40:05 WIB', 'Autentikasi OTP', 'SMS token berhasil diverifikasi.'),
-            _buildLogStep('09:41:12 WIB', 'Registrasi Selesai', 'Data disimpan ke database Dukcapil.'),
-            const SizedBox(height: 16),
+            Obx(() => Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: ['Semua', 'Hari Ini', 'Kemarin', 'Minggu Lalu', 'Bulan Lalu'].map((time) {
+                final isSelected = controller.selectedTimeFilter.value == time;
+                return ChoiceChip(
+                  label: Text(time),
+                  selected: isSelected,
+                  onSelected: (bool selected) {
+                    if (selected) controller.selectedTimeFilter.value = time;
+                  },
+                  selectedColor: const Color(0xFFEFF6FF),
+                  labelStyle: TextStyle(
+                    color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF64748B),
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                  side: BorderSide(color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFE2E8F0)),
+                );
+              }).toList(),
+            )),
+            const SizedBox(height: 20),
+            const Text('Status Validasi', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+            const SizedBox(height: 10),
+            Obx(() => Wrap(
+              spacing: 8,
+              children: ['Semua', 'Berhasil', 'Gagal'].map((status) {
+                final isSelected = controller.selectedStatusFilter.value == status;
+                return ChoiceChip(
+                  label: Text(status),
+                  selected: isSelected,
+                  onSelected: (bool selected) {
+                    if (selected) controller.selectedStatusFilter.value = status;
+                  },
+                  selectedColor: const Color(0xFFEFF6FF),
+                  labelStyle: TextStyle(
+                    color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF64748B),
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                  side: BorderSide(color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFE2E8F0)),
+                );
+              }).toList(),
+            )),
+            const SizedBox(height: 24),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
-                minimumSize: const Size(double.infinity, 44),
+                minimumSize: const Size(double.infinity, 48),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               onPressed: () => Get.back(),
-              child: const Text('TUTUP AUDIT LOG', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: const Text('TERAPKAN FILTER', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildLogStep(String time, String title, String desc) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(Icons.circle, size: 10, color: Color(0xFF2563EB)),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('$time • $title', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                Text(desc, style: const TextStyle(fontSize: 10, color: Color(0xFF64748B))),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

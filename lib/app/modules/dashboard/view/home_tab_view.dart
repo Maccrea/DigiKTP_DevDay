@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:digiktp/app/modules/dashboard/dashboard_controller.dart';
+import 'package:digiktp/app/modules/dashboard/widget/activity_tile.dart';
+import 'package:digiktp/app/modules/dashboard/view/notification_page.dart';
 
 class HomeTabView extends GetView<DashboardController> {
   const HomeTabView({Key? key}) : super(key: key);
@@ -34,7 +36,33 @@ class HomeTabView extends GetView<DashboardController> {
                 const SizedBox(height: 24),
                 _buildActivityHeader(),
                 const SizedBox(height: 12),
-                _buildActivityFeed(context),
+                Obx(() {
+                if (controller.recentActivities.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text(
+                        'Belum ada aktivitas terbaru',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  );
+                }
+
+                return ListView.separated(
+                  shrinkWrap: true, 
+                  physics: const NeverScrollableScrollPhysics(), 
+                  itemCount: controller.recentActivities.length > 3 
+                      ? 3 
+                      : controller.recentActivities.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final item = controller.recentActivities[index];
+                    
+                    return ActivityTile(item: item);
+                  },
+                );
+              }),
               ],
             ),
           ),
@@ -79,7 +107,7 @@ class HomeTabView extends GetView<DashboardController> {
                     ),
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () => Get.to(() => const NotificationPage()),
                     borderRadius: BorderRadius.circular(50),
                     child: Container(
                       padding: const EdgeInsets.all(9),
@@ -274,40 +302,5 @@ class HomeTabView extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildActivityFeed(BuildContext context) {
-    return Obx(
-      () => ListView.separated(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: controller.recentActivities.length > 3 ? 3 : controller.recentActivities.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 10),
-        itemBuilder: (context, index) {
-          final item = controller.recentActivities[index];
-          final bool isSuccess = item['isSuccess'] ?? false;
-          return Container(
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE2E8F0))),
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Row(
-                children: [
-                  Icon(isSuccess ? Icons.badge_rounded : Icons.warning_amber_rounded, color: isSuccess ? const Color(0xFF2563EB) : const Color(0xFFD97706)),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(item['name'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                        Text('NIK: ${item['nik']}', style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
-                      ],
-                    ),
-                  ),
-                  Text(item['status'], style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: isSuccess ? Colors.green : Colors.orange)),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
+  
 }
