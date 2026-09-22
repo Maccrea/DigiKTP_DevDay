@@ -80,32 +80,36 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                         ),
                         const Divider(height: 24, color: Color(0xFFF1F5F9)),
 
-                        _buildSummaryItem(
-                          icon: Icons.person_outline,
-                          label: 'Nama Lengkap',
-                          value: 'Siti Rahmawati',
-                        ),
-                        const SizedBox(height: 12),
-                        _buildSummaryItem(
-                          icon: Icons.badge_outlined,
-                          label: 'NIK Warga',
-                          value: '3171012345670003',
-                        ),
-                        const SizedBox(height: 12),
-                        _buildSummaryItem(
-                          icon: Icons.nfc_outlined,
-                          label: 'UID e-KTP (Chip)',
-                          value: controller.scannedUid.value.isEmpty
-                              ? 'E004123456789A'
-                              : controller.scannedUid.value,
-                          isMonospace: true,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildSummaryItem(
-                          icon: Icons.mark_email_read_outlined,
-                          label: 'Email Verifikasi OTP',
-                          value: 'sitirahmawati@gmail.com',
-                        ),
+                        Obx(() => Column(
+                              children: [
+                                _buildSummaryItem(
+                                  icon: Icons.person_outline,
+                                  label: 'Nama Lengkap',
+                                  value: controller.verifiedWargaData['nama_lengkap'] ?? 'Memuat...',
+                                ),
+                                const SizedBox(height: 12),
+                                _buildSummaryItem(
+                                  icon: Icons.badge_outlined,
+                                  label: 'NIK Warga',
+                                  value: controller.verifiedWargaData['nik'] ?? 'Memuat...',
+                                ),
+                                const SizedBox(height: 12),
+                                _buildSummaryItem(
+                                  icon: Icons.nfc_outlined,
+                                  label: 'UID e-KTP (Chip)',
+                                  value: controller.scannedUid.value.isNotEmpty
+                                      ? controller.scannedUid.value
+                                      : (controller.verifiedWargaData['uid_nfc'] ?? 'E004123456789A'),
+                                  isMonospace: true,
+                                ),
+                                const SizedBox(height: 12),
+                                _buildSummaryItem(
+                                  icon: Icons.mark_email_read_outlined,
+                                  label: 'Email Verifikasi OTP',
+                                  value: controller.verifiedWargaData['email'] ?? 'Memuat...',
+                                ),
+                              ],
+                            )),
                       ],
                     ),
                   ),
@@ -144,7 +148,7 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                     padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
                     child: Column(
                       children: [
-                        SizedBox(
+                        Obx(() => SizedBox(
                           width: double.infinity,
                           height: 52,
                           child: ElevatedButton(
@@ -155,18 +159,30 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                                 borderRadius: BorderRadius.circular(14),
                               ),
                             ),
-                            onPressed: () => controller.goToStep(ScanStep.success),
-                            child: const Text(
-                              'PROSES & SIMPAN DATA',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                letterSpacing: 0.5,
-                                color: Colors.white,
-                              ),
-                            ),
+                            // Panggil fungsi API, jika sukses & valid baru pindah ke success dan muncul log
+                            onPressed: controller.isLoading.value 
+                                ? null 
+                                : () => controller.verifyOtpAndFetchData(),
+                            child: controller.isLoading.value
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2.5,
+                                    ),
+                                  )
+                                : const Text(
+                                    'PROSES & SIMPAN DATA',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                      letterSpacing: 0.5,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                           ),
-                        ),
+                        )),
                         const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,

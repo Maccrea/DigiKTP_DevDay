@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:digiktp/app/modules/dashboard/dashboard_controller.dart';
 import 'package:digiktp/app/modules/dashboard/widget/activity_tile.dart';
 import 'package:digiktp/app/modules/dashboard/view/notification_page.dart';
+import 'package:digiktp/app/modules/nfc_scan/nfc_scan_controller.dart';
+
 
 class HomeTabView extends GetView<DashboardController> {
   const HomeTabView({Key? key}) : super(key: key);
@@ -37,32 +39,26 @@ class HomeTabView extends GetView<DashboardController> {
                 _buildActivityHeader(),
                 const SizedBox(height: 12),
                 Obx(() {
-                if (controller.recentActivities.isEmpty) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text(
-                        'Belum ada aktivitas terbaru',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  );
-                }
+  if (controller.dashboardActivities.isEmpty) {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(20.0),
+        child: Text('Belum ada riwayat aktivitas pemindaian hari ini.'),
+      ),
+    );
+  }
 
-                return ListView.separated(
-                  shrinkWrap: true, 
-                  physics: const NeverScrollableScrollPhysics(), 
-                  itemCount: controller.recentActivities.length > 3 
-                      ? 3 
-                      : controller.recentActivities.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final item = controller.recentActivities[index];
-                    
-                    return ActivityTile(item: item);
-                  },
-                );
-              }),
+  return ListView.separated(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    itemCount: controller.dashboardActivities.length,
+    separatorBuilder: (context, index) => const SizedBox(height: 10),
+    itemBuilder: (context, index) {
+      final activityItem = controller.dashboardActivities[index];
+      return ActivityTile(item: activityItem); // Menggunakan widget ActivityTile milikmu!
+    },
+  );
+})
               ],
             ),
           ),

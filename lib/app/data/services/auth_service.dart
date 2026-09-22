@@ -5,7 +5,6 @@ import '../providers/api_provider.dart';
 
 class AuthService extends GetxService {
   final GetStorage _storage = GetStorage();
-  
   ApiProvider? _apiProvider; 
 
   final RxBool isLoggedIn = false.obs;
@@ -14,11 +13,16 @@ class AuthService extends GetxService {
 
   Future<AuthService> init() async {
     if (Get.isRegistered<ApiProvider>()) {
-      _apiProvider = Get.find<ApiProvider>();
+      _apiManagerInit();
     }
-
     _loadSessionFromStorage();
     return this;
+  }
+
+  void _apiManagerInit() {
+    try {
+      _apiProvider = Get.find<ApiProvider>();
+    } catch (_) {}
   }
 
   void _loadSessionFromStorage() {
@@ -43,17 +47,14 @@ class AuthService extends GetxService {
       Map<String, dynamic> responseData;
 
       if (_apiProvider != null) {
-        final response = await _apiProvider!.post('/auth/login', {
-          'nip': nip,
-          'password': password,
-          'id_instansi': idInstansi,
-          'location': poskoLocation,
-        });
-
-        if (response.status.hasError) return false;
-        responseData = response.body;
+        responseData = await _apiProvider!.loginPetugas(
+          nip: nip,
+          password: password,
+          idInstansi: idInstansi,
+          location: poskoLocation,
+        );
       } else {
-        await Future.delayed(const Duration(seconds: 1)); 
+        await Future.delayed(const Duration(milliseconds: 500)); 
         responseData = {
           'token': 'mock_jwt_token_xyz123',
           'petugas': {
@@ -86,11 +87,11 @@ class AuthService extends GetxService {
 
   Future<bool> updateLocation(String newLocation) async {
     try {
-      if (_apiProvider != null) {
-        await _apiProvider!.put('/petugas/location', {
-          'id_petugas': currentPetugas.value?.idPetugas,
-          'new_location': newLocation,
-        });
+      if (_apiProvider != null && currentPetugas.value != null) {
+        await _apiProvider!.updatePetugasLocation(
+          idPetugas: currentPetugas.value!.idPetugas,
+          newLocation: newLocation,
+        );
       }
 
       await _storage.write('current_location', newLocation);

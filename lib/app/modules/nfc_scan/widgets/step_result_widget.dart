@@ -19,7 +19,6 @@ class StepResultWidget extends GetView<NfcScanController> {
               child: Column(
                 children: [
                   const SizedBox(height: 8),
-
                   Column(
                     children: [
                       Container(
@@ -71,7 +70,6 @@ class StepResultWidget extends GetView<NfcScanController> {
                         ),
                       ),
                       const SizedBox(height: 14),
-
                       Container(
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
@@ -136,93 +134,55 @@ class StepResultWidget extends GetView<NfcScanController> {
                                 ),
                                 const SizedBox(width: 14),
                                 Expanded(
-                                  child: Column(
+                                  child: Obx(() => Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: const [
+                                    children: [
                                       Text(
-                                        'Siti Rahmawati',
-                                        style: TextStyle(
+                                        controller.verifiedWargaData['nama_lengkap'] ?? 'Siti Rahmawati',
+                                        style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
                                           color: Color(0xFF0F172A),
                                         ),
                                       ),
-                                      SizedBox(height: 4),
+                                      const SizedBox(height: 4),
                                       Text(
-                                        'NIK: 3171012345670003',
-                                        style: TextStyle(
+                                        'NIK: ${controller.verifiedWargaData['nik'] ?? '3171012345670003'}',
+                                        style: const TextStyle(
                                           color: Color(0xFF334155),
                                           fontWeight: FontWeight.w600,
                                           fontSize: 12,
                                         ),
                                       ),
-                                      SizedBox(height: 2),
+                                      const SizedBox(height: 2),
                                       Text(
-                                        'TTL: Jakarta, 12-05-1994',
-                                        style: TextStyle(
+                                        'TTL: ${controller.verifiedWargaData['tempat_tanggal_lahir'] ?? 'Jakarta, 12-05-1994'}',
+                                        style: const TextStyle(
                                           color: Color(0xFF64748B),
                                           fontSize: 12,
                                         ),
                                       ),
                                     ],
-                                  ),
+                                  )),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 16),
                             const Divider(height: 1, color: Color(0xFFF1F5F9)),
                             const SizedBox(height: 12),
-                            _buildDetailRow('Status Hubungan', 'Kepala Keluarga'),
-                            const SizedBox(height: 8),
-                            _buildDetailRow('Alamat e-KTP', 'Jl. Kebon Sirih No. 12'),
+                            Obx(() => Column(
+                              children: [
+                                _buildDetailRow('Jenis Kelamin', controller.verifiedWargaData['jenis_kelamin'] ?? 'Perempuan'),
+                                const SizedBox(height: 8),
+                                _buildDetailRow('Alamat e-KTP', controller.verifiedWargaData['alamat'] ?? 'Jl. Kebon Sirih No. 12'),
+                              ],
+                            )),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 14),
-
-                      // Container(
-                      //   padding: const EdgeInsets.all(14),
-                      //   decoration: BoxDecoration(
-                      //     color: const Color(0xFFFEFCE8),
-                      //     borderRadius: BorderRadius.circular(14),
-                      //     border: Border.all(color: const Color(0xFFFEF08A)),
-                      //   ),
-                      //   child: Row(
-                      //     crossAxisAlignment: CrossAxisAlignment.start,
-                      //     children: const [
-                      //       Icon(Icons.warning_amber_rounded, color: Color(0xFFD97706), size: 20),
-                      //       SizedBox(width: 10),
-                      //       // Expanded(
-                      //       //   child: Column(
-                      //       //     crossAxisAlignment: CrossAxisAlignment.start,
-                      //       //     children: [
-                      //       //       Text(
-                      //       //         'Data Belum Terdaftar di Posko?',
-                      //       //         style: TextStyle(
-                      //       //           fontWeight: FontWeight.bold,
-                      //       //           fontSize: 12,
-                      //       //           color: Color(0xFF854D0E),
-                      //       //         ),
-                      //       //       ),
-                      //       //       SizedBox(height: 2),
-                      //       //       Text(
-                      //       //         'Jika warga ini membutuhkan registrasi bantuan sosial atau verifikasi khusus posko daerah baru.',
-                      //       //         style: TextStyle(
-                      //       //           fontSize: 11,
-                      //       //           color: Color(0xFFA16207),
-                      //       //           height: 1.3,
-                      //       //         ),
-                      //       //       ),
-                      //       //     ],
-                      //       //   ),
-                      //       // ),
-                      //     ],
-                      //   ),
-                      // ),
                     ],
                   ),
                   const Spacer(),
-
                   Padding(
                     padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
                     child: Column(
@@ -245,28 +205,6 @@ class StepResultWidget extends GetView<NfcScanController> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15,
                                 color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 48,
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                            ),
-                            onPressed: () => controller.goToStep(ScanStep.validation),
-                            child: const Text(
-                              'DAFTARKAN DATA BARU',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: Color(0xFF2563EB),
                               ),
                             ),
                           ),

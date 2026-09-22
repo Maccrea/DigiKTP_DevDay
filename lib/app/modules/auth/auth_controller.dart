@@ -4,10 +4,12 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:digiktp/app/data/services/auth_service.dart';
 import 'package:digiktp/app/routes/app_routes.dart';
 import 'package:nfc_manager/nfc_manager.dart';
+import 'package:digiktp/app/utils/app_snackbar.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService = Get.find<AuthService>();
 
+  final password = ''.obs;
   final isNfcActive = false.obs;
   final nipController = TextEditingController();
   final passwordController = TextEditingController();
@@ -84,73 +86,56 @@ class AuthController extends GetxController {
 
 
 
-  void checkPasswordStrength(String password) {
-    if (password.isEmpty) {
-      passwordStrength.value = 0.0;
-      passwordStrengthText.value = '';
-      return;
-    }
+  final passwordHint = 'Gunakan minimal 8 karakter dengan kombinasi huruf besar, angka, dan simbol.'.obs;
 
-    double strength = 0;
-    if (password.length >= 8) strength += 0.25; 
-    if (password.contains(RegExp(r'[A-Z]'))) strength += 0.25; 
-    if (password.contains(RegExp(r'[0-9]'))) strength += 0.25; 
-    if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) strength += 0.25; 
-
-    passwordStrength.value = strength;
-
-    if (strength <= 0.25) {
-      passwordStrengthText.value = 'Lemah';
-      passwordStrengthColor.value = Colors.red;
-    } else if (strength <= 0.75) {
-      passwordStrengthText.value = 'Sedang';
-      passwordStrengthColor.value = Colors.orange;
-    } else {
-      passwordStrengthText.value = 'Kuat';
-      passwordStrengthColor.value = Colors.green;
-    }
+void checkPasswordStrength(String value) {
+  password.value = value;
+  
+  if (value.isEmpty) {
+    passwordStrength.value = 0.0;
+    passwordStrengthText.value = '';
+    passwordStrengthColor.value = Colors.grey;
+    passwordHint.value = 'Gunakan minimal 8 karakter dengan kombinasi huruf besar, angka, dan simbol.';
+    return;
   }
+
+  bool hasLength = value.length >= 8;
+  bool hasUpper = value.contains(RegExp(r'[A-Z]'));
+  bool hasDigit = value.contains(RegExp(r'[0-9]'));
+  bool hasSpecial = value.contains(RegExp(r'[!@#$%^&*(),.?":{}[\]|<>]'));
+
+  double strength = 0;
+  if (hasLength) strength += 0.25; 
+  if (hasUpper) strength += 0.25; 
+  if (hasDigit) strength += 0.25; 
+  if (hasSpecial) strength += 0.25; 
+
+  passwordStrength.value = strength;
+
+  List<String> missingRequirements = [];
+  if (!hasLength) missingRequirements.add('minimal 8 karakter');
+  if (!hasUpper) missingRequirements.add('huruf besar');
+  if (!hasDigit) missingRequirements.add('angka');
+  if (!hasSpecial) missingRequirements.add('simbol khusus');
+
+  if (strength <= 0.25) {
+    passwordStrengthText.value = 'Lemah';
+    passwordStrengthColor.value = Colors.red;
+    passwordHint.value = '⚠️ Keamanan rendah. Harap tambahkan: ${missingRequirements.join(', ')}.';
+  } else if (strength <= 0.75) {
+    passwordStrengthText.value = 'Sedang';
+    passwordStrengthColor.value = Colors.orange;
+    passwordHint.value = '⚠️ Hampir memenuhi standar. Kurang: ${missingRequirements.join(', ')}.';
+  } else {
+    passwordStrengthText.value = 'Kuat';
+    passwordStrengthColor.value = Colors.green;
+    passwordHint.value = '✔ Kata sandi telah memenuhi standar keamanan sistem.';
+  }
+}
 
   void goToSetPosko() {
     if (nipController.text.trim().isEmpty || passwordController.text.trim().isEmpty) {
-      Get.rawSnackbar(
-        messageText: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.info_outline_rounded, color: Colors.white, size: 16),
-            ),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Text(
-                'NIP dan Kata Sandi wajib diisi.',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF1E293B),
-        borderRadius: 30, 
-        margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        duration: const Duration(seconds: 3),
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      );
+      AppSnackbar.show(message : 'NIP dan Kata Sandi wajib diisi.');
       return;
     }
 
@@ -167,43 +152,9 @@ class AuthController extends GetxController {
     if (await canLaunchUrl(emailLaunchUri)) {
       await launchUrl(emailLaunchUri);
     } else {
-      Get.rawSnackbar(
-        messageText: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 16),
-            ),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Text(
-                'Tidak dapat membuka aplikasi email.',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF1E293B), 
-        borderRadius: 30,
-        margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        duration: const Duration(seconds: 3),
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+      AppSnackbar.show(
+        message : 'Tidak dapat membuka aplikasi email.',
+        icon: Icons.warning_amber_rounded,
       );
     }
   }

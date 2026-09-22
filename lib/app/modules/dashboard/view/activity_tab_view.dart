@@ -9,7 +9,7 @@ class ActivityTabView extends GetView<DashboardController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFFF1F5F9),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -77,24 +77,26 @@ class ActivityTabView extends GetView<DashboardController> {
 
               Expanded(
                 child: Obx(() {
-                  final activities = controller.filteredActivities;
-                  
-                  if (activities.isEmpty) {
-                    return const Center(
-                      child: Text('Tidak ada riwayat yang sesuai.', style: TextStyle(color: Colors.grey)),
-                    );
-                  }
+  if (controller.dashboardActivities.isEmpty) {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(20.0),
+        child: Text('Belum ada riwayat aktivitas pemindaian hari ini.'),
+      ),
+    );
+  }
 
-                  return ListView.separated(
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: activities.length, 
-                    separatorBuilder: (context, index) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final item = activities[index];
-                      return ActivityTile(item: item); 
-                    },
-                  );
-                }),
+  return ListView.separated(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    itemCount: controller.dashboardActivities.length,
+    separatorBuilder: (context, index) => const SizedBox(height: 10),
+    itemBuilder: (context, index) {
+      final activityItem = controller.dashboardActivities[index];
+      return ActivityTile(item: activityItem); // Menggunakan widget ActivityTile milikmu!
+    },
+  );
+})
               ),
             ],
           ),

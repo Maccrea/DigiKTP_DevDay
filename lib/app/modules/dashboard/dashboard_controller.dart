@@ -8,6 +8,7 @@ class DashboardController extends GetxController {
   final RxString userNip = 'NIP. 199408122020121002'.obs;
   final RxString activePosko = 'Kelurahan Gambir • Posko Layanan Terpadu'.obs;
 
+  RxList<Map<String, dynamic>> dashboardActivities = <Map<String, dynamic>>[].obs;
   final RxInt eKtpScannedCount = 142.obs;
   final RxInt dukcapilValidCount = 138.obs;
 

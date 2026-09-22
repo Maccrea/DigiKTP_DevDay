@@ -82,19 +82,19 @@ class SendOtpWidget extends GetView<NfcScanController> {
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.email_outlined, size: 18, color: Color(0xFF2563EB)),
-                              SizedBox(width: 8),
+                            children: [
+                              const Icon(Icons.email_outlined, size: 18, color: Color(0xFF2563EB)),
+                              const SizedBox(width: 8),
                               Flexible(
-                                child: Text(
-                                  'sitirahmawati@gmail.com',
-                                  style: TextStyle(
+                                child: Obx(() => Text(
+                                  controller.targetedEmail.value,
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
                                     color: Color(0xFF0F172A),
                                   ),
                                   overflow: TextOverflow.ellipsis,
-                                ),
+                                )),
                               ),
                             ],
                           ),

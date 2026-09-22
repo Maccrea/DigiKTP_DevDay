@@ -1,8 +1,8 @@
 import 'package:digiktp/app/modules/auth/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../widgets/custom_app_bar.dart';
-import '../../../widgets/custom_input_field.dart';
+import '../../../utils/custom_app_bar.dart';
+import '../../../utils/custom_input_field.dart';
 import '../../../theme/app_colors.dart';
 
 class SwitchPoskoView extends GetView<AuthController> {
@@ -11,6 +11,7 @@ class SwitchPoskoView extends GetView<AuthController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF1F5F9),
       appBar: const CustomAppBar(
         title: 'Pengaturan Posko Kerja',
         showBackButton: true,

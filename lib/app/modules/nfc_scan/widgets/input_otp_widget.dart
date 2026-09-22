@@ -61,15 +61,27 @@ class InputOtpWidget extends GetView<NfcScanController> {
                           ),
                         ),
                         const SizedBox(height: 6),
-                        const Text(
-                          'Kode 6 digit telah dikirimkan ke email\nsitirahmawati@gmail.com',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Color(0xFF64748B),
-                            fontSize: 12,
-                            height: 1.4,
+                        Obx(() => Text.rich(
+                          TextSpan(
+                            text: 'Kode 6 digit telah dikirimkan ke email\n',
+                            style: const TextStyle(
+                              color: Color(0xFF64748B),
+                              fontSize: 12,
+                              height: 1.4,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: controller.targetedEmail.value, // 👈 Membaca email dinamis dari controller
+                                style: const TextStyle(
+                                  color: Color(0xFF0F172A),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
+                          textAlign: TextAlign.center,
+                        )),
                         const SizedBox(height: 28),
 
                         Row(
@@ -80,12 +92,14 @@ class InputOtpWidget extends GetView<NfcScanController> {
                               width: 44,
                               height: 52,
                               child: TextField(
+                                controller: controller.otpControllers[index],
+                                focusNode: controller.otpFocusNodes[index],
                                 autofocus: index == 0,
                                 onChanged: (value) {
                                   if (value.length == 1 && index < 5) {
-                                    FocusScope.of(context).nextFocus();
+                                    controller.otpFocusNodes[index + 1].requestFocus();
                                   } else if (value.isEmpty && index > 0) {
-                                    FocusScope.of(context).previousFocus();
+                                    controller.otpFocusNodes[index - 1].requestFocus();
                                   }
                                 },
                                 textAlign: TextAlign.center,
@@ -135,18 +149,18 @@ class InputOtpWidget extends GetView<NfcScanController> {
                               final canResend = controller.canResend.value;
                               final seconds = controller.countdown.value.toString().padLeft(2, '0');
 
-                            return GestureDetector(
-                              onTap: canResend ? () => controller.resendOtp() : null,
-                              child: Text(
-                                canResend ? 'Kirim Ulang' : 'Kirim Ulang (00:$seconds)',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: canResend ? const Color(0xFF2563EB) : const Color(0xFF94A3B8),
+                              return GestureDetector(
+                                onTap: canResend ? () => controller.resendOtp() : null,
+                                child: Text(
+                                  canResend ? 'Kirim Ulang' : 'Kirim Ulang (00:$seconds)',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: canResend ? const Color(0xFF2563EB) : const Color(0xFF94A3B8),
+                                  ),
                                 ),
-                              ),
-                            );
-                          })
+                              );
+                            })
                           ],
                         ),
                       ],
@@ -168,16 +182,24 @@ class InputOtpWidget extends GetView<NfcScanController> {
                             borderRadius: BorderRadius.circular(14),
                           ),
                         ),
-                        onPressed: () => controller.goToStep(ScanStep.confirmation),
-                        child: const Text(
-                          'VERIFIKASI & LANJUTKAN',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            letterSpacing: 0.5,
-                            color: Colors.white,
-                          ),
-                        ),
+                        onPressed: () async {
+                          await controller.verifyOtpApi();
+                        },
+                        child: Obx(() => controller.isLoading.value
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                              )
+                            : const Text(
+                                'VERIFIKASI & LANJUTKAN',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  letterSpacing: 0.5,
+                                  color: Colors.white,
+                                ),
+                              )),
                       ),
                     ),
                   ),

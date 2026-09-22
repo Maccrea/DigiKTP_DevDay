@@ -2,8 +2,8 @@ import 'package:digiktp/app/modules/auth/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; 
 import 'package:get/get.dart';
-import '../../../widgets/custom_app_bar.dart';
-import '../../../widgets/custom_input_field.dart';
+import '../../../utils/custom_app_bar.dart';
+import '../../../utils/custom_input_field.dart';
 import '../../../theme/app_colors.dart';
 
 class LoginView extends GetView<AuthController> {
@@ -12,6 +12,7 @@ class LoginView extends GetView<AuthController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF1F5F9),
       appBar: CustomAppBar(
         title: 'Autentikasi Petugas',
         showBackButton: true,
@@ -141,29 +142,36 @@ class LoginView extends GetView<AuthController> {
               controller: controller.passwordController,
               onChanged: (val) => controller.checkPasswordStrength(val), 
             ),
-            
-            Obx(() {
-              if (controller.passwordStrengthText.value.isEmpty) {
-                return const SizedBox.shrink();
-              }
-              return Padding(
-                padding: const EdgeInsets.only(top: 8.0, left: 4.0, right: 4.0),
-                child: Row(
+
+            Obx(() => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                
+                LinearProgressIndicator(
+                  value: controller.passwordStrength.value,
+                  color: controller.passwordStrengthColor.value,
+                  backgroundColor: const Color(0xFFE2E8F0),
+                  minHeight: 6,
+                  borderRadius: BorderRadius.circular(3),
+                ),
+                const SizedBox(height: 8),
+                
+                // Baris Label Status (Lemah / Sedang / Kuat)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: LinearProgressIndicator(
-                          value: controller.passwordStrength.value,
-                          backgroundColor: Colors.grey.shade300,
-                          color: controller.passwordStrengthColor.value,
-                          minHeight: 6,
-                        ),
+                    const Text(
+                      'Tingkat Keamanan Sandi:',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF64748B),
                       ),
                     ),
-                    const SizedBox(width: 12),
                     Text(
-                      controller.passwordStrengthText.value,
+                      controller.passwordStrengthText.value.isEmpty 
+                          ? '-' 
+                          : controller.passwordStrengthText.value,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -172,9 +180,21 @@ class LoginView extends GetView<AuthController> {
                     ),
                   ],
                 ),
-              );
-            }),
-            const SizedBox(height: 16),
+                const SizedBox(height: 6),
+
+                Text(
+                  controller.passwordHint.value,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Color(0xFF475569),
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            )),
+            
+            
+            const SizedBox(height: 18),
 
             Obx(() => CustomDropdownField<String>(
               label: 'Instansi Induk',
@@ -236,4 +256,28 @@ class LoginView extends GetView<AuthController> {
       ),
     );
   }
+
+  Widget _buildRequirementItem(String text, bool isMet) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 2),
+    child: Row(
+      children: [
+        Icon(
+          isMet ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
+          size: 16,
+          color: isMet ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 12,
+            color: isMet ? const Color(0xFF0F172A) : const Color(0xFF64748B),
+            fontWeight: isMet ? FontWeight.w600 : FontWeight.normal,
+          ),
+        ),
+      ],
+    ),
+  );
+}
 }

@@ -89,69 +89,60 @@ class NotificationPage extends GetView<NotificationController> {
             ? []
             : [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 8, offset: const Offset(0, 2))],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            controller.markAsRead(notif.id);
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: iconColor.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(controller.getIcon(notif.type), color: iconColor, size: 22),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(controller.getIcon(notif.type), color: iconColor, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              notif.title,
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF0F172A)),
-                            ),
-                          ),
-                          if (notif.isUnread)
-                            Container(
-                              margin: const EdgeInsets.only(right: 6),
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(color: Color(0xFFEF4444), shape: BoxShape.circle),
-                            ),
-                          Text(
-                            notif.time,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: notif.isUnread ? FontWeight.w600 : FontWeight.normal,
-                              color: notif.isUnread ? const Color(0xFF2563EB) : const Color(0xFF94A3B8),
-                            ),
-                          ),
-                        ],
+                      Expanded(
+                        child: Text(
+                          notif.title,
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF0F172A)),
+                        ),
                       ),
-                      const SizedBox(height: 6),
+                      if (notif.isUnread)
+                        Container(
+                          margin: const EdgeInsets.only(right: 6),
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(color: Color(0xFFEF4444), shape: BoxShape.circle),
+                        ),
                       Text(
-                        notif.subtitle,
-                        style: const TextStyle(fontSize: 12.5, color: Color(0xFF64748B), height: 1.4),
+                        notif.time,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: notif.isUnread ? FontWeight.w600 : FontWeight.normal,
+                          color: notif.isUnread ? const Color(0xFF2563EB) : const Color(0xFF94A3B8),
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 6),
+                  Text(
+                    notif.subtitle,
+                    style: const TextStyle(fontSize: 12.5, color: Color(0xFF64748B), height: 1.4),
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

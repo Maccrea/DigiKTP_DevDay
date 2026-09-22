@@ -8,7 +8,7 @@ class PetugasTabView extends GetView<DashboardController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFFF1F5F9),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -69,7 +69,7 @@ class PetugasTabView extends GetView<DashboardController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('LOKASI TUGAS AKTIF', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF94A3B8), letterSpacing: 0.8)),
+                    const Text('LOKASI TUGAS AKTIF', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.8)),
                     const SizedBox(height: 6),
                     Obx(() => Text(controller.activePosko.value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white))),
                     const SizedBox(height: 12),

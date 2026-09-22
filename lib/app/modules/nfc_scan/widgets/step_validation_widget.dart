@@ -150,7 +150,7 @@ class StepValidationWidget extends GetView<NfcScanController> {
                         Obx(() => _buildContactRadioTile(
                               index: 0,
                               selectedIndex: selectedOption.value,
-                              title: 'sitirahmawati@gmail.com',
+                              title: 'macreynardosan@gmail.com',
                               subtitle: 'Email Utama Dukcapil',
                               onTap: () => selectedOption.value = 0,
                             )),
@@ -159,7 +159,7 @@ class StepValidationWidget extends GetView<NfcScanController> {
                         Obx(() => _buildContactRadioTile(
                               index: 1,
                               selectedIndex: selectedOption.value,
-                              title: 'rahma@gmail.com',
+                              title: 'alyaaranaraya@gmail.com',
                               subtitle: 'Email Cadangan Terverifikasi',
                               onTap: () => selectedOption.value = 1,
                             )),
@@ -173,7 +173,6 @@ class StepValidationWidget extends GetView<NfcScanController> {
                               onTap: () => selectedOption.value = 2,
                             )),
 
-                        // TextField yang muncul jika memilih Opsi 3
                         Obx(() {
                           if (selectedOption.value != 2) return const SizedBox.shrink();
                           return Padding(
@@ -217,24 +216,43 @@ class StepValidationWidget extends GetView<NfcScanController> {
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2563EB),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        onPressed: () => controller.goToStep(ScanStep.sendOtp),
-                        child: const Text(
-                          'KIRIM OTP',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            letterSpacing: 0.5,
-                            color: Colors.white,
-                          ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2563EB),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
+                      onPressed: () async {
+                        if (controller.selectedContact.value == 2 && !controller.isEmailValid) {
+                          Get.snackbar(
+                            'Peringatan', 
+                            'Masukkan format email aktif yang valid.', 
+                            snackPosition: SnackPosition.TOP,
+                            backgroundColor: const Color(0xFFEF4444),
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+                        
+                        await controller.requestOtpApi(controller.selectedContact.value);
+                      },
+                      child: Obx(() => controller.isLoading.value
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                            )
+                          : const Text(
+                              'KIRIM OTP',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                letterSpacing: 0.5,
+                                color: Colors.white,
+                              ),
+                            )),
+                    ),
                     ),
                   ),
                 ],
@@ -246,7 +264,6 @@ class StepValidationWidget extends GetView<NfcScanController> {
     );
   }
 
-  // Widget Tile Opsi Pilihan Kontak (Radio Tile)
   Widget _buildContactRadioTile({
     required int index,
     required int selectedIndex,
