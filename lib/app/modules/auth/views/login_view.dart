@@ -157,7 +157,6 @@ class LoginView extends GetView<AuthController> {
                 ),
                 const SizedBox(height: 8),
                 
-                // Baris Label Status (Lemah / Sedang / Kuat)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

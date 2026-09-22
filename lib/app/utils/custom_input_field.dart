@@ -10,7 +10,6 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController? controller;
   final String? Function(String?)? validator;
   
-  // Parameter tambahan untuk mendukung fungsi di LoginView
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final Function(String)? onChanged;
@@ -54,9 +53,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
           controller: widget.controller,
           obscureText: widget.isPassword ? _obscureText : false,
           validator: widget.validator,
-          keyboardType: widget.keyboardType, // Ditambahkan ke sini
-          inputFormatters: widget.inputFormatters, // Ditambahkan ke sini
-          onChanged: widget.onChanged, // Ditambahkan ke sini
+          keyboardType: widget.keyboardType, 
+          inputFormatters: widget.inputFormatters, 
+          onChanged: widget.onChanged,
           style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: widget.hintText,

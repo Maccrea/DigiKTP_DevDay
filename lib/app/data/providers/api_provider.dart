@@ -22,26 +22,37 @@ class ApiProvider extends GetxService {
   }
 
   Future<Map<String, dynamic>> generateOtp({
-    required String nfcUid, 
-    required String email, 
+    required String nfcUid,
+    required String email,
   }) async {
     try {
+      final requestBody = {
+        'nfc_uid': nfcUid.trim(),
+        'email_terpilih': email.trim(),
+      };
+
+      print('📤 MENGIRIM GENERATE OTP PAYLOAD: $requestBody');
+
       final response = await supabase.functions.invoke(
         'generate-otp',
-        body: {
-          'nfc_uid': nfcUid,
-          'email_terpilih': email,
-        },
+        body: requestBody,
       );
-      return response.data as Map<String, dynamic>;
+
+      final responseData = response.data is Map<String, dynamic>
+          ? response.data as Map<String, dynamic>
+          : Map<String, dynamic>.from(response.data as Map);
+
+      print('📥 RESPON GENERATE OTP: $responseData');
+
+      return responseData;
     } catch (e) {
-      print('DEBUG ERROR SUPABASE FUNCTIONS: $e'); 
+      print('DEBUG ERROR SUPABASE FUNCTIONS: $e');
       throw Exception('Gagal mengirim OTP: $e');
     }
   }
 
   Future<Map<String, dynamic>> verifyOtp({
-    required String nfcUid, 
+    required String nfcUid,
     required String otpCode,
     required String idPetugas,
     required String idInstansi,
@@ -50,14 +61,21 @@ class ApiProvider extends GetxService {
   }) async {
     try {
       final Map<String, dynamic> requestBody = {
-        'nfc_uid': nfcUid,
-        'otp_code': otpCode,
-        'id_petugas': idPetugas,
-        'id_instansi': idInstansi,
+        'nfc_uid': nfcUid.trim(),
+        'otp_code': otpCode.trim(),
+        'id_petugas': idPetugas.trim(),
+        'id_instansi': idInstansi.trim(),
       };
 
-      if (lokasiTugas != null) requestBody['lokasi_tugas'] = lokasiTugas;
-      if (jenisLayanan != null) requestBody['jenis_layanan'] = jenisLayanan;
+      final cleanLokasiTugas = (lokasiTugas ?? '').trim();
+      final cleanJenisLayanan = (jenisLayanan ?? '').trim();
+
+      if (cleanLokasiTugas.isNotEmpty) {
+        requestBody['lokasi_tugas'] = cleanLokasiTugas;
+      }
+      if (cleanJenisLayanan.isNotEmpty) {
+        requestBody['jenis_layanan'] = cleanJenisLayanan;
+      }
 
       print('📤 MENGIRIM VERIFIKASI OTP PAYLOAD: $requestBody');
 
@@ -65,9 +83,22 @@ class ApiProvider extends GetxService {
         'verify-otp',
         body: requestBody,
       );
-      
-      print('📥 RESPON SUKSES VERIFY OTP: ${response.data}');
-      return response.data as Map<String, dynamic>;
+
+      final responseData = response.data is Map<String, dynamic>
+          ? response.data as Map<String, dynamic>
+          : Map<String, dynamic>.from(response.data as Map);
+
+      print('📥 RESPON VERIFY OTP: $responseData');
+
+      if (responseData.containsKey('error')) {
+        throw Exception(responseData['error']);
+      }
+
+      if (responseData['status'] != 'success') {
+        throw Exception('Verifikasi OTP gagal. Silakan coba lagi.');
+      }
+
+      return responseData;
     } catch (e) {
       print('❌ DEBUG ERROR VERIFY OTP MENTAH: $e');
       throw Exception('$e');

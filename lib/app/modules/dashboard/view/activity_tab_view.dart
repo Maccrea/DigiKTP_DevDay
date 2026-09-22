@@ -93,7 +93,7 @@ class ActivityTabView extends GetView<DashboardController> {
     separatorBuilder: (context, index) => const SizedBox(height: 10),
     itemBuilder: (context, index) {
       final activityItem = controller.dashboardActivities[index];
-      return ActivityTile(item: activityItem); // Menggunakan widget ActivityTile milikmu!
+      return ActivityTile(item: activityItem); 
     },
   );
 })
