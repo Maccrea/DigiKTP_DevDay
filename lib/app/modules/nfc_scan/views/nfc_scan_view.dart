@@ -8,12 +8,15 @@ import '../widgets/send_otp_widget.dart';
 import '../widgets/input_otp_widget.dart';
 import '../widgets/confirmation_widget.dart';
 import '../widgets/success_widget.dart';
+import '../widgets/cek_warga_widget.dart';
+
 
 class NfcScanView extends GetView<NfcScanController> {
   const NfcScanView({Key? key}) : super(key: key);
 
   String _getStepTitle(ScanStep step) {
     switch (step) {
+      case ScanStep.cekWarga: return 'Verifikasi NIK Warga';
       case ScanStep.prompt: return 'Pemindaian e-KTP';
       case ScanStep.result: return 'Hasil Pembacaan NFC';
       case ScanStep.validation: return 'Validasi Data Warga';
@@ -26,17 +29,19 @@ class NfcScanView extends GetView<NfcScanController> {
 
   int _getStepPhaseIndex(ScanStep step) {
     switch (step) {
+      case ScanStep.cekWarga:
+        return 0;
       case ScanStep.prompt:
       case ScanStep.result:
-        return 0;
-      case ScanStep.validation:
         return 1;
+      case ScanStep.validation:
+        return 2;
       case ScanStep.sendOtp:
       case ScanStep.inputOtp:
-        return 2;
+        return 3;
       case ScanStep.confirmation:
       case ScanStep.success:
-        return 3;
+        return 4;
     }
   }
 
@@ -62,6 +67,7 @@ class NfcScanView extends GetView<NfcScanController> {
             Expanded(
               child: Obx(() {
                 switch (controller.currentStep.value) {
+                  case ScanStep.cekWarga: return const CekWargaWidget();
                   case ScanStep.prompt: return const PromptWidget();
                   case ScanStep.result: return const StepResultWidget();
                   case ScanStep.validation: return const StepValidationWidget();
@@ -80,7 +86,7 @@ class NfcScanView extends GetView<NfcScanController> {
 
   Widget _buildPremiumFlowHeader(ScanStep currentStep) {
     final currentPhase = _getStepPhaseIndex(currentStep);
-    const totalPhases = 4;
+    const totalPhases = 5;
 
     return Container(
       width: double.infinity,

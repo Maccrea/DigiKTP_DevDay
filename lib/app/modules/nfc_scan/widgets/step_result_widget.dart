@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../nfc_scan_controller.dart';
+import 'cek_warga_widget.dart';
 
 class StepResultWidget extends GetView<NfcScanController> {
   const StepResultWidget({Key? key}) : super(key: key);
@@ -70,6 +71,7 @@ class StepResultWidget extends GetView<NfcScanController> {
                         ),
                       ),
                       const SizedBox(height: 14),
+                            const CekWargaWidget(),
                       Container(
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
@@ -147,7 +149,7 @@ class StepResultWidget extends GetView<NfcScanController> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        'NIK: ${controller.verifiedWargaData['nik'] ?? '3171012345670003'}',
+                                        'NIK: ${controller.verifiedWargaData['nik'] ?? '-'}',
                                         style: const TextStyle(
                                           color: Color(0xFF334155),
                                           fontWeight: FontWeight.w600,
@@ -187,28 +189,6 @@ class StepResultWidget extends GetView<NfcScanController> {
                     padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
                     child: Column(
                       children: [
-                        SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2563EB),
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                            ),
-                            onPressed: () => controller.goToStep(ScanStep.validation),
-                            child: const Text(
-                              'VERIFIKASI & SIMPAN',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),

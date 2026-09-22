@@ -159,7 +159,6 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                                 borderRadius: BorderRadius.circular(14),
                               ),
                             ),
-                            // Panggil fungsi API, jika sukses & valid baru pindah ke success dan muncul log
                             onPressed: controller.isLoading.value 
                                 ? null 
                                 : () => controller.verifyOtpAndFetchData(),

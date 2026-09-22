@@ -81,25 +81,30 @@ class SuccessWidget extends GetView<NfcScanController> {
                           ),
                           child: Column(
                             children: const [
-                              Text(
-                                'ID REGISTRASI POSKO',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF64748B),
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'REG-2026-NFC9802',
-                                style: TextStyle(
-                                  fontFamily: 'Monospace',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2563EB),
-                                ),
-                              ),
+                                  const Text(
+                                    'ID REGISTRASI POSKO',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF64748B),
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Obx(() {
+                                    final logId = controller.logData['id'] ??
+                                        controller.logData['id_log'] ??
+                                        'ID belum tersedia';
+                                    return Text(
+                                      logId.toString(),
+                                      style: TextStyle(
+                                        fontFamily: 'Monospace',
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF2563EB),
+                                      ),
+                                    );
+                                  }),
                             ],
                           ),
                         ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../nfc_scan_controller.dart';
+import 'package:digiktp/app/modules/nfc_scan/nfc_scan_controller.dart';
 
 class StepValidationWidget extends GetView<NfcScanController> {
   const StepValidationWidget({Key? key}) : super(key: key);
@@ -70,12 +70,12 @@ class StepValidationWidget extends GetView<NfcScanController> {
                               ),
                             ),
                             const SizedBox(width: 14),
-                            const Expanded(
+                            Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Siti Rahmawati',
+                                    controller.verifiedWargaData['nama_masking'] ?? 'Nama warga',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 15,
@@ -84,7 +84,7 @@ class StepValidationWidget extends GetView<NfcScanController> {
                                   ),
                                   SizedBox(height: 2),
                                   Text(
-                                    'NIK: 317101******0003',
+                                    'NIK: ${controller.verifiedWargaData['nik'] ?? '-'}',
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Color(0xFF475569),
@@ -93,7 +93,7 @@ class StepValidationWidget extends GetView<NfcScanController> {
                                   ),
                                   SizedBox(height: 2),
                                   Text(
-                                    'Gambir, Jakarta Pusat',
+                                    '${controller.verifiedWargaData['wilayah'] ?? '-'} • ${controller.verifiedWargaData['phone_last_digits'] ?? '-'}',
                                     style: TextStyle(
                                       fontSize: 11,
                                       color: Color(0xFF94A3B8),

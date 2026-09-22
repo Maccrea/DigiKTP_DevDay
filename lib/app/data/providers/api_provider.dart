@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ApiProvider extends GetxService {
@@ -6,18 +7,110 @@ class ApiProvider extends GetxService {
 
   Future<Map<String, dynamic>> cekWarga({
     required String nik,
+    required String nfcUid,
   }) async {
+    final cleanNik = nik.trim();
+    final cleanNfcUid = nfcUid.trim().toUpperCase();
+    if (!RegExp(r'^\d{16}$').hasMatch(cleanNik)) {
+      throw Exception('Format NIK tidak valid');
+    }
+    if (cleanNfcUid.isEmpty) {
+      throw Exception('UID NFC wajib tersedia');
+    }
+
     try {
+      final accessToken = supabase.auth.currentSession?.accessToken ??
+          GetStorage().read<String>('auth_token');
+      if (accessToken == null || accessToken.isEmpty) {
+        throw Exception('Token akses tidak tersedia');
+      }
+
       final response = await supabase.functions.invoke(
-        'cek-warga', 
+        'cek-warga',
         body: {
-          'nik': nik,
+          'nik': cleanNik,
+          'nfc_uid': cleanNfcUid,
+        },
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
         },
       );
-      return response.data as Map<String, dynamic>;
+
+      final responseData = response.data is Map<String, dynamic>
+          ? response.data as Map<String, dynamic>
+          : Map<String, dynamic>.from(response.data as Map);
+
+      print(
+        'RESPON CEK WARGA: status=${responseData['status']}, '
+        'message=${responseData['message']}',
+      );
+
+      if (responseData['status'] != 'success') {
+        throw Exception(
+          responseData['message'] ?? 'Data warga tidak ditemukan',
+        );
+      }
+
+      return responseData;
+    } on FunctionsHttpException catch (e) {
+      print('ERROR CEK WARGA: status=${e.status}, details=${e.details}');
+      if (e.status == 400) {
+        throw Exception(_functionErrorMessage(e.details));
+      }
+      if (e.status == 404) {
+        final directResponse = await _lookupWargaDirectly(
+          nik: cleanNik,
+          nfcUid: cleanNfcUid,
+        );
+        if (directResponse != null) {
+          return directResponse;
+        }
+        throw Exception(_functionErrorMessage(e.details));
+      }
+      throw Exception(_functionErrorMessage(e.details));
     } catch (e) {
-      print('DEBUG ERROR CEK WARGA: $e');
-      throw Exception('Gagal memverifikasi NIK: $e');
+      throw Exception(e.toString().replaceFirst('Exception: ', ''));
+    }
+  }
+
+  String _functionErrorMessage(dynamic details) {
+    if (details is Map && details['message'] is String) {
+      return details['message'] as String;
+    }
+    return 'Gagal memverifikasi NIK';
+  }
+
+  Future<Map<String, dynamic>?> _lookupWargaDirectly({
+    required String nik,
+    required String nfcUid,
+  }) async {
+    try {
+      final row = await supabase
+          .from('users_warga')
+          .select()
+          .eq('nik', nik)
+          .eq('uid_nfc', nfcUid)
+          .maybeSingle();
+
+      if (row == null) return null;
+
+      final data = Map<String, dynamic>.from(row);
+      return {
+        'status': 'success',
+        'message': 'Data warga ditemukan',
+        'data': {
+          ...data,
+          'nik': data['nik'] ?? nik,
+          'nama_masking': data['nama_masking'] ?? data['nama_lengkap'] ?? '',
+          'wilayah': data['wilayah'] ?? data['alamat'] ?? '',
+          'is_active': data['is_active'] ?? true,
+          'phone_last_digits': data['phone_last_digits'] ?? data['no_hp'] ?? '',
+        },
+      };
+    } catch (error) {
+      print('FALLBACK USERS_WARGA GAGAL: $error');
+      return null;
     }
   }
 
@@ -121,21 +214,19 @@ class ApiProvider extends GetxService {
           'location': location,
         },
       );
-      return response.data as Map<String, dynamic>;
+      final responseData = response.data is Map<String, dynamic>
+          ? response.data as Map<String, dynamic>
+          : Map<String, dynamic>.from(response.data as Map);
+
+      if (responseData['petugas'] is! Map ||
+          responseData['petugas']['id_petugas'] == null ||
+          responseData['petugas']['id_instansi'] == null) {
+        throw Exception('Respons login tidak berisi ID petugas/instansi yang valid');
+      }
+
+      return responseData;
     } catch (e) {
-      await Future.delayed(const Duration(milliseconds: 500));
-      return {
-        'token': 'mock_jwt_token_xyz123',
-        'petugas': {
-          'id_petugas': 'P-10928',
-          'nip': nip,
-          'nama': 'Budi Santoso',
-          'email': 'budi.santoso@jakarta.go.id',
-          'id_instansi': idInstansi,
-          'current_location': location,
-          'role': 'petugas_layanan',
-        }
-      };
+      throw Exception('Login petugas gagal: $e');
     }
   }
 

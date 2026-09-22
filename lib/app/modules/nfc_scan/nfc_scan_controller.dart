@@ -4,9 +4,11 @@ import 'package:nfc_manager/nfc_manager.dart';
 import 'dart:async';
 
 import '../../data/providers/api_provider.dart';
+import '../../data/services/auth_service.dart';
 import 'package:digiktp/app/utils/app_snackbar.dart';
 
 enum ScanStep {
+  cekWarga,     // Step 1: Check resident NIK
   prompt,       // Step 1: Scan e-KTP
   result,       // Step 2: Hasil Pembacaan NFC
   validation,   // Step 3: Validasi Warga (Pilih Kontak)
@@ -17,6 +19,8 @@ enum ScanStep {
 }
 
 class NfcScanController extends GetxController {
+  static const String defaultPetugasId = 'P-001';
+
   final ApiProvider _apiProvider = Get.put(ApiProvider());
 
   RxList<Map<String, dynamic>> dashboardActivities = <Map<String, dynamic>>[].obs;
@@ -30,6 +34,8 @@ class NfcScanController extends GetxController {
   
   final isLoading = false.obs;
   final isAgreed = false.obs;
+  final TextEditingController nikController = TextEditingController();
+  final nikDigitCount = 0.obs;
 
   final targetedEmail = ''.obs;
 
@@ -120,6 +126,7 @@ class NfcScanController extends GetxController {
     _timer?.cancel();
     NfcManager.instance.stopSession();
     customEmailController.dispose();
+    nikController.dispose();
 
     for (final c in otpControllers) {
       c.dispose();
@@ -142,6 +149,8 @@ class NfcScanController extends GetxController {
 
   bool handleBack() {
     switch (currentStep.value) {
+      case ScanStep.cekWarga:
+        return true;
       case ScanStep.success:
         return false;
       case ScanStep.confirmation:
@@ -163,6 +172,54 @@ class NfcScanController extends GetxController {
         return false;
       case ScanStep.prompt:
         return true;
+    }
+  }
+
+  Future<void> cekWargaApi() async {
+    final nik = nikController.text.replaceAll(RegExp(r'[^0-9]'), '');
+    nikDigitCount.value = nik.length;
+    final nfcUid = activeNfcUid;
+    if (nfcUid.isEmpty) {
+      Get.snackbar(
+        'NFC Belum Dipindai',
+        'Silakan scan e-KTP terlebih dahulu.',
+        snackPosition: SnackPosition.TOP,
+      );
+      return;
+    }
+    if (nik.length != 16) {
+      Get.snackbar(
+        'NIK Tidak Valid',
+        'NIK harus terdiri dari 16 digit angka. Terbaca ${nik.length} digit.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+      debugPrint('CEK WARGA: mengirim ${nik.length} digit NIK');
+      final responseData = await _apiProvider.cekWarga(
+        nik: nik,
+        nfcUid: nfcUid,
+      );
+      final warga = Map<String, dynamic>.from(responseData['data'] as Map);
+      warga['nik'] = nik;
+      verifiedWargaData.value = warga;
+      currentStep.value = ScanStep.validation;
+    } catch (e) {
+      final message = e.toString().replaceFirst('Exception: ', '');
+      Get.snackbar(
+        'Cek Data Warga Gagal',
+        message,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -245,12 +302,18 @@ class NfcScanController extends GetxController {
       isLoading.value = true;
       update();
 
+      final authService = Get.find<AuthService>();
+      final petugas = authService.currentPetugas.value;
+      if (petugas == null || petugas.idPetugas.trim().isEmpty) {
+        throw Exception('Sesi petugas tidak ditemukan. Silakan login ulang.');
+      }
+
       final responseData = await _apiProvider.verifyOtp(
         nfcUid: nfcUid,
         otpCode: enteredOtp,
-        idPetugas: 'PTG-001',
-        idInstansi: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-        lokasiTugas: 'Kantor Cabang Pemuda',
+        idPetugas: defaultPetugasId,
+        idInstansi: petugas.idInstansi,
+        lokasiTugas: authService.currentLocation.value,
         jenisLayanan: 'Pendaftaran Layanan Kesehatan',
       );
 
@@ -321,7 +384,8 @@ class NfcScanController extends GetxController {
   }
 
   Future<void> verifyOtpAndFetchData() async {
-    await verifyOtpApi();
+    if (currentStep.value != ScanStep.confirmation) return;
+    currentStep.value = ScanStep.success;
   }
 
   void startNfcSession() async {

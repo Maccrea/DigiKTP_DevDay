@@ -6,12 +6,22 @@ import 'app/data/services/auth_service.dart';
 import 'app/routes/app_pages.dart';
 import 'app/theme/app_theme.dart';
 
+const supabaseUrl = 'https://kocnlqtyfffwkfmaomcb.supabase.co';
+const supabaseAnonKey = 'sb_publishable_xqV78cO7bMGLZO8CtM52Qw_6Ctx0ga-';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
+  if (supabaseAnonKey.isEmpty) {
+    throw StateError(
+      'SUPABASE_ANON_KEY belum diatur. Jalankan dengan '
+      '--dart-define=SUPABASE_ANON_KEY=<anon-key>',
+    );
+  }
+
   await Supabase.initialize(
-    url: 'https://kocnlqtyfffwkfmaomcb.supabase.co',
-    anonKey: 'MASUKKAN_ANON_KEY_KAMU_DISINI', // Ganti dengan Anon Key dari Dashboard Supabase
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
   
   await GetStorage.init();
