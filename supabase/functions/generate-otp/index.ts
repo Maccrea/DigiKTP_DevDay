@@ -17,15 +17,15 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { nfc_uid, id_instansi } = await req.json()
+    const { nfc_uid, id_instansi, email_terpilih } = await req.json()
 
-    if (!nfc_uid) {
-      return new Response(JSON.stringify({ error: 'nfc_uid wajib diisi' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 })
+    if (!nfc_uid || !email_terpilih) {
+      return new Response(JSON.stringify({ error: 'nfc_uid dan email_terpilih wajib diisi' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 })
     }
 
     const { data: wargaData, error: wargaError } = await supabase
       .from('users_warga')
-      .select('email, nama_lengkap, nik')
+      .select('nama_lengkap, nik')
       .eq('uid_nfc', nfc_uid)
       .single()
 
@@ -38,8 +38,9 @@ serve(async (req) => {
     const { error: insertError } = await supabase
       .from('otp_requests')
       .insert({
-        citizen_uid: wargaData.nik,
+        citizen_uid: nfc_uid,
         instansi_id: id_instansi || null,
+        email_tujuan: email_terpilih,
         otp_code: generatedOtp,
         status: 'pending'
       })
@@ -55,7 +56,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         from: 'Pemerintah Digital <onboarding@resend.dev>',
-        to: wargaData.email, 
+        to: email_terpilih, 
         subject: 'Kode OTP Konfirmasi Data KTP',
         html: `<p>Halo ${wargaData.nama_lengkap},</p><p>Anda diminta untuk memberikan persetujuan akses data KTP.</p><h2>Kode OTP Anda: ${generatedOtp}</h2><p>Berikan kode ini kepada petugas.</p>`
       })
@@ -66,9 +67,8 @@ serve(async (req) => {
       throw new Error(`Gagal mengirim email: ${JSON.stringify(emailErr)}`)
     }
 
-    // 6. Berhasil
     return new Response(
-      JSON.stringify({ success: true, message: 'OTP berhasil dibuat dan dikirim ke email.' }),
+      JSON.stringify({ success: true, message: `OTP berhasil dibuat dan dikirim ke ${email_terpilih}.` }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     )
 

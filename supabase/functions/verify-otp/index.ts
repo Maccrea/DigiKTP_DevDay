@@ -55,7 +55,7 @@ serve(async (req) => {
       .eq('id', otpData.id)
 
     const { data: wargaData, error: wargaError } = await supabaseClient
-      .from('warga')
+      .from('users_warga')
       .select('nik, uid_nfc, nama_lengkap, email, no_hp, tempat_tanggal_lahir, jenis_kelamin, alamat, agama')
       .eq('uid_nfc', nfc_uid)
       .single()
@@ -67,9 +67,14 @@ serve(async (req) => {
       )
     }
 
+    const randomNum = Math.floor(1000000 + Math.random() * 9000000);
+    const dateCode = new Date().toISOString().slice(5,10).replace('-', '');
+    const generatedLogId = `TX-${randomNum}-${dateCode}-DKI`;
+
     const { data: logData, error: logError } = await supabaseClient
-      .from('layanan_log')
+      .from('layanan_logs')
       .insert({
+        id_log: generatedLogId,
         nik_warga: wargaData.nik,
         id_petugas: id_petugas,
         id_instansi: id_instansi,
@@ -94,7 +99,7 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     )
 
-} catch (error) {
+  } catch (error) {
     return new Response(
       JSON.stringify({ 
         error: 'Terjadi kesalahan pada server backend.', 
@@ -102,4 +107,5 @@ serve(async (req) => {
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     )
-  }})
+  }
+})
