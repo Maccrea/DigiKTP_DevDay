@@ -8,14 +8,14 @@ import '../../data/services/auth_service.dart';
 import 'package:digiktp/app/utils/app_snackbar.dart';
 
 enum ScanStep {
-  cekWarga,     // Step 1: Check resident NIK
-  prompt,       // Step 1: Scan e-KTP
-  result,       // Step 2: Hasil Pembacaan NFC
-  validation,   // Step 3: Validasi Warga (Pilih Kontak)
-  sendOtp,      // Step 4: Kirim Kode OTP
-  inputOtp,     // Step 5: Autentikasi OTP (Input Kode)
-  confirmation, // Step 6: Konfirmasi Pengajuan
-  success       // Step 7: Transaksi Berhasil
+  cekWarga,
+  prompt,
+  result,
+  validation,
+  sendOtp,
+  inputOtp,
+  confirmation,
+  success,
 }
 
 class NfcScanController extends GetxController {
@@ -23,15 +23,16 @@ class NfcScanController extends GetxController {
 
   final ApiProvider _apiProvider = Get.put(ApiProvider());
 
-  RxList<Map<String, dynamic>> dashboardActivities = <Map<String, dynamic>>[].obs;
+  RxList<Map<String, dynamic>> dashboardActivities =
+      <Map<String, dynamic>>[].obs;
   final currentStep = ScanStep.prompt.obs;
   final isScanning = false.obs;
   final scannedUid = ''.obs;
   final errorMessage = ''.obs;
-  
+
   final selectedContact = 0.obs;
   final TextEditingController customEmailController = TextEditingController();
-  
+
   final isLoading = false.obs;
   final isAgreed = false.obs;
   final TextEditingController nikController = TextEditingController();
@@ -42,7 +43,10 @@ class NfcScanController extends GetxController {
   RxMap<String, dynamic> verifiedWargaData = <String, dynamic>{}.obs;
   RxMap<String, dynamic> logData = <String, dynamic>{}.obs;
 
-  final List<TextEditingController> otpControllers = List.generate(6, (_) => TextEditingController());
+  final List<TextEditingController> otpControllers = List.generate(
+    6,
+    (_) => TextEditingController(),
+  );
   final List<FocusNode> otpFocusNodes = List.generate(6, (_) => FocusNode());
 
   final RxInt countdown = 60.obs;
@@ -53,7 +57,9 @@ class NfcScanController extends GetxController {
   DateTime? _lastOtpRequestedAt;
 
   bool get hasValidOtpSession {
-    if (_otpNfcUid == null || _otpNfcUid!.trim().isEmpty || _lastOtpRequestedAt == null) {
+    if (_otpNfcUid == null ||
+        _otpNfcUid!.trim().isEmpty ||
+        _lastOtpRequestedAt == null) {
       return false;
     }
 
@@ -64,7 +70,9 @@ class NfcScanController extends GetxController {
   }
 
   String get activeNfcUid {
-    final current = (scannedUid.value.isNotEmpty ? scannedUid.value : (_otpNfcUid ?? '')).trim();
+    final current =
+        (scannedUid.value.isNotEmpty ? scannedUid.value : (_otpNfcUid ?? ''))
+            .trim();
 
     if (current.isNotEmpty) {
       _otpNfcUid = current;
@@ -179,6 +187,7 @@ class NfcScanController extends GetxController {
     final nik = nikController.text.replaceAll(RegExp(r'[^0-9]'), '');
     nikDigitCount.value = nik.length;
     final nfcUid = activeNfcUid;
+
     if (nfcUid.isEmpty) {
       Get.snackbar(
         'NFC Belum Dipindai',
@@ -187,6 +196,7 @@ class NfcScanController extends GetxController {
       );
       return;
     }
+
     if (nik.length != 16) {
       Get.snackbar(
         'NIK Tidak Valid',
@@ -201,18 +211,43 @@ class NfcScanController extends GetxController {
     try {
       isLoading.value = true;
       debugPrint('CEK WARGA: mengirim ${nik.length} digit NIK');
+
       final responseData = await _apiProvider.cekWarga(
-        nik: nik,
+        // nik: nik,
         nfcUid: nfcUid,
       );
+
       final warga = Map<String, dynamic>.from(responseData['data'] as Map);
-      warga['nik'] = nik;
+      // warga['nik'] = nik;
       verifiedWargaData.value = warga;
-      currentStep.value = ScanStep.validation;
     } catch (e) {
       final message = e.toString().replaceFirst('Exception: ', '');
       Get.snackbar(
         'Cek Data Warga Gagal',
+        message,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> cekWargaApiByUid() async {
+    final nfcUid = activeNfcUid;
+    if (nfcUid.isEmpty) return;
+
+    try {
+      isLoading.value = true;
+      final responseData = await _apiProvider.cekWarga(nfcUid: nfcUid);
+
+      final warga = Map<String, dynamic>.from(responseData['data'] as Map);
+      verifiedWargaData.value = warga;
+    } catch (e) {
+      final message = e.toString().replaceFirst('Exception: ', '');
+      Get.snackbar(
+        'Gagal Memuat Data',
         message,
         snackPosition: SnackPosition.TOP,
         backgroundColor: const Color(0xFFEF4444),
@@ -241,13 +276,12 @@ class NfcScanController extends GetxController {
 
       final nfcUid = activeNfcUid;
       if (nfcUid.isEmpty) {
-        throw Exception('UID NFC belum tersedia. Silakan scan e-KTP terlebih dahulu.');
+        throw Exception(
+          'UID NFC belum tersedia. Silakan scan e-KTP terlebih dahulu.',
+        );
       }
 
-      await _apiProvider.generateOtp(
-        nfcUid: nfcUid,
-        email: targetEmail,
-      );
+      await _apiProvider.generateOtp(nfcUid: nfcUid, email: targetEmail);
 
       _otpNfcUid = nfcUid;
       _lastOtpRequestedAt = DateTime.now().toUtc();
@@ -307,10 +341,15 @@ class NfcScanController extends GetxController {
       if (petugas == null || petugas.idPetugas.trim().isEmpty) {
         throw Exception('Sesi petugas tidak ditemukan. Silakan login ulang.');
       }
+      final nikWarga = (verifiedWargaData['nik'] ?? '').toString().trim();
+      if (nikWarga.isEmpty) {
+        throw Exception('NIK warga belum tersedia untuk mencatat layanan.');
+      }
 
       final responseData = await _apiProvider.verifyOtp(
         nfcUid: nfcUid,
         otpCode: enteredOtp,
+        nikWarga: nikWarga,
         idPetugas: defaultPetugasId,
         idInstansi: petugas.idInstansi,
         lokasiTugas: authService.currentLocation.value,
@@ -328,7 +367,7 @@ class NfcScanController extends GetxController {
       }
 
       final Map<String, dynamic> mappedActivityItem = {
-        'log_id': log['id'] ?? 'UUID-UNKNOWN',
+        'log_id': log['id_log'] ?? log['id'] ?? 'UUID-UNKNOWN',
         'name': warga['nama_lengkap'] ?? 'Tanpa Nama',
         'nik': warga['nik'] ?? 'NIK-UNKNOWN',
         'service': 'Pendaftaran Layanan Kesehatan',
@@ -339,17 +378,12 @@ class NfcScanController extends GetxController {
 
       dashboardActivities.insert(0, mappedActivityItem);
 
-      Get.snackbar(
-        'Sukses',
-        responseData['message'] ?? 'OTP Valid! Data berhasil diambil.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green[100],
-        colorText: Colors.green[900],
-      );
+      AppSnackbar.show(message: 'OTP Valid! Data berhasil diambil.');
 
       currentStep.value = ScanStep.confirmation;
     } catch (e) {
-      final cleanError = e.toString()
+      final cleanError = e
+          .toString()
           .replaceAll('Exception: Exception: ', '')
           .replaceAll('Exception: ', '');
 
@@ -391,7 +425,8 @@ class NfcScanController extends GetxController {
   void startNfcSession() async {
     bool isAvailable = await NfcManager.instance.isAvailable();
     if (!isAvailable) {
-      errorMessage.value = 'NFC tidak tersedia atau belum diaktifkan pada HP ini.';
+      errorMessage.value =
+          'NFC tidak tersedia atau belum diaktifkan pada HP ini.';
       return;
     }
 
@@ -399,23 +434,44 @@ class NfcScanController extends GetxController {
     errorMessage.value = '';
 
     NfcManager.instance.startSession(
-      pollingOptions: {NfcPollingOption.iso14443, NfcPollingOption.iso15693, NfcPollingOption.iso18092},
+      pollingOptions: {
+        NfcPollingOption.iso14443,
+        NfcPollingOption.iso15693,
+        NfcPollingOption.iso18092,
+      },
       onDiscovered: (NfcTag tag) async {
         try {
           List<int> identifier = [];
           dynamic tagData = tag.data;
 
-          try { if (tagData.id != null) identifier = List<int>.from(tagData.id); } catch (_) {}
-          if (identifier.isEmpty) { try { identifier = List<int>.from(tagData.nfca.identifier); } catch (_) {} }
-          if (identifier.isEmpty) { try { identifier = List<int>.from(tagData.isodep.identifier); } catch (_) {} }
-          if (identifier.isEmpty) { try { identifier = List<int>.from(tagData.mifare.identifier); } catch (_) {} }
+          try {
+            if (tagData.id != null) identifier = List<int>.from(tagData.id);
+          } catch (_) {}
+          if (identifier.isEmpty) {
+            try {
+              identifier = List<int>.from(tagData.nfca.identifier);
+            } catch (_) {}
+          }
+          if (identifier.isEmpty) {
+            try {
+              identifier = List<int>.from(tagData.isodep.identifier);
+            } catch (_) {}
+          }
+          if (identifier.isEmpty) {
+            try {
+              identifier = List<int>.from(tagData.mifare.identifier);
+            } catch (_) {}
+          }
 
           if (identifier.isNotEmpty) {
-            String uidString = identifier.map((e) => e.toRadixString(16).padLeft(2, '0').toUpperCase()).join(':');
+            String uidString = identifier
+                .map((e) => e.toRadixString(16).padLeft(2, '0').toUpperCase())
+                .join(':');
             scannedUid.value = uidString;
             isScanning.value = false;
             await NfcManager.instance.stopSession();
             currentStep.value = ScanStep.result;
+            await cekWargaApiByUid();
           } else {
             errorMessage.value = 'KTP terdeteksi, tetapi UID gagal diekstrak.';
             isScanning.value = false;

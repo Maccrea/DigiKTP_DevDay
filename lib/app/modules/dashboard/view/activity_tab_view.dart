@@ -21,11 +21,85 @@ class ActivityTabView extends GetView<DashboardController> {
                 children: [
                   const Text(
                     'Riwayat Pemindaian',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF0F172A),
+                    ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.help_outline_rounded, color: Color(0xFF64748B)),
-                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.help_outline_rounded,
+                      color: Color(0xFF64748B),
+                    ),
+                    onPressed: () {
+                      Get.bottomSheet(
+                        Container(
+                          padding: const EdgeInsets.all(24.0),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: const [
+                                  Icon(
+                                    Icons.history_rounded,
+                                    color: Color(0xFF2563EB),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'Tentang Riwayat Pemindaian',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                'Halaman ini mencatat seluruh aktivitas pemindaian e-KTP dan verifikasi warga yang berhasil diproses oleh perangkat Anda secara real-time.',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Color(0xFF64748B),
+                                  height: 1.4,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              SizedBox(
+                                width: double.infinity,
+                                height: 44,
+                                child: ElevatedButton(
+                                  onPressed: () => Get.back(),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF2563EB),
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Mengerti',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        isScrollControlled: true,
+                      );
+                    },
                   ),
                 ],
               ),
@@ -38,18 +112,31 @@ class ActivityTabView extends GetView<DashboardController> {
                       onChanged: (val) => controller.searchQuery.value = val,
                       decoration: InputDecoration(
                         hintText: 'Cari NIK atau Nama warga...',
-                        hintStyle: const TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
-                        prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF64748B), size: 20),
+                        hintStyle: const TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF94A3B8),
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search_rounded,
+                          color: Color(0xFF64748B),
+                          size: 20,
+                        ),
                         filled: true,
                         fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE2E8F0),
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE2E8F0),
+                          ),
                         ),
                       ),
                     ),
@@ -67,7 +154,11 @@ class ActivityTabView extends GetView<DashboardController> {
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(color: const Color(0xFFE2E8F0)),
                         ),
-                        child: const Icon(Icons.tune_rounded, color: Color(0xFF2563EB), size: 20),
+                        child: const Icon(
+                          Icons.tune_rounded,
+                          color: Color(0xFF2563EB),
+                          size: 20,
+                        ),
                       ),
                     ),
                   ),
@@ -77,26 +168,30 @@ class ActivityTabView extends GetView<DashboardController> {
 
               Expanded(
                 child: Obx(() {
-  if (controller.dashboardActivities.isEmpty) {
-    return const Center(
-      child: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: Text('Belum ada riwayat aktivitas pemindaian hari ini.'),
-      ),
-    );
-  }
+                  if (controller.dashboardActivities.isEmpty) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: Text(
+                          'Belum ada riwayat aktivitas pemindaian hari ini.',
+                        ),
+                      ),
+                    );
+                  }
 
-  return ListView.separated(
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    itemCount: controller.dashboardActivities.length,
-    separatorBuilder: (context, index) => const SizedBox(height: 10),
-    itemBuilder: (context, index) {
-      final activityItem = controller.dashboardActivities[index];
-      return ActivityTile(item: activityItem); 
-    },
-  );
-})
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: controller.dashboardActivities.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 10),
+                    itemBuilder: (context, index) {
+                      final activityItem =
+                          controller.dashboardActivities[index];
+                      return ActivityTile(item: activityItem);
+                    },
+                  );
+                }),
               ),
             ],
           ),
@@ -120,70 +215,129 @@ class ActivityTabView extends GetView<DashboardController> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Filter Riwayat', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const Text(
+                  'Filter Riwayat',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 TextButton(
                   onPressed: () {
                     controller.resetFilters();
                     Get.back();
                   },
-                  child: const Text('Reset', style: TextStyle(color: Colors.red)),
-                )
+                  child: const Text(
+                    'Reset',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 16),
-            const Text('Waktu Pemindaian', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+            const Text(
+              'Waktu Pemindaian',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF64748B),
+              ),
+            ),
             const SizedBox(height: 10),
-            Obx(() => Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: ['Semua', 'Hari Ini', 'Kemarin', 'Minggu Lalu', 'Bulan Lalu'].map((time) {
-                final isSelected = controller.selectedTimeFilter.value == time;
-                return ChoiceChip(
-                  label: Text(time),
-                  selected: isSelected,
-                  onSelected: (bool selected) {
-                    if (selected) controller.selectedTimeFilter.value = time;
-                  },
-                  selectedColor: const Color(0xFFEFF6FF),
-                  labelStyle: TextStyle(
-                    color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF64748B),
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  ),
-                  side: BorderSide(color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFE2E8F0)),
-                );
-              }).toList(),
-            )),
+            Obx(
+              () => Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children:
+                    [
+                      'Semua',
+                      'Hari Ini',
+                      'Kemarin',
+                      'Minggu Lalu',
+                      'Bulan Lalu',
+                    ].map((time) {
+                      final isSelected =
+                          controller.selectedTimeFilter.value == time;
+                      return ChoiceChip(
+                        label: Text(time),
+                        selected: isSelected,
+                        onSelected: (bool selected) {
+                          if (selected)
+                            controller.selectedTimeFilter.value = time;
+                        },
+                        selectedColor: const Color(0xFFEFF6FF),
+                        labelStyle: TextStyle(
+                          color: isSelected
+                              ? const Color(0xFF2563EB)
+                              : const Color(0xFF64748B),
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                        side: BorderSide(
+                          color: isSelected
+                              ? const Color(0xFF2563EB)
+                              : const Color(0xFFE2E8F0),
+                        ),
+                      );
+                    }).toList(),
+              ),
+            ),
             const SizedBox(height: 20),
-            const Text('Status Validasi', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+            const Text(
+              'Status Validasi',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF64748B),
+              ),
+            ),
             const SizedBox(height: 10),
-            Obx(() => Wrap(
-              spacing: 8,
-              children: ['Semua', 'Berhasil', 'Gagal'].map((status) {
-                final isSelected = controller.selectedStatusFilter.value == status;
-                return ChoiceChip(
-                  label: Text(status),
-                  selected: isSelected,
-                  onSelected: (bool selected) {
-                    if (selected) controller.selectedStatusFilter.value = status;
-                  },
-                  selectedColor: const Color(0xFFEFF6FF),
-                  labelStyle: TextStyle(
-                    color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF64748B),
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  ),
-                  side: BorderSide(color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFE2E8F0)),
-                );
-              }).toList(),
-            )),
+            Obx(
+              () => Wrap(
+                spacing: 8,
+                children: ['Semua', 'Berhasil', 'Gagal'].map((status) {
+                  final isSelected =
+                      controller.selectedStatusFilter.value == status;
+                  return ChoiceChip(
+                    label: Text(status),
+                    selected: isSelected,
+                    onSelected: (bool selected) {
+                      if (selected)
+                        controller.selectedStatusFilter.value = status;
+                    },
+                    selectedColor: const Color(0xFFEFF6FF),
+                    labelStyle: TextStyle(
+                      color: isSelected
+                          ? const Color(0xFF2563EB)
+                          : const Color(0xFF64748B),
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                    ),
+                    side: BorderSide(
+                      color: isSelected
+                          ? const Color(0xFF2563EB)
+                          : const Color(0xFFE2E8F0),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
             const SizedBox(height: 24),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
                 minimumSize: const Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               onPressed: () => Get.back(),
-              child: const Text('TERAPKAN FILTER', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: const Text(
+                'TERAPKAN FILTER',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         ),

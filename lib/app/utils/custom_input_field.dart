@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; 
+import 'package:flutter/services.dart';
 import '../theme/app_colors.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -9,7 +9,7 @@ class CustomTextField extends StatefulWidget {
   final bool isPassword;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
-  
+
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final Function(String)? onChanged;
@@ -53,21 +53,28 @@ class _CustomTextFieldState extends State<CustomTextField> {
           controller: widget.controller,
           obscureText: widget.isPassword ? _obscureText : false,
           validator: widget.validator,
-          keyboardType: widget.keyboardType, 
-          inputFormatters: widget.inputFormatters, 
+          keyboardType: widget.keyboardType,
+          inputFormatters: widget.inputFormatters,
           onChanged: widget.onChanged,
           style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: widget.hintText,
-            prefixIcon: Icon(widget.prefixIcon, size: 20, color: AppColors.textSecondary),
+            prefixIcon: Icon(
+              widget.prefixIcon,
+              size: 20,
+              color: AppColors.textSecondary,
+            ),
             suffixIcon: widget.isPassword
                 ? IconButton(
                     icon: Icon(
-                      _obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                      _obscureText
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
                       size: 20,
                       color: AppColors.textSecondary,
                     ),
-                    onPressed: () => setState(() => _obscureText = !_obscureText),
+                    onPressed: () =>
+                        setState(() => _obscureText = !_obscureText),
                   )
                 : null,
           ),
@@ -114,11 +121,18 @@ class CustomDropdownField<T> extends StatelessWidget {
           value: value,
           items: items,
           onChanged: onChanged,
-          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.textSecondary),
+          icon: const Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: AppColors.textSecondary,
+          ),
           style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: hintText,
-            prefixIcon: Icon(prefixIcon, size: 20, color: AppColors.textSecondary),
+            prefixIcon: Icon(
+              prefixIcon,
+              size: 20,
+              color: AppColors.textSecondary,
+            ),
           ),
         ),
       ],

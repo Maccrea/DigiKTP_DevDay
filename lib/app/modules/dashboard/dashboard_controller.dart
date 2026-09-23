@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
+import 'package:digiktp/app/data/providers/api_provider.dart';
 
 class DashboardController extends GetxController {
+  final ApiProvider _apiProvider = Get.put(ApiProvider());
   final RxInt currentBottomNavIndex = 0.obs;
   final List<int> _tabHistory = [0];
 
@@ -8,13 +10,33 @@ class DashboardController extends GetxController {
   final RxString userNip = 'NIP. 199408122020121002'.obs;
   final RxString activePosko = 'Kelurahan Gambir • Posko Layanan Terpadu'.obs;
 
-  RxList<Map<String, dynamic>> dashboardActivities = <Map<String, dynamic>>[].obs;
+  RxList<Map<String, dynamic>> dashboardActivities =
+      <Map<String, dynamic>>[].obs;
   final RxInt eKtpScannedCount = 142.obs;
   final RxInt dukcapilValidCount = 138.obs;
 
   final selectedTimeFilter = 'Semua'.obs;
   final selectedStatusFilter = 'Semua'.obs;
   final RxString searchQuery = ''.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadLayananLogs();
+  }
+
+  Future<void> loadLayananLogs() async {
+    try {
+      final logs = await _apiProvider.fetchLayananLogs();
+      dashboardActivities.assignAll(logs);
+      eKtpScannedCount.value = logs.length;
+      dukcapilValidCount.value = logs
+          .where((log) => log['isSuccess'] == true)
+          .length;
+    } catch (error) {
+      print('GAGAL MEMUAT RIWAYAT LAYANAN: $error');
+    }
+  }
 
   final RxList<Map<String, dynamic>> recentActivities = <Map<String, dynamic>>[
     {
@@ -71,19 +93,19 @@ class DashboardController extends GetxController {
 
   void changeBottomNavIndex(int index) {
     if (currentBottomNavIndex.value != index) {
-      _tabHistory.remove(index); 
-      _tabHistory.add(index);    
+      _tabHistory.remove(index);
+      _tabHistory.add(index);
       currentBottomNavIndex.value = index;
     }
   }
 
   bool handleBackAction() {
     if (_tabHistory.length > 1) {
-      _tabHistory.removeLast(); 
-      currentBottomNavIndex.value = _tabHistory.last; 
-      return false; 
+      _tabHistory.removeLast();
+      currentBottomNavIndex.value = _tabHistory.last;
+      return false;
     }
-    return true; 
+    return true;
   }
 
   void goToNfcScan() {
@@ -103,8 +125,12 @@ class DashboardController extends GetxController {
   List<Map<String, dynamic>> get filteredActivities {
     return recentActivities.where((item) {
       final searchLower = searchQuery.value.toLowerCase();
-      final nameMatches = (item['name'] ?? '').toLowerCase().contains(searchLower);
-      final nikMatches = (item['nik'] ?? '').toLowerCase().contains(searchLower);
+      final nameMatches = (item['name'] ?? '').toLowerCase().contains(
+        searchLower,
+      );
+      final nikMatches = (item['nik'] ?? '').toLowerCase().contains(
+        searchLower,
+      );
       final matchesSearch = searchLower.isEmpty || nameMatches || nikMatches;
 
       bool matchesStatus = true;

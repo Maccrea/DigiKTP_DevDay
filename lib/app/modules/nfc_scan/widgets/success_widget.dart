@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../nfc_scan_controller.dart';
+import '../../dashboard/dashboard_controller.dart';
 
 class SuccessWidget extends GetView<NfcScanController> {
   const SuccessWidget({Key? key}) : super(key: key);
@@ -22,11 +23,17 @@ class SuccessWidget extends GetView<NfcScanController> {
 
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 32,
+                      horizontal: 20,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+                      border: Border.all(
+                        color: const Color(0xFFE2E8F0),
+                        width: 1.5,
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.04),
@@ -80,31 +87,32 @@ class SuccessWidget extends GetView<NfcScanController> {
                             border: Border.all(color: const Color(0xFFE2E8F0)),
                           ),
                           child: Column(
-                            children: const [
-                                  const Text(
-                                    'ID REGISTRASI POSKO',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF64748B),
-                                      letterSpacing: 0.5,
-                                    ),
+                            children: [
+                              const Text(
+                                'ID REGISTRASI POSKO',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF64748B),
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Obx(() {
+                                final logId =
+                                    controller.logData['id'] ??
+                                    controller.logData['id_log'] ??
+                                    'ID belum tersedia';
+                                return Text(
+                                  logId.toString(),
+                                  style: TextStyle(
+                                    fontFamily: 'Monospace',
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF2563EB),
                                   ),
-                                  SizedBox(height: 4),
-                                  Obx(() {
-                                    final logId = controller.logData['id'] ??
-                                        controller.logData['id_log'] ??
-                                        'ID belum tersedia';
-                                    return Text(
-                                      logId.toString(),
-                                      style: TextStyle(
-                                        fontFamily: 'Monospace',
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF2563EB),
-                                      ),
-                                    );
-                                  }),
+                                );
+                              }),
                             ],
                           ),
                         ),
@@ -129,7 +137,13 @@ class SuccessWidget extends GetView<NfcScanController> {
                                 borderRadius: BorderRadius.circular(14),
                               ),
                             ),
-                            onPressed: () => Get.back(),
+                            onPressed: () {
+                              if (Get.isRegistered<DashboardController>()) {
+                                Get.find<DashboardController>()
+                                    .loadLayananLogs();
+                              }
+                              Get.back();
+                            },
                             child: const Text(
                               'KEMBALI KE BERANDA',
                               style: TextStyle(
@@ -147,7 +161,10 @@ class SuccessWidget extends GetView<NfcScanController> {
                           height: 48,
                           child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+                              side: const BorderSide(
+                                color: Color(0xFF2563EB),
+                                width: 1.5,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),

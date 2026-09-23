@@ -5,7 +5,7 @@ import '../providers/api_provider.dart';
 
 class AuthService extends GetxService {
   final GetStorage _storage = GetStorage();
-  ApiProvider? _apiProvider; 
+  ApiProvider? _apiProvider;
 
   final RxBool isLoggedIn = false.obs;
   final Rxn<PetugasModel> currentPetugas = Rxn<PetugasModel>();
@@ -33,7 +33,8 @@ class AuthService extends GetxService {
     if (token != null && petugasData != null) {
       isLoggedIn.value = true;
       currentPetugas.value = PetugasModel.fromJson(petugasData);
-      currentLocation.value = savedLocation ?? currentPetugas.value?.lokasiLayanan ?? '';
+      currentLocation.value =
+          savedLocation ?? currentPetugas.value?.lokasiLayanan ?? '';
     }
   }
 
@@ -54,7 +55,7 @@ class AuthService extends GetxService {
           location: poskoLocation,
         );
       } else {
-        await Future.delayed(const Duration(milliseconds: 500)); 
+        await Future.delayed(const Duration(milliseconds: 500));
         responseData = {
           'token': 'mock_jwt_token_xyz123',
           'petugas': {
@@ -65,7 +66,7 @@ class AuthService extends GetxService {
             'id_instansi': idInstansi,
             'current_location': poskoLocation,
             'role': 'petugas_layanan',
-          }
+          },
         };
       }
 
@@ -96,7 +97,7 @@ class AuthService extends GetxService {
 
       await _storage.write('current_location', newLocation);
       currentLocation.value = newLocation;
-      
+
       return true;
     } catch (e) {
       Get.snackbar('Gagal Mengubah Lokasi', e.toString());

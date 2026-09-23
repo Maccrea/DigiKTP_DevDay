@@ -23,7 +23,6 @@ class StepValidationWidget extends GetView<NfcScanController> {
                 children: [
                   const SizedBox(height: 8),
 
-                  
                   const SizedBox(height: 14),
 
                   Container(
@@ -75,7 +74,9 @@ class StepValidationWidget extends GetView<NfcScanController> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    controller.verifiedWargaData['nama_masking'] ?? 'Nama warga',
+                                    controller
+                                            .verifiedWargaData['nama_masking'] ??
+                                        'Nama warga',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 15,
@@ -147,58 +148,85 @@ class StepValidationWidget extends GetView<NfcScanController> {
                         ),
                         const SizedBox(height: 16),
 
-                        Obx(() => _buildContactRadioTile(
-                              index: 0,
-                              selectedIndex: selectedOption.value,
-                              title: 'macreynardosan@gmail.com',
-                              subtitle: 'Email Utama Dukcapil',
-                              onTap: () => selectedOption.value = 0,
-                            )),
+                        Obx(
+                          () => _buildContactRadioTile(
+                            index: 0,
+                            selectedIndex: selectedOption.value,
+                            title: 'macreynardosan@gmail.com',
+                            subtitle: 'Email Utama Dukcapil',
+                            onTap: () => selectedOption.value = 0,
+                          ),
+                        ),
                         const SizedBox(height: 10),
 
-                        Obx(() => _buildContactRadioTile(
-                              index: 1,
-                              selectedIndex: selectedOption.value,
-                              title: 'alyaaranaraya@gmail.com',
-                              subtitle: 'Email Cadangan Terverifikasi',
-                              onTap: () => selectedOption.value = 1,
-                            )),
+                        Obx(
+                          () => _buildContactRadioTile(
+                            index: 1,
+                            selectedIndex: selectedOption.value,
+                            title: 'alyaaranaraya@gmail.com',
+                            subtitle: 'Email Cadangan Terverifikasi',
+                            onTap: () => selectedOption.value = 1,
+                          ),
+                        ),
                         const SizedBox(height: 10),
 
-                        Obx(() => _buildContactRadioTile(
-                              index: 2,
-                              selectedIndex: selectedOption.value,
-                              title: 'Gunakan Alamat Email Lain',
-                              subtitle: 'Kirim OTP ke email baru',
-                              onTap: () => selectedOption.value = 2,
-                            )),
+                        Obx(
+                          () => _buildContactRadioTile(
+                            index: 2,
+                            selectedIndex: selectedOption.value,
+                            title: 'Gunakan Alamat Email Lain',
+                            subtitle: 'Kirim OTP ke email baru',
+                            onTap: () => selectedOption.value = 2,
+                          ),
+                        ),
 
                         Obx(() {
-                          if (selectedOption.value != 2) return const SizedBox.shrink();
+                          if (selectedOption.value != 2)
+                            return const SizedBox.shrink();
                           return Padding(
                             padding: const EdgeInsets.only(top: 12.0),
                             child: TextField(
                               controller: customEmailController,
                               keyboardType: TextInputType.emailAddress,
-                              style: const TextStyle(fontSize: 13, color: Color(0xFF0F172A)),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Color(0xFF0F172A),
+                              ),
                               decoration: InputDecoration(
                                 hintText: 'Masukkan email aktif...',
-                                hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
-                                prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF64748B), size: 18),
+                                hintStyle: const TextStyle(
+                                  color: Color(0xFF94A3B8),
+                                  fontSize: 13,
+                                ),
+                                prefixIcon: const Icon(
+                                  Icons.email_outlined,
+                                  color: Color(0xFF64748B),
+                                  size: 18,
+                                ),
                                 filled: true,
                                 fillColor: const Color(0xFFF8FAFC),
-                                contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                  horizontal: 14,
+                                ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFCBD5E1),
+                                  ),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFE2E8F0),
+                                  ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFF2563EB),
+                                    width: 1.5,
+                                  ),
                                 ),
                               ),
                             ),
@@ -216,43 +244,51 @@ class StepValidationWidget extends GetView<NfcScanController> {
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2563EB),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2563EB),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        onPressed: () async {
+                          if (controller.selectedContact.value == 2 &&
+                              !controller.isEmailValid) {
+                            Get.snackbar(
+                              'Peringatan',
+                              'Masukkan format email aktif yang valid.',
+                              snackPosition: SnackPosition.TOP,
+                              backgroundColor: const Color(0xFFEF4444),
+                              colorText: Colors.white,
+                            );
+                            return;
+                          }
+
+                          await controller.requestOtpApi(
+                            controller.selectedContact.value,
+                          );
+                        },
+                        child: Obx(
+                          () => controller.isLoading.value
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text(
+                                  'KIRIM OTP',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    letterSpacing: 0.5,
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                       ),
-                      onPressed: () async {
-                        if (controller.selectedContact.value == 2 && !controller.isEmailValid) {
-                          Get.snackbar(
-                            'Peringatan', 
-                            'Masukkan format email aktif yang valid.', 
-                            snackPosition: SnackPosition.TOP,
-                            backgroundColor: const Color(0xFFEF4444),
-                            colorText: Colors.white,
-                          );
-                          return;
-                        }
-                        
-                        await controller.requestOtpApi(controller.selectedContact.value);
-                      },
-                      child: Obx(() => controller.isLoading.value
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                            )
-                          : const Text(
-                              'KIRIM OTP',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                letterSpacing: 0.5,
-                                color: Colors.white,
-                              ),
-                            )),
-                    ),
                     ),
                   ),
                 ],
@@ -283,7 +319,9 @@ class StepValidationWidget extends GetView<NfcScanController> {
           color: isSelected ? const Color(0xFFEFF6FF) : const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFE2E8F0),
+            color: isSelected
+                ? const Color(0xFF2563EB)
+                : const Color(0xFFE2E8F0),
             width: isSelected ? 1.5 : 1.0,
           ),
         ),
@@ -295,7 +333,9 @@ class StepValidationWidget extends GetView<NfcScanController> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF94A3B8),
+                  color: isSelected
+                      ? const Color(0xFF2563EB)
+                      : const Color(0xFF94A3B8),
                   width: isSelected ? 5.5 : 1.5,
                 ),
                 color: Colors.white,
@@ -311,7 +351,9 @@ class StepValidationWidget extends GetView<NfcScanController> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
-                      color: isSelected ? const Color(0xFF1E40AF) : const Color(0xFF0F172A),
+                      color: isSelected
+                          ? const Color(0xFF1E40AF)
+                          : const Color(0xFF0F172A),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -319,7 +361,9 @@ class StepValidationWidget extends GetView<NfcScanController> {
                     subtitle,
                     style: TextStyle(
                       fontSize: 11,
-                      color: isSelected ? const Color(0xFF3B82F6) : const Color(0xFF64748B),
+                      color: isSelected
+                          ? const Color(0xFF3B82F6)
+                          : const Color(0xFF64748B),
                     ),
                   ),
                 ],

@@ -19,11 +19,8 @@ void main() async {
     );
   }
 
-  await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
-  );
-  
+  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
+
   await GetStorage.init();
   await Get.putAsync(() => AuthService().init());
 

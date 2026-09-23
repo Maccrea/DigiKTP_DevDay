@@ -32,7 +32,11 @@ class SwitchPoskoView extends GetView<AuthController> {
             const SizedBox(height: 6),
             const Text(
               'Lokasi operasional digunakan untuk melacak validasi berkas fisik e-KTP secara berkala.',
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.4),
+              style: TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+                height: 1.4,
+              ),
             ),
             const SizedBox(height: 20),
 
@@ -51,7 +55,11 @@ class SwitchPoskoView extends GetView<AuthController> {
                       color: AppColors.accent,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.business_center, color: Colors.white, size: 20),
+                    child: const Icon(
+                      Icons.business_center,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Column(
@@ -59,15 +67,25 @@ class SwitchPoskoView extends GetView<AuthController> {
                     children: [
                       const Text(
                         'INSTANSI TERPILIH',
-                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.accent),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.accent,
+                        ),
                       ),
                       const SizedBox(height: 2),
-                      Obx(() => Text(
-                        controller.selectedInstansi.value.isEmpty 
-                            ? 'Disdukcapil DKI Jakarta' 
-                            : controller.selectedInstansi.value,
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
-                      )),
+                      Obx(
+                        () => Text(
+                          controller.selectedInstansi.value.isEmpty
+                              ? 'Disdukcapil DKI Jakarta'
+                              : controller.selectedInstansi.value,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -80,8 +98,14 @@ class SwitchPoskoView extends GetView<AuthController> {
               hintText: 'Jakarta Pusat',
               prefixIcon: Icons.location_on_outlined,
               items: const [
-                DropdownMenuItem(value: 'Jakarta Pusat', child: Text('Jakarta Pusat')),
-                DropdownMenuItem(value: 'Jakarta Selatan', child: Text('Jakarta Selatan')),
+                DropdownMenuItem(
+                  value: 'Jakarta Pusat',
+                  child: Text('Jakarta Pusat'),
+                ),
+                DropdownMenuItem(
+                  value: 'Jakarta Selatan',
+                  child: Text('Jakarta Selatan'),
+                ),
               ],
               onChanged: (val) {},
             ),
@@ -92,8 +116,14 @@ class SwitchPoskoView extends GetView<AuthController> {
               hintText: 'Posko Layanan Kelurahan Gambir',
               prefixIcon: Icons.home_work_outlined,
               items: const [
-                DropdownMenuItem(value: 'Posko Layanan Kelurahan Gambir', child: Text('Posko Layanan Kelurahan Gambir')),
-                DropdownMenuItem(value: 'Posko Mobilitas Gelora', child: Text('Posko Mobilitas Gelora')),
+                DropdownMenuItem(
+                  value: 'Posko Layanan Kelurahan Gambir',
+                  child: Text('Posko Layanan Kelurahan Gambir'),
+                ),
+                DropdownMenuItem(
+                  value: 'Posko Mobilitas Gelora',
+                  child: Text('Posko Mobilitas Gelora'),
+                ),
               ],
               onChanged: (val) {},
             ),
@@ -104,8 +134,14 @@ class SwitchPoskoView extends GetView<AuthController> {
               hintText: 'Shift 1 — Pagi (08:00 - 15:00)',
               prefixIcon: Icons.access_time,
               items: const [
-                DropdownMenuItem(value: 'Shift 1', child: Text('Shift 1 — Pagi (08:00 - 15:00)')),
-                DropdownMenuItem(value: 'Shift 2', child: Text('Shift 2 — Siang (15:00 - 21:00)')),
+                DropdownMenuItem(
+                  value: 'Shift 1',
+                  child: Text('Shift 1 — Pagi (08:00 - 15:00)'),
+                ),
+                DropdownMenuItem(
+                  value: 'Shift 2',
+                  child: Text('Shift 2 — Siang (15:00 - 21:00)'),
+                ),
               ],
               onChanged: (val) {},
             ),
@@ -114,11 +150,18 @@ class SwitchPoskoView extends GetView<AuthController> {
             Obx(() {
               final bool isActive = controller.isNfcActive.value;
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: isActive ? AppColors.border : const Color(0xFFFCA5A5)),
+                  border: Border.all(
+                    color: isActive
+                        ? AppColors.border
+                        : const Color(0xFFFCA5A5),
+                  ),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -126,41 +169,58 @@ class SwitchPoskoView extends GetView<AuthController> {
                     Row(
                       children: [
                         Icon(
-                          Icons.developer_board, 
-                          size: 20, 
-                          color: isActive ? AppColors.textSecondary : const Color(0xFFEF4444)
+                          Icons.developer_board,
+                          size: 20,
+                          color: isActive
+                              ? AppColors.textSecondary
+                              : const Color(0xFFEF4444),
                         ),
                         const SizedBox(width: 10),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'PERANGKAT DETEKSI', 
-                              style: TextStyle(fontSize: 9, color: AppColors.textSecondary, fontWeight: FontWeight.bold)
+                              'PERANGKAT DETEKSI',
+                              style: TextStyle(
+                                fontSize: 9,
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             Text(
-                              'NFC Reader Internal', 
-                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)
+                              'NFC Reader Internal',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
+                              ),
                             ),
                           ],
                         ),
                       ],
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: isActive ? const Color(0xFFDCFCE7) : const Color(0xFFFEF2F2),
+                        color: isActive
+                            ? const Color(0xFFDCFCE7)
+                            : const Color(0xFFFEF2F2),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         isActive ? 'SIAP AKTIF' : 'TIDAK AKTIF',
                         style: TextStyle(
-                          fontSize: 10, 
-                          fontWeight: FontWeight.bold, 
-                          color: isActive ? AppColors.success : const Color(0xFFEF4444)
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: isActive
+                              ? AppColors.success
+                              : const Color(0xFFEF4444),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               );
@@ -172,10 +232,15 @@ class SwitchPoskoView extends GetView<AuthController> {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 onPressed: () => controller.submitLoginAndPosko(),
-                child: const Text('TERAPKAN POSKO', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: const Text(
+                  'TERAPKAN POSKO',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ],

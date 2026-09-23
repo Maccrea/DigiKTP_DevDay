@@ -1,6 +1,6 @@
 import 'package:digiktp/app/modules/auth/auth_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; 
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../utils/custom_app_bar.dart';
 import '../../../utils/custom_input_field.dart';
@@ -46,7 +46,11 @@ class LoginView extends GetView<AuthController> {
                   const SizedBox(height: 16),
                   const Text(
                     'Aplikasi DigiKTP digunakan khusus oleh petugas resmi untuk melakukan verifikasi data kependudukan melalui pembacaan sensor NFC pada e-KTP.',
-                    style: TextStyle(fontSize: 14, color: AppColors.textSecondary, height: 1.5),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Container(
@@ -59,7 +63,10 @@ class LoginView extends GetView<AuthController> {
                     child: const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Versi Aplikasi : 1.0.0 (Beta)', style: TextStyle(fontWeight: FontWeight.w600)),
+                        Text(
+                          'Versi Aplikasi : 1.0.0 (Beta)',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
                         SizedBox(height: 4),
                         Text('Sistem Inti : Dukcapil Terpusat'),
                       ],
@@ -92,7 +99,12 @@ class LoginView extends GetView<AuthController> {
           children: [
             Row(
               children: [
-                Image.asset('assets/icons/flag_id.png', width: 18, errorBuilder: (_, __, ___) => const Icon(Icons.flag, size: 16, color: Colors.red)),
+                Image.asset(
+                  'assets/icons/flag_id.png',
+                  width: 18,
+                  errorBuilder: (_, __, ___) =>
+                      const Icon(Icons.flag, size: 16, color: Colors.red),
+                ),
                 const SizedBox(width: 6),
                 const Text(
                   'KEMENTERIAN DALAM NEGERI - RI',
@@ -118,122 +130,137 @@ class LoginView extends GetView<AuthController> {
             const SizedBox(height: 6),
             const Text(
               'Silakan masukkan NIP resmi dan kata sandi Anda untuk mengakses pembaca NFC kartu e-KTP.',
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.4),
+              style: TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+                height: 1.4,
+              ),
             ),
             const SizedBox(height: 24),
 
             CustomTextField(
               label: 'NIP Petugas',
-              hintText: 'Contoh: 199408122020121002',
+              hintText: 'Contoh: 19940812',
               prefixIcon: Icons.person_outline,
               controller: controller.nipController,
-              keyboardType: TextInputType.number, 
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly, 
-              ],
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
             const SizedBox(height: 16),
 
             CustomTextField(
               label: 'Kata Sandi',
-              hintText: 'Masukkan kata sandi akun',
+              hintText: 'password123',
               prefixIcon: Icons.lock_outline,
               isPassword: true,
               controller: controller.passwordController,
-              onChanged: (val) => controller.checkPasswordStrength(val), 
+              onChanged: (val) => controller.checkPasswordStrength(val),
             ),
 
-            Obx(() => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 8),
-                
-                LinearProgressIndicator(
-                  value: controller.passwordStrength.value,
-                  color: controller.passwordStrengthColor.value,
-                  backgroundColor: const Color(0xFFE2E8F0),
-                  minHeight: 6,
-                  borderRadius: BorderRadius.circular(3),
-                ),
-                const SizedBox(height: 8),
-                
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Tingkat Keamanan Sandi:',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF64748B),
-                      ),
-                    ),
-                    Text(
-                      controller.passwordStrengthText.value.isEmpty 
-                          ? '-' 
-                          : controller.passwordStrengthText.value,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: controller.passwordStrengthColor.value,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
+            Obx(
+              () => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
 
-                Text(
-                  controller.passwordHint.value,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFF475569),
-                    height: 1.3,
+                  LinearProgressIndicator(
+                    value: controller.passwordStrength.value,
+                    color: controller.passwordStrengthColor.value,
+                    backgroundColor: const Color(0xFFE2E8F0),
+                    minHeight: 6,
+                    borderRadius: BorderRadius.circular(3),
                   ),
-                ),
-              ],
-            )),
-            
-            
+                  const SizedBox(height: 8),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Tingkat Keamanan Sandi:',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF64748B),
+                        ),
+                      ),
+                      Text(
+                        controller.passwordStrengthText.value.isEmpty
+                            ? '-'
+                            : controller.passwordStrengthText.value,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: controller.passwordStrengthColor.value,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+
+                  Text(
+                    controller.passwordHint.value,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Color(0xFF475569),
+                      height: 1.3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             const SizedBox(height: 18),
 
-            Obx(() => CustomDropdownField<String>(
-              label: 'Instansi Induk',
-              hintText: 'Pilih Instansi',
-              prefixIcon: Icons.apartment_outlined,
-              value: controller.selectedInstansi.value.isEmpty ? null : controller.selectedInstansi.value,
-              items: controller.listInstansi.map((instansi) {
-                return DropdownMenuItem(
-                  value: instansi,
-                  child: Text(instansi),
-                );
-              }).toList(),
-              onChanged: (val) => controller.selectedInstansi.value = val ?? '',
-            )),
+            Obx(
+              () => CustomDropdownField<String>(
+                label: 'Instansi Induk',
+                hintText: 'Pilih Instansi',
+                prefixIcon: Icons.apartment_outlined,
+                value: controller.selectedInstansi.value.isEmpty
+                    ? null
+                    : controller.selectedInstansi.value,
+                items: controller.listInstansi.map((instansi) {
+                  return DropdownMenuItem(
+                    value: instansi,
+                    child: Text(instansi),
+                  );
+                }).toList(),
+                onChanged: (val) =>
+                    controller.selectedInstansi.value = val ?? '',
+              ),
+            ),
             const SizedBox(height: 28),
 
             SizedBox(
               width: double.infinity,
               height: 50,
-              child: Obx(() => ElevatedButton(
-                onPressed: controller.isLoading.value ? null : () => controller.goToSetPosko(),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              child: Obx(
+                () => ElevatedButton(
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : () => controller.goToSetPosko(),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                ),
-                child: controller.isLoading.value
-                    ? const SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2.5,
+                  child: controller.isLoading.value
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                      : const Text(
+                          'MASUK & ATUR LOKASI',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      )
-                    : const Text(
-                        'MASUK & ATUR LOKASI',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                      ),
-              )),
+                ),
+              ),
             ),
             const SizedBox(height: 16),
 
@@ -257,26 +284,28 @@ class LoginView extends GetView<AuthController> {
   }
 
   Widget _buildRequirementItem(String text, bool isMet) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 2),
-    child: Row(
-      children: [
-        Icon(
-          isMet ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
-          size: 16,
-          color: isMet ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 12,
-            color: isMet ? const Color(0xFF0F172A) : const Color(0xFF64748B),
-            fontWeight: isMet ? FontWeight.w600 : FontWeight.normal,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Icon(
+            isMet
+                ? Icons.check_circle_rounded
+                : Icons.radio_button_unchecked_rounded,
+            size: 16,
+            color: isMet ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
           ),
-        ),
-      ],
-    ),
-  );
-}
+          const SizedBox(width: 8),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 12,
+              color: isMet ? const Color(0xFF0F172A) : const Color(0xFF64748B),
+              fontWeight: isMet ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

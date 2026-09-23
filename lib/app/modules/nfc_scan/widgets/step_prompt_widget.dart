@@ -22,11 +22,17 @@ class PromptWidget extends GetView<NfcScanController> {
 
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 32,
+                      horizontal: 20,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+                      border: Border.all(
+                        color: const Color(0xFFE2E8F0),
+                        width: 1.5,
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.04),
@@ -112,38 +118,49 @@ class PromptWidget extends GetView<NfcScanController> {
 
                   Padding(
                     padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
-                    child: Obx(() => SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2563EB),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                    child: Obx(
+                      () => SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2563EB),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
                           ),
-                        ),
-                        onPressed: controller.isScanning.value
-                            ? null
-                            : () => controller.startNfcSession(),
-                        onLongPress: () => controller.bypassScan(),
-                        icon: controller.isScanning.value
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                              )
-                            : const Icon(Icons.wifi_tethering, color: Colors.white, size: 22),
-                        label: Text(
-                          controller.isScanning.value ? 'MENUNGGU KTP...' : 'MULAI PEMINDAIAN',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            color: Colors.white,
+                          onPressed: controller.isScanning.value
+                              ? null
+                              : () => controller.startNfcSession(),
+                          onLongPress: () => controller.bypassScan(),
+                          icon: controller.isScanning.value
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.wifi_tethering,
+                                  color: Colors.white,
+                                  size: 22,
+                                ),
+                          label: Text(
+                            controller.isScanning.value
+                                ? 'MENUNGGU KTP...'
+                                : 'MULAI PEMINDAIAN',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
-                    )),
+                    ),
                   ),
                 ],
               ),

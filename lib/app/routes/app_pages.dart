@@ -6,7 +6,9 @@ import 'package:digiktp/app/modules/nfc_scan/views/nfc_scan_view.dart';
 import 'package:digiktp/app/modules/dashboard/dashboard_controller.dart';
 import 'package:digiktp/app/modules/dashboard/dashboard_binding.dart';
 import 'package:digiktp/app/modules/dashboard/view/dashboard_view.dart';
-
+import 'package:digiktp/app/modules/onboarding/onboarding_binding.dart';
+import 'package:digiktp/app/modules/onboarding/onboarding_controller.dart';
+import 'package:digiktp/app/modules/onboarding/onboarding_view.dart';
 
 import 'package:get/get.dart';
 import 'app_routes.dart';
@@ -15,11 +17,11 @@ class AppPages {
   static const INITIAL = Routes.DASHBOARD;
 
   static final routes = [
-    // GetPage(
-    //   name: Routes.ONBOARDING,
-    //   page: () => const OnboardingView(),
-    //   binding: OnboardingBinding(),
-    // ),
+    GetPage(
+      name: Routes.ONBOARDING,
+      page: () => const OnboardingView(),
+      binding: OnboardingBinding(),
+    ),
     GetPage(
       name: Routes.LOGIN,
       page: () => const LoginView(),

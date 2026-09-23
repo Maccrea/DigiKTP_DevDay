@@ -6,20 +6,16 @@ class ApiProvider extends GetxService {
   final SupabaseClient supabase = Supabase.instance.client;
 
   Future<Map<String, dynamic>> cekWarga({
-    required String nik,
     required String nfcUid,
   }) async {
-    final cleanNik = nik.trim();
     final cleanNfcUid = nfcUid.trim().toUpperCase();
-    if (!RegExp(r'^\d{16}$').hasMatch(cleanNik)) {
-      throw Exception('Format NIK tidak valid');
-    }
     if (cleanNfcUid.isEmpty) {
       throw Exception('UID NFC wajib tersedia');
     }
 
     try {
-      final accessToken = supabase.auth.currentSession?.accessToken ??
+      final accessToken =
+          supabase.auth.currentSession?.accessToken ??
           GetStorage().read<String>('auth_token');
       if (accessToken == null || accessToken.isEmpty) {
         throw Exception('Token akses tidak tersedia');
@@ -27,10 +23,7 @@ class ApiProvider extends GetxService {
 
       final response = await supabase.functions.invoke(
         'cek-warga',
-        body: {
-          'nik': cleanNik,
-          'nfc_uid': cleanNfcUid,
-        },
+        body: {'nfc_uid': cleanNfcUid},
         headers: {
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json',
@@ -60,7 +53,6 @@ class ApiProvider extends GetxService {
       }
       if (e.status == 404) {
         final directResponse = await _lookupWargaDirectly(
-          nik: cleanNik,
           nfcUid: cleanNfcUid,
         );
         if (directResponse != null) {
@@ -78,18 +70,16 @@ class ApiProvider extends GetxService {
     if (details is Map && details['message'] is String) {
       return details['message'] as String;
     }
-    return 'Gagal memverifikasi NIK';
+    return 'Gagal memverifikasi data warga';
   }
 
   Future<Map<String, dynamic>?> _lookupWargaDirectly({
-    required String nik,
     required String nfcUid,
   }) async {
     try {
       final row = await supabase
           .from('users_warga')
           .select()
-          .eq('nik', nik)
           .eq('uid_nfc', nfcUid)
           .maybeSingle();
 
@@ -101,7 +91,7 @@ class ApiProvider extends GetxService {
         'message': 'Data warga ditemukan',
         'data': {
           ...data,
-          'nik': data['nik'] ?? nik,
+          'nik': data['nik'] ?? '-',
           'nama_masking': data['nama_masking'] ?? data['nama_lengkap'] ?? '',
           'wilayah': data['wilayah'] ?? data['alamat'] ?? '',
           'is_active': data['is_active'] ?? true,
@@ -112,6 +102,31 @@ class ApiProvider extends GetxService {
       print('FALLBACK USERS_WARGA GAGAL: $error');
       return null;
     }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchLayananLogs() async {
+    final rows = await supabase
+        .from('layanan_logs')
+        .select('*, users_warga(nama_lengkap)')
+        .order('created_at', ascending: false);
+
+    return (rows as List).map((row) {
+      final log = Map<String, dynamic>.from(row as Map);
+      final warga = log['users_warga'] is Map
+          ? Map<String, dynamic>.from(log['users_warga'] as Map)
+          : <String, dynamic>{};
+      final status = (log['status_transaksi'] ?? 'PENDING').toString();
+
+      return {
+        'log_id': log['id_log'] ?? '-',
+        'name': warga['nama_lengkap'] ?? log['nik_warga'] ?? 'Tanpa Nama',
+        'nik': log['nik_warga'] ?? '-',
+        'service': log['jenis_layanan'] ?? 'Layanan Dukcapil',
+        'status': status,
+        'isSuccess': status.toUpperCase() == 'SUCCESS',
+        'time': log['created_at'] ?? '-',
+      };
+    }).toList();
   }
 
   Future<Map<String, dynamic>> generateOtp({
@@ -147,15 +162,18 @@ class ApiProvider extends GetxService {
   Future<Map<String, dynamic>> verifyOtp({
     required String nfcUid,
     required String otpCode,
+    required String nikWarga,
     required String idPetugas,
     required String idInstansi,
     String? lokasiTugas,
     String? jenisLayanan,
+    String statusTransaksi = 'SUCCESS',
   }) async {
     try {
       final Map<String, dynamic> requestBody = {
         'nfc_uid': nfcUid.trim(),
         'otp_code': otpCode.trim(),
+        'nik_warga': nikWarga.trim(),
         'id_petugas': idPetugas.trim(),
         'id_instansi': idInstansi.trim(),
       };
@@ -169,6 +187,7 @@ class ApiProvider extends GetxService {
       if (cleanJenisLayanan.isNotEmpty) {
         requestBody['jenis_layanan'] = cleanJenisLayanan;
       }
+      requestBody['status_transaksi'] = statusTransaksi.trim();
 
       print('📤 MENGIRIM VERIFIKASI OTP PAYLOAD: $requestBody');
 
@@ -221,7 +240,9 @@ class ApiProvider extends GetxService {
       if (responseData['petugas'] is! Map ||
           responseData['petugas']['id_petugas'] == null ||
           responseData['petugas']['id_instansi'] == null) {
-        throw Exception('Respons login tidak berisi ID petugas/instansi yang valid');
+        throw Exception(
+          'Respons login tidak berisi ID petugas/instansi yang valid',
+        );
       }
 
       return responseData;
@@ -237,10 +258,7 @@ class ApiProvider extends GetxService {
     try {
       await supabase.functions.invoke(
         'update-location',
-        body: {
-          'id_petugas': idPetugas,
-          'new_location': newLocation,
-        },
+        body: {'id_petugas': idPetugas, 'new_location': newLocation},
       );
     } catch (e) {
       print('Update location error: $e');

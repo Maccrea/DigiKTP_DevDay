@@ -26,7 +26,10 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+                      border: Border.all(
+                        color: const Color(0xFFE2E8F0),
+                        width: 1.5,
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.04),
@@ -80,36 +83,47 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                         ),
                         const Divider(height: 24, color: Color(0xFFF1F5F9)),
 
-                        Obx(() => Column(
-                              children: [
-                                _buildSummaryItem(
-                                  icon: Icons.person_outline,
-                                  label: 'Nama Lengkap',
-                                  value: controller.verifiedWargaData['nama_lengkap'] ?? 'Memuat...',
-                                ),
-                                const SizedBox(height: 12),
-                                _buildSummaryItem(
-                                  icon: Icons.badge_outlined,
-                                  label: 'NIK Warga',
-                                  value: controller.verifiedWargaData['nik'] ?? 'Memuat...',
-                                ),
-                                const SizedBox(height: 12),
-                                _buildSummaryItem(
-                                  icon: Icons.nfc_outlined,
-                                  label: 'UID e-KTP (Chip)',
-                                  value: controller.scannedUid.value.isNotEmpty
-                                      ? controller.scannedUid.value
-                                      : (controller.verifiedWargaData['uid_nfc'] ?? 'E004123456789A'),
-                                  isMonospace: true,
-                                ),
-                                const SizedBox(height: 12),
-                                _buildSummaryItem(
-                                  icon: Icons.mark_email_read_outlined,
-                                  label: 'Email Verifikasi OTP',
-                                  value: controller.verifiedWargaData['email'] ?? 'Memuat...',
-                                ),
-                              ],
-                            )),
+                        Obx(
+                          () => Column(
+                            children: [
+                              _buildSummaryItem(
+                                icon: Icons.person_outline,
+                                label: 'Nama Lengkap',
+                                value:
+                                    controller
+                                        .verifiedWargaData['nama_lengkap'] ??
+                                    'Memuat...',
+                              ),
+                              const SizedBox(height: 12),
+                              _buildSummaryItem(
+                                icon: Icons.badge_outlined,
+                                label: 'NIK Warga',
+                                value:
+                                    controller.verifiedWargaData['nik'] ??
+                                    'Memuat...',
+                              ),
+                              const SizedBox(height: 12),
+                              _buildSummaryItem(
+                                icon: Icons.nfc_outlined,
+                                label: 'UID e-KTP (Chip)',
+                                value: controller.scannedUid.value.isNotEmpty
+                                    ? controller.scannedUid.value
+                                    : (controller
+                                              .verifiedWargaData['uid_nfc'] ??
+                                          'E004123456789A'),
+                                isMonospace: true,
+                              ),
+                              const SizedBox(height: 12),
+                              _buildSummaryItem(
+                                icon: Icons.mark_email_read_outlined,
+                                label: 'Email Verifikasi OTP',
+                                value:
+                                    controller.verifiedWargaData['email'] ??
+                                    'Memuat...',
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -126,7 +140,11 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
-                        Icon(Icons.shield_outlined, color: Color(0xFF2563EB), size: 20),
+                        Icon(
+                          Icons.shield_outlined,
+                          color: Color(0xFF2563EB),
+                          size: 20,
+                        ),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
@@ -148,40 +166,42 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                     padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
                     child: Column(
                       children: [
-                        Obx(() => SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2563EB),
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
+                        Obx(
+                          () => SizedBox(
+                            width: double.infinity,
+                            height: 52,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF2563EB),
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
                               ),
+                              onPressed: controller.isLoading.value
+                                  ? null
+                                  : () => controller.verifyOtpAndFetchData(),
+                              child: controller.isLoading.value
+                                  ? const SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2.5,
+                                      ),
+                                    )
+                                  : const Text(
+                                      'PROSES & SIMPAN DATA',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                        letterSpacing: 0.5,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                             ),
-                            onPressed: controller.isLoading.value 
-                                ? null 
-                                : () => controller.verifyOtpAndFetchData(),
-                            child: controller.isLoading.value
-                                ? const SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                      strokeWidth: 2.5,
-                                    ),
-                                  )
-                                : const Text(
-                                    'PROSES & SIMPAN DATA',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      letterSpacing: 0.5,
-                                      color: Colors.white,
-                                    ),
-                                  ),
                           ),
-                        )),
+                        ),
                         const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
@@ -193,7 +213,8 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                                 borderRadius: BorderRadius.circular(14),
                               ),
                             ),
-                            onPressed: () => controller.goToStep(ScanStep.validation),
+                            onPressed: () =>
+                                controller.goToStep(ScanStep.validation),
                             child: const Text(
                               'Ubah Data Kontak',
                               style: TextStyle(

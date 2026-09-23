@@ -10,13 +10,13 @@ class DashboardView extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope( 
+    return WillPopScope(
       onWillPop: () async {
         bool exitApp = controller.handleBackAction();
-        return exitApp; 
+        return exitApp;
       },
       child: Scaffold(
-      backgroundColor: const Color(0xFFF1F5F9),
+        backgroundColor: const Color(0xFFF1F5F9),
         body: Obx(() {
           switch (controller.currentBottomNavIndex.value) {
             case 0:
@@ -49,8 +49,14 @@ class DashboardView extends GetView<DashboardController> {
               backgroundColor: Colors.white,
               selectedItemColor: const Color(0xFF2563EB),
               unselectedItemColor: const Color(0xFF94A3B8),
-              selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
-              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11),
+              selectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 11,
+              ),
               elevation: 0,
               type: BottomNavigationBarType.fixed,
               items: const [

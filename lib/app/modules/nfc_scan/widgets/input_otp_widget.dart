@@ -27,7 +27,10 @@ class InputOtpWidget extends GetView<NfcScanController> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+                      border: Border.all(
+                        color: const Color(0xFFE2E8F0),
+                        width: 1.5,
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.04),
@@ -61,27 +64,29 @@ class InputOtpWidget extends GetView<NfcScanController> {
                           ),
                         ),
                         const SizedBox(height: 6),
-                        Obx(() => Text.rich(
-                          TextSpan(
-                            text: 'Kode 6 digit telah dikirimkan ke email\n',
-                            style: const TextStyle(
-                              color: Color(0xFF64748B),
-                              fontSize: 12,
-                              height: 1.4,
-                            ),
-                            children: [
-                              TextSpan(
-                                text: controller.targetedEmail.value, // 👈 Membaca email dinamis dari controller
-                                style: const TextStyle(
-                                  color: Color(0xFF0F172A),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
+                        Obx(
+                          () => Text.rich(
+                            TextSpan(
+                              text: 'Kode 6 digit telah dikirimkan ke email\n',
+                              style: const TextStyle(
+                                color: Color(0xFF64748B),
+                                fontSize: 12,
+                                height: 1.4,
                               ),
-                            ],
+                              children: [
+                                TextSpan(
+                                  text: controller.targetedEmail.value,
+                                  style: const TextStyle(
+                                    color: Color(0xFF0F172A),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
-                        )),
+                        ),
                         const SizedBox(height: 28),
 
                         Row(
@@ -97,9 +102,11 @@ class InputOtpWidget extends GetView<NfcScanController> {
                                 autofocus: index == 0,
                                 onChanged: (value) {
                                   if (value.length == 1 && index < 5) {
-                                    controller.otpFocusNodes[index + 1].requestFocus();
+                                    controller.otpFocusNodes[index + 1]
+                                        .requestFocus();
                                   } else if (value.isEmpty && index > 0) {
-                                    controller.otpFocusNodes[index - 1].requestFocus();
+                                    controller.otpFocusNodes[index - 1]
+                                        .requestFocus();
                                   }
                                 },
                                 textAlign: TextAlign.center,
@@ -120,15 +127,22 @@ class InputOtpWidget extends GetView<NfcScanController> {
                                   contentPadding: EdgeInsets.zero,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFFCBD5E1),
+                                    ),
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFFE2E8F0),
+                                    ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.8),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFF2563EB),
+                                      width: 1.8,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -143,24 +157,35 @@ class InputOtpWidget extends GetView<NfcScanController> {
                           children: [
                             const Text(
                               'Tidak menerima kode? ',
-                              style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF64748B),
+                              ),
                             ),
                             Obx(() {
                               final canResend = controller.canResend.value;
-                              final seconds = controller.countdown.value.toString().padLeft(2, '0');
+                              final seconds = controller.countdown.value
+                                  .toString()
+                                  .padLeft(2, '0');
 
                               return GestureDetector(
-                                onTap: canResend ? () => controller.resendOtp() : null,
+                                onTap: canResend
+                                    ? () => controller.resendOtp()
+                                    : null,
                                 child: Text(
-                                  canResend ? 'Kirim Ulang' : 'Kirim Ulang (00:$seconds)',
+                                  canResend
+                                      ? 'Kirim Ulang'
+                                      : 'Kirim Ulang (00:$seconds)',
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: canResend ? const Color(0xFF2563EB) : const Color(0xFF94A3B8),
+                                    color: canResend
+                                        ? const Color(0xFF2563EB)
+                                        : const Color(0xFF94A3B8),
                                   ),
                                 ),
                               );
-                            })
+                            }),
                           ],
                         ),
                       ],
@@ -185,21 +210,26 @@ class InputOtpWidget extends GetView<NfcScanController> {
                         onPressed: () async {
                           await controller.verifyOtpApi();
                         },
-                        child: Obx(() => controller.isLoading.value
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                              )
-                            : const Text(
-                                'VERIFIKASI & LANJUTKAN',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                  letterSpacing: 0.5,
-                                  color: Colors.white,
+                        child: Obx(
+                          () => controller.isLoading.value
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text(
+                                  'VERIFIKASI & LANJUTKAN',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    letterSpacing: 0.5,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              )),
+                        ),
                       ),
                     ),
                   ),
