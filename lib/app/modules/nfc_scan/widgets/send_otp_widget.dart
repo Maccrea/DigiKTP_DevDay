@@ -52,7 +52,7 @@ class SendOtpWidget extends GetView<NfcScanController> {
                           child: const Icon(
                             Icons.mark_email_read_rounded,
                             size: 52,
-                            color: Color(0xFF2563EB),
+                            color: Color(0xFF030164),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -95,7 +95,7 @@ class SendOtpWidget extends GetView<NfcScanController> {
                               const Icon(
                                 Icons.email_outlined,
                                 size: 18,
-                                color: Color(0xFF2563EB),
+                                color: Color(0xFF030164),
                               ),
                               const SizedBox(width: 8),
                               Flexible(
@@ -149,7 +149,7 @@ class SendOtpWidget extends GetView<NfcScanController> {
                       height: 52,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2563EB),
+                          backgroundColor: const Color(0xFF030164),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),

@@ -86,7 +86,7 @@ class PetugasTabView extends GetView<DashboardController> {
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF2563EB),
+                                color: Color(0xFF030164),
                               ),
                             ),
                           ),
@@ -102,7 +102,7 @@ class PetugasTabView extends GetView<DashboardController> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
+                    colors: [Color(0xFF030164), Color(0xFF1D4ED8)],
                   ),
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -227,7 +227,7 @@ class PetugasTabView extends GetView<DashboardController> {
       ),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF2563EB), size: 22),
+          Icon(icon, color: const Color(0xFF030164), size: 22),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -419,7 +419,7 @@ class PetugasTabView extends GetView<DashboardController> {
               (posko) => ListTile(
                 leading: const Icon(
                   Icons.location_on_outlined,
-                  color: Color(0xFF2563EB),
+                  color: Color(0xFF030164),
                 ),
                 title: Text(
                   posko,

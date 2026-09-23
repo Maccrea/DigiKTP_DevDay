@@ -36,10 +36,10 @@ class NfcScanView extends GetView<NfcScanController> {
 
   int _getStepPhaseIndex(ScanStep step) {
     switch (step) {
-      case ScanStep.cekWarga:
-        return 0;
       case ScanStep.prompt:
+        return 0;
       case ScanStep.result:
+      case ScanStep.cekWarga:
         return 1;
       case ScanStep.validation:
         return 2;
@@ -139,7 +139,7 @@ class NfcScanView extends GetView<NfcScanController> {
                   style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF2563EB),
+                    color: Color(0xFF030164),
                     letterSpacing: 1.2,
                   ),
                 ),
@@ -176,7 +176,7 @@ class NfcScanView extends GetView<NfcScanController> {
                         color: isCompleted
                             ? const Color(0xFF10B981)
                             : (isActive
-                                  ? const Color(0xFF2563EB)
+                                  ? const Color(0xFF030164)
                                   : const Color(0xFFF1F5F9)),
                         border: isActive
                             ? Border.all(
@@ -193,7 +193,7 @@ class NfcScanView extends GetView<NfcScanController> {
                             ? [
                                 BoxShadow(
                                   color: const Color(
-                                    0xFF2563EB,
+                                    0xFF030164,
                                   ).withOpacity(0.3),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),

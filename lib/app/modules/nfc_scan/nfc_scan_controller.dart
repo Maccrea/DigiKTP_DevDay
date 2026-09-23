@@ -212,13 +212,9 @@ class NfcScanController extends GetxController {
       isLoading.value = true;
       debugPrint('CEK WARGA: mengirim ${nik.length} digit NIK');
 
-      final responseData = await _apiProvider.cekWarga(
-        // nik: nik,
-        nfcUid: nfcUid,
-      );
+      final responseData = await _apiProvider.cekWarga(nfcUid: nfcUid);
 
       final warga = Map<String, dynamic>.from(responseData['data'] as Map);
-      // warga['nik'] = nik;
       verifiedWargaData.value = warga;
     } catch (e) {
       final message = e.toString().replaceFirst('Exception: ', '');
@@ -244,17 +240,52 @@ class NfcScanController extends GetxController {
 
       final warga = Map<String, dynamic>.from(responseData['data'] as Map);
       verifiedWargaData.value = warga;
+
+      currentStep.value = ScanStep.result;
     } catch (e) {
-      final message = e.toString().replaceFirst('Exception: ', '');
+      verifiedWargaData.clear();
+      currentStep.value = ScanStep.cekWarga;
+
+      AppSnackbar.show(message: "KTP Belum Terdaftar");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> submitRegistrasiWarga(Map<String, dynamic> formData) async {
+    try {
+      isLoading.value = true;
+      update();
+
+      final response = await _apiProvider.registerWargaBaru(formData: formData);
+
+      if (response.containsKey('data')) {
+        verifiedWargaData.value = Map<String, dynamic>.from(
+          response['data'] as Map,
+        );
+      } else {
+        verifiedWargaData.value = Map<String, dynamic>.from(formData);
+      }
+
+      AppSnackbar.show(
+        message: 'Registrasi KTP Berhasil!',
+        icon: Icons.check_circle_outline,
+      );
+
+      currentStep.value = ScanStep.validation;
+    } catch (e) {
+      final cleanError = e.toString().replaceFirst('Exception: ', '');
       Get.snackbar(
-        'Gagal Memuat Data',
-        message,
+        'Registrasi Gagal',
+        cleanError,
         snackPosition: SnackPosition.TOP,
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        duration: const Duration(seconds: 4),
       );
     } finally {
       isLoading.value = false;
+      update();
     }
   }
 

@@ -79,7 +79,8 @@ class HomeTabView extends GetView<DashboardController> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF0F172A), Color(0xFF1E293B), Color(0xFF0284C7)],
+          colors: [Color(0xFF030164), Color(0xFF1D286F), Color(0xFF0284C7)],
+          stops: [0.0, 0.5, 1.0],
         ),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(28),
@@ -114,7 +115,7 @@ class HomeTabView extends GetView<DashboardController> {
                         ),
                         SizedBox(width: 6),
                         Text(
-                          'LAYANAN DUKCAPIL DIGIKTP',
+                          'LAYANAN DUKCAPIL NIKita',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
@@ -275,7 +276,7 @@ class HomeTabView extends GetView<DashboardController> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
+          colors: [Color(0xFF030164), Color(0xFF1D4ED8)],
         ),
         borderRadius: BorderRadius.circular(20),
       ),
@@ -453,7 +454,7 @@ class HomeTabView extends GetView<DashboardController> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
-                color: Color(0xFF2563EB),
+                color: Color(0xFF030164),
               ),
             ),
           ),

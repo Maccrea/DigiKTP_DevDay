@@ -109,7 +109,7 @@ class SuccessWidget extends GetView<NfcScanController> {
                                     fontFamily: 'Monospace',
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF2563EB),
+                                    color: Color(0xFF030164),
                                   ),
                                 );
                               }),
@@ -131,7 +131,7 @@ class SuccessWidget extends GetView<NfcScanController> {
                           height: 52,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2563EB),
+                              backgroundColor: const Color(0xFF030164),
                               elevation: 0,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
@@ -162,7 +162,7 @@ class SuccessWidget extends GetView<NfcScanController> {
                           child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(
-                                color: Color(0xFF2563EB),
+                                color: Color(0xFF030164),
                                 width: 1.5,
                               ),
                               shape: RoundedRectangleBorder(
@@ -178,7 +178,7 @@ class SuccessWidget extends GetView<NfcScanController> {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
-                                color: Color(0xFF2563EB),
+                                color: Color(0xFF030164),
                               ),
                             ),
                           ),

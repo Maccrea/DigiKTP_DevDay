@@ -52,7 +52,7 @@ class SwitchPoskoView extends GetView<AuthController> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: AppColors.accent,
+                      color: Color(0xFF030164),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
@@ -70,7 +70,7 @@ class SwitchPoskoView extends GetView<AuthController> {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.accent,
+                          color: Color(0xFF030164),
                         ),
                       ),
                       const SizedBox(height: 2),

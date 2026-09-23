@@ -63,7 +63,7 @@ class StepValidationWidget extends GetView<NfcScanController> {
                                 color: const Color(0xFFEFF6FF),
                                 child: const Icon(
                                   Icons.person_rounded,
-                                  color: Color(0xFF2563EB),
+                                  color: Color(0xFF030164),
                                   size: 38,
                                 ),
                               ),
@@ -224,7 +224,7 @@ class StepValidationWidget extends GetView<NfcScanController> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: const BorderSide(
-                                    color: Color(0xFF2563EB),
+                                    color: Color(0xFF030164),
                                     width: 1.5,
                                   ),
                                 ),
@@ -245,7 +245,7 @@ class StepValidationWidget extends GetView<NfcScanController> {
                       height: 52,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2563EB),
+                          backgroundColor: const Color(0xFF030164),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
@@ -320,7 +320,7 @@ class StepValidationWidget extends GetView<NfcScanController> {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF2563EB)
+                ? const Color(0xFF030164)
                 : const Color(0xFFE2E8F0),
             width: isSelected ? 1.5 : 1.0,
           ),
@@ -334,7 +334,7 @@ class StepValidationWidget extends GetView<NfcScanController> {
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: isSelected
-                      ? const Color(0xFF2563EB)
+                      ? const Color(0xFF030164)
                       : const Color(0xFF94A3B8),
                   width: isSelected ? 5.5 : 1.5,
                 ),

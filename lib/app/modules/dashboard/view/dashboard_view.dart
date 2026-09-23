@@ -47,7 +47,7 @@ class DashboardView extends GetView<DashboardController> {
               currentIndex: controller.currentBottomNavIndex.value,
               onTap: (index) => controller.changeBottomNavIndex(index),
               backgroundColor: Colors.white,
-              selectedItemColor: const Color(0xFF2563EB),
+              selectedItemColor: const Color(0xFF030164),
               unselectedItemColor: const Color(0xFF94A3B8),
               selectedLabelStyle: const TextStyle(
                 fontWeight: FontWeight.bold,

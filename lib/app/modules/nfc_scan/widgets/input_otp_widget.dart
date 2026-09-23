@@ -50,7 +50,7 @@ class InputOtpWidget extends GetView<NfcScanController> {
                           child: const Icon(
                             Icons.pin_outlined,
                             size: 40,
-                            color: Color(0xFF2563EB),
+                            color: Color(0xFF030164),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -140,7 +140,7 @@ class InputOtpWidget extends GetView<NfcScanController> {
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
                                     borderSide: const BorderSide(
-                                      color: Color(0xFF2563EB),
+                                      color: Color(0xFF030164),
                                       width: 1.8,
                                     ),
                                   ),
@@ -180,7 +180,7 @@ class InputOtpWidget extends GetView<NfcScanController> {
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     color: canResend
-                                        ? const Color(0xFF2563EB)
+                                        ? const Color(0xFF030164)
                                         : const Color(0xFF94A3B8),
                                   ),
                                 ),
@@ -201,7 +201,7 @@ class InputOtpWidget extends GetView<NfcScanController> {
                       height: 52,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2563EB),
+                          backgroundColor: const Color(0xFF030164),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),

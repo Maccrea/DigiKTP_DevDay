@@ -31,7 +31,7 @@ class LoginView extends GetView<AuthController> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.info_outline, color: AppColors.accent),
+                      const Icon(Icons.info_outline, color: Color(0xFF030164)),
                       const SizedBox(width: 8),
                       const Text(
                         'Informasi Aplikasi',
@@ -45,7 +45,7 @@ class LoginView extends GetView<AuthController> {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'Aplikasi DigiKTP digunakan khusus oleh petugas resmi untuk melakukan verifikasi data kependudukan melalui pembacaan sensor NFC pada e-KTP.',
+                    'Aplikasi NIKita digunakan khusus oleh petugas resmi untuk melakukan verifikasi data kependudukan melalui pembacaan sensor NFC pada e-KTP.',
                     style: TextStyle(
                       fontSize: 14,
                       color: AppColors.textSecondary,
@@ -120,7 +120,7 @@ class LoginView extends GetView<AuthController> {
             const SizedBox(height: 8),
 
             const Text(
-              'Masuk Akun DigiKTP',
+              'Masuk Akun NIKita',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -272,7 +272,7 @@ class LoginView extends GetView<AuthController> {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.accent,
+                    color: Color(0xFF030164),
                   ),
                 ),
               ),

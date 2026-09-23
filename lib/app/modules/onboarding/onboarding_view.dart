@@ -23,7 +23,7 @@ class OnboardingView extends GetView<OnboardingController> {
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2563EB),
+                      color: const Color(0xFF030164),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
@@ -34,7 +34,7 @@ class OnboardingView extends GetView<OnboardingController> {
                   ),
                   const SizedBox(width: 12),
                   const Text(
-                    'DigiKTP',
+                    'NIKita',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -91,19 +91,31 @@ class OnboardingView extends GetView<OnboardingController> {
                         ),
                       ),
                     ),
+
                     Transform.rotate(
                       angle: -0.15,
                       child: Container(
-                        width: 200,
-                        height: 120,
-                        padding: const EdgeInsets.all(16),
+                        width: 240,
+                        height: 152,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1E3A8A),
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFF1E40AF), Color(0xFF030164)],
+                          ),
                           borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.4),
+                            width: 1.2,
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 15,
+                              color: Colors.black.withOpacity(0.4),
+                              blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
                           ],
@@ -111,43 +123,116 @@ class OnboardingView extends GetView<OnboardingController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            Center(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'PROVINSI JAWA TENGAH',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.9),
+                                      fontSize: 7.5,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 0.8,
+                                    ),
+                                  ),
+                                  Text(
+                                    'KOTA SEMARANG',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.9),
+                                      fontSize: 7.5,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 0.8,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+
+                            Row(
                               children: [
                                 Text(
-                                  'REPUBLIK INDONESIA',
+                                  'NIK',
                                   style: TextStyle(
-                                    color: Colors.white54,
-                                    fontSize: 8,
+                                    color: Colors.white.withOpacity(0.9),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                Icon(
-                                  Icons.contactless,
-                                  color: Colors.white54,
-                                  size: 12,
+                                const SizedBox(width: 8),
+                                const Text(
+                                  '3374012345678901',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontFamily: 'Monospace',
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.5,
+                                  ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 12),
-                            Container(
-                              width: 30,
-                              height: 20,
-                              decoration: BoxDecoration(
-                                color: Colors.amber[600],
-                                borderRadius: BorderRadius.circular(4),
+                            const SizedBox(height: 8),
+
+                            Expanded(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        _buildAbstractLine(110, 4, 0.8),
+                                        const SizedBox(height: 6),
+                                        _buildAbstractLine(70, 4, 0.6),
+                                        const SizedBox(height: 6),
+                                        _buildAbstractLine(120, 4, 0.5),
+                                        const SizedBox(height: 6),
+                                        _buildAbstractLine(80, 4, 0.4),
+                                        const SizedBox(height: 6),
+                                        _buildAbstractLine(95, 4, 0.3),
+                                      ],
+                                    ),
+                                  ),
+                                  Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        width: 36,
+                                        height: 46,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.15),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                          border: Border.all(
+                                            color: Colors.white.withOpacity(
+                                              0.4,
+                                            ),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Icon(
+                                            Icons.person,
+                                            color: Colors.white.withOpacity(
+                                              0.5,
+                                            ),
+                                            size: 28,
+                                          ),
+                                        ),
+                                      ),
+                                      Icon(
+                                        Icons.contactless_rounded,
+                                        color: Colors.white.withOpacity(0.8),
+                                        size: 14,
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            ),
-                            const Spacer(),
-                            Container(
-                              width: double.infinity,
-                              height: 4,
-                              color: Colors.white54,
-                            ),
-                            const SizedBox(height: 4),
-                            Container(
-                              width: 120,
-                              height: 4,
-                              color: Colors.white24,
                             ),
                           ],
                         ),
@@ -221,7 +306,7 @@ class OnboardingView extends GetView<OnboardingController> {
                     height: 56,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2563EB),
+                        backgroundColor: const Color(0xFF030164),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -243,7 +328,6 @@ class OnboardingView extends GetView<OnboardingController> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Footer Text
                   const Center(
                     child: Text(
                       'Khusus petugas berwenang yang terdaftar di Dukcapil RI.',
@@ -255,6 +339,17 @@ class OnboardingView extends GetView<OnboardingController> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAbstractLine(double width, double height, double opacity) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(opacity),
+        borderRadius: BorderRadius.circular(height / 2),
       ),
     );
   }

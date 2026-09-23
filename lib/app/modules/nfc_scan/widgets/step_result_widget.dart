@@ -110,7 +110,7 @@ class StepResultWidget extends GetView<NfcScanController> {
                                 height: 24,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  color: Color(0xFF2563EB),
+                                  color: Color(0xFF030164),
                                 ),
                               ),
                             ),
@@ -206,7 +206,7 @@ class StepResultWidget extends GetView<NfcScanController> {
                                   color: const Color(0xFFEFF6FF),
                                   child: const Icon(
                                     Icons.person_rounded,
-                                    color: Color(0xFF2563EB),
+                                    color: Color(0xFF030164),
                                     size: 42,
                                   ),
                                 ),
@@ -284,7 +284,7 @@ class StepResultWidget extends GetView<NfcScanController> {
                       height: 52,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2563EB),
+                          backgroundColor: const Color(0xFF030164),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),

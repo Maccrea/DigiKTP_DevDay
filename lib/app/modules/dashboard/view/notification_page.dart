@@ -41,7 +41,7 @@ class NotificationPage extends GetView<NotificationController> {
               child: const Text(
                 'Tandai dibaca',
                 style: TextStyle(
-                  color: Color(0xFF2563EB),
+                  color: Color(0xFF030164),
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -177,7 +177,7 @@ class NotificationPage extends GetView<NotificationController> {
                               ? FontWeight.w600
                               : FontWeight.normal,
                           color: notif.isUnread
-                              ? const Color(0xFF2563EB)
+                              ? const Color(0xFF030164)
                               : const Color(0xFF94A3B8),
                         ),
                       ),

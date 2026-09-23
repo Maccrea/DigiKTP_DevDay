@@ -11,8 +11,9 @@ class ActivityTabView extends GetView<DashboardController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF1F5F9),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+          physics: const BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -50,7 +51,7 @@ class ActivityTabView extends GetView<DashboardController> {
                                 children: const [
                                   Icon(
                                     Icons.history_rounded,
-                                    color: Color(0xFF2563EB),
+                                    color: Color(0xFF030164),
                                   ),
                                   SizedBox(width: 10),
                                   Text(
@@ -79,7 +80,7 @@ class ActivityTabView extends GetView<DashboardController> {
                                 child: ElevatedButton(
                                   onPressed: () => Get.back(),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF2563EB),
+                                    backgroundColor: const Color(0xFF030164),
                                     elevation: 0,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
@@ -156,7 +157,7 @@ class ActivityTabView extends GetView<DashboardController> {
                         ),
                         child: const Icon(
                           Icons.tune_rounded,
-                          color: Color(0xFF2563EB),
+                          color: Color(0xFF030164),
                           size: 20,
                         ),
                       ),
@@ -166,33 +167,30 @@ class ActivityTabView extends GetView<DashboardController> {
               ),
               const SizedBox(height: 16),
 
-              Expanded(
-                child: Obx(() {
-                  if (controller.dashboardActivities.isEmpty) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: Text(
-                          'Belum ada riwayat aktivitas pemindaian hari ini.',
-                        ),
+              Obx(() {
+                if (controller.dashboardActivities.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Text(
+                        'Belum ada riwayat aktivitas pemindaian hari ini.',
                       ),
-                    );
-                  }
-
-                  return ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: controller.dashboardActivities.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 10),
-                    itemBuilder: (context, index) {
-                      final activityItem =
-                          controller.dashboardActivities[index];
-                      return ActivityTile(item: activityItem);
-                    },
+                    ),
                   );
-                }),
-              ),
+                }
+
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: controller.dashboardActivities.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 10),
+                  itemBuilder: (context, index) {
+                    final activityItem = controller.dashboardActivities[index];
+                    return ActivityTile(item: activityItem);
+                  },
+                );
+              }),
             ],
           ),
         ),
@@ -203,48 +201,74 @@ class ActivityTabView extends GetView<DashboardController> {
   void _showFilterBottomSheet(BuildContext context) {
     Get.bottomSheet(
       Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
         decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Center(
+              child: Container(
+                width: 48,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE2E8F0),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
                   'Filter Riwayat',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF0F172A),
+                  ),
                 ),
-                TextButton(
-                  onPressed: () {
+                InkWell(
+                  onTap: () {
                     controller.resetFilters();
                     Get.back();
                   },
-                  child: const Text(
-                    'Reset',
-                    style: TextStyle(color: Colors.red),
+                  borderRadius: BorderRadius.circular(8),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Text(
+                      'Reset Ulang',
+                      style: TextStyle(
+                        color: Color(0xFFEF4444),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
+
             const Text(
-              'Waktu Pemindaian',
+              'WAKTU PEMINDAIAN',
               style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
                 color: Color(0xFF64748B),
+                letterSpacing: 0.5,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Obx(
               () => Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: 10,
+                runSpacing: 10,
                 children:
                     [
                       'Semua',
@@ -253,94 +277,97 @@ class ActivityTabView extends GetView<DashboardController> {
                       'Minggu Lalu',
                       'Bulan Lalu',
                     ].map((time) {
-                      final isSelected =
-                          controller.selectedTimeFilter.value == time;
-                      return ChoiceChip(
-                        label: Text(time),
-                        selected: isSelected,
-                        onSelected: (bool selected) {
+                      return _buildFilterChip(
+                        label: time,
+                        isSelected: controller.selectedTimeFilter.value == time,
+                        onSelected: (selected) {
                           if (selected)
                             controller.selectedTimeFilter.value = time;
                         },
-                        selectedColor: const Color(0xFFEFF6FF),
-                        labelStyle: TextStyle(
-                          color: isSelected
-                              ? const Color(0xFF2563EB)
-                              : const Color(0xFF64748B),
-                          fontWeight: isSelected
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                        ),
-                        side: BorderSide(
-                          color: isSelected
-                              ? const Color(0xFF2563EB)
-                              : const Color(0xFFE2E8F0),
-                        ),
                       );
                     }).toList(),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
+
             const Text(
-              'Status Validasi',
+              'STATUS VALIDASI',
               style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
                 color: Color(0xFF64748B),
+                letterSpacing: 0.5,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Obx(
               () => Wrap(
-                spacing: 8,
+                spacing: 10,
+                runSpacing: 10,
                 children: ['Semua', 'Berhasil', 'Gagal'].map((status) {
-                  final isSelected =
-                      controller.selectedStatusFilter.value == status;
-                  return ChoiceChip(
-                    label: Text(status),
-                    selected: isSelected,
-                    onSelected: (bool selected) {
+                  return _buildFilterChip(
+                    label: status,
+                    isSelected: controller.selectedStatusFilter.value == status,
+                    onSelected: (selected) {
                       if (selected)
                         controller.selectedStatusFilter.value = status;
                     },
-                    selectedColor: const Color(0xFFEFF6FF),
-                    labelStyle: TextStyle(
-                      color: isSelected
-                          ? const Color(0xFF2563EB)
-                          : const Color(0xFF64748B),
-                      fontWeight: isSelected
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                    ),
-                    side: BorderSide(
-                      color: isSelected
-                          ? const Color(0xFF2563EB)
-                          : const Color(0xFFE2E8F0),
-                    ),
                   );
                 }).toList(),
               ),
             ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2563EB),
-                minimumSize: const Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            const SizedBox(height: 32),
+
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF030164),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
-              ),
-              onPressed: () => Get.back(),
-              child: const Text(
-                'TERAPKAN FILTER',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                onPressed: () => Get.back(),
+                child: const Text(
+                  'TERAPKAN FILTER',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    required bool isSelected,
+    required Function(bool) onSelected,
+  }) {
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: onSelected,
+      showCheckmark: false,
+      selectedColor: const Color(0xFFEFF6FF),
+      backgroundColor: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      labelStyle: TextStyle(
+        color: isSelected ? const Color(0xFF030164) : const Color(0xFF64748B),
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+        fontSize: 13,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      side: BorderSide(
+        color: isSelected ? const Color(0xFF030164) : const Color(0xFFE2E8F0),
+        width: isSelected ? 1.5 : 1.0,
       ),
     );
   }

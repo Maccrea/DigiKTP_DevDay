@@ -5,9 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class ApiProvider extends GetxService {
   final SupabaseClient supabase = Supabase.instance.client;
 
-  Future<Map<String, dynamic>> cekWarga({
-    required String nfcUid,
-  }) async {
+  Future<Map<String, dynamic>> cekWarga({required String nfcUid}) async {
     final cleanNfcUid = nfcUid.trim().toUpperCase();
     if (cleanNfcUid.isEmpty) {
       throw Exception('UID NFC wajib tersedia');
@@ -52,9 +50,7 @@ class ApiProvider extends GetxService {
         throw Exception(_functionErrorMessage(e.details));
       }
       if (e.status == 404) {
-        final directResponse = await _lookupWargaDirectly(
-          nfcUid: cleanNfcUid,
-        );
+        final directResponse = await registerCitizen(nfcUid: cleanNfcUid);
         if (directResponse != null) {
           return directResponse;
         }
@@ -73,7 +69,7 @@ class ApiProvider extends GetxService {
     return 'Gagal memverifikasi data warga';
   }
 
-  Future<Map<String, dynamic>?> _lookupWargaDirectly({
+  Future<Map<String, dynamic>?> registerCitizen({
     required String nfcUid,
   }) async {
     try {
@@ -96,6 +92,7 @@ class ApiProvider extends GetxService {
           'wilayah': data['wilayah'] ?? data['alamat'] ?? '',
           'is_active': data['is_active'] ?? true,
           'phone_last_digits': data['phone_last_digits'] ?? data['no_hp'] ?? '',
+          'email': data['email'] ?? '',
         },
       };
     } catch (error) {
@@ -262,6 +259,34 @@ class ApiProvider extends GetxService {
       );
     } catch (e) {
       print('Update location error: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> registerWargaBaru({
+    required Map<String, dynamic> formData,
+  }) async {
+    try {
+      print('📤 MENGIRIM DATA REGISTRASI WARGA: $formData');
+
+      final response = await supabase.functions.invoke(
+        'register-ktp',
+        body: formData,
+      );
+
+      final responseData = response.data is Map<String, dynamic>
+          ? response.data as Map<String, dynamic>
+          : Map<String, dynamic>.from(response.data as Map? ?? {});
+
+      print('📥 RESPON REGISTRASI KTP: $responseData');
+
+      if (responseData.containsKey('error')) {
+        throw Exception(responseData['error']);
+      }
+
+      return responseData;
+    } catch (e) {
+      print('❌ ERROR REGISTRASI KTP: $e');
+      throw Exception('Gagal mendaftarkan data KTP. Pastikan jaringan stabil.');
     }
   }
 }

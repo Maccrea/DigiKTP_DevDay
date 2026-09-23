@@ -76,7 +76,7 @@ class ActivityTile extends StatelessWidget {
                         item['service'] ?? 'Layanan Dukcapil',
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF2563EB),
+                          color: Color(0xFF030164),
                           fontWeight: FontWeight.w600,
                         ),
                         maxLines: 1,
@@ -122,7 +122,7 @@ class ActivityTile extends StatelessWidget {
       ),
       child: Icon(
         isSuccess ? Icons.badge_rounded : Icons.warning_amber_rounded,
-        color: isSuccess ? const Color(0xFF2563EB) : const Color(0xFFD97706),
+        color: isSuccess ? const Color(0xFF030164) : const Color(0xFFD97706),
         size: 20,
       ),
     );
@@ -147,7 +147,6 @@ class ActivityTile extends StatelessWidget {
     );
   }
 
-  // Fungsi helper untuk merapikan format tanggal ISO yang panjang
   String _formatTimestamp(dynamic rawTime) {
     if (rawTime == null) return '-';
     try {
@@ -249,7 +248,7 @@ class ActivityTile extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2563EB),
+                backgroundColor: const Color(0xFF030164),
                 minimumSize: const Size(double.infinity, 48),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -280,7 +279,7 @@ class ActivityTile extends StatelessWidget {
         children: [
           const Padding(
             padding: EdgeInsets.only(top: 4),
-            child: Icon(Icons.circle, size: 8, color: Color(0xFF2563EB)),
+            child: Icon(Icons.circle, size: 8, color: Color(0xFF030164)),
           ),
           const SizedBox(width: 10),
           Expanded(

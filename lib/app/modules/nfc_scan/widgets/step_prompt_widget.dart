@@ -52,7 +52,7 @@ class PromptWidget extends GetView<NfcScanController> {
                           child: const Icon(
                             Icons.contactless,
                             size: 56,
-                            color: Color(0xFF2563EB),
+                            color: Color(0xFF030164),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -124,7 +124,7 @@ class PromptWidget extends GetView<NfcScanController> {
                         height: 52,
                         child: ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2563EB),
+                            backgroundColor: const Color(0xFF030164),
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),

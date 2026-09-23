@@ -51,7 +51,7 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                               ),
                               child: const Icon(
                                 Icons.assignment_turned_in_outlined,
-                                color: Color(0xFF2563EB),
+                                color: Color(0xFF030164),
                                 size: 22,
                               ),
                             ),
@@ -142,7 +142,7 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                       children: const [
                         Icon(
                           Icons.shield_outlined,
-                          color: Color(0xFF2563EB),
+                          color: Color(0xFF030164),
                           size: 20,
                         ),
                         SizedBox(width: 10),
@@ -172,7 +172,7 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                             height: 52,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF2563EB),
+                                backgroundColor: const Color(0xFF030164),
                                 elevation: 0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
