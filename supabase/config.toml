@@ -446,3 +446,25 @@ entrypoint = "./functions/cek-warga/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/cek-warga/*.html" ]
+
+[functions.register-ktp]
+enabled = true
+verify_jwt = false
+import_map = "./functions/register-ktp/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/register-ktp/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/register-ktp/*.html" ]
+
+[functions.login-petugas]
+enabled = true
+verify_jwt = false
+import_map = "./functions/login-petugas/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/login-petugas/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/login-petugas/*.html" ]
