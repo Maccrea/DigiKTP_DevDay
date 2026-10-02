@@ -18,6 +18,52 @@ class DashboardView extends GetView<DashboardController> {
       child: Scaffold(
         backgroundColor: const Color(0xFFF1F5F9),
         body: Obx(() {
+          if (controller.isLoading.value && controller.dashboardActivities.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  CircularProgressIndicator(color: Color(0xFF030164)),
+                  SizedBox(height: 16),
+                  Text(
+                    'Memuat data posko & riwayat...',
+                    style: TextStyle(
+                      color: Color(0xFF64748B),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (controller.errorMessage.isNotEmpty && controller.dashboardActivities.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.wifi_off_rounded, size: 48, color: Colors.orange),
+                    const SizedBox(height: 16),
+                    Text(
+                      controller.errorMessage.value,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Color(0xFF334155), fontSize: 14),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF030164)),
+                      onPressed: () => controller.loadLayananLogs(),
+                      child: const Text('Coba Lagi', style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
           switch (controller.currentBottomNavIndex.value) {
             case 0:
               return const HomeTabView();

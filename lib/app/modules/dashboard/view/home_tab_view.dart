@@ -351,7 +351,7 @@ class HomeTabView extends GetView<DashboardController> {
           child: Obx(
             () => _buildStatCard(
               label: 'E-KTP TERBACA',
-              value: controller.eKtpScannedCount.value.toString(),
+              value: controller.eKtpScannedCount.toString(),
               unit: 'kartu',
               subtext: '+12 kartu hari ini',
               valueColor: const Color(0xFF0F172A),
@@ -363,7 +363,7 @@ class HomeTabView extends GetView<DashboardController> {
           child: Obx(
             () => _buildStatCard(
               label: 'VALID DUKCAPIL',
-              value: controller.dukcapilValidCount.value.toString(),
+              value: controller.dukcapilValidCount.toString(),
               unit: 'kartu',
               subtext: '97.1% terverifikasi',
               valueColor: const Color(0xFF10B981),

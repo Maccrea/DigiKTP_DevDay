@@ -41,42 +41,28 @@ class AuthService extends GetxService {
   Future<bool> login({
     required String nip,
     required String password,
-    required String idInstansi,
-    required String poskoLocation,
   }) async {
     try {
-      Map<String, dynamic> responseData;
-
-      if (_apiProvider != null) {
-        responseData = await _apiProvider!.loginPetugas(
-          nip: nip,
-          password: password,
-          idInstansi: idInstansi,
-          location: poskoLocation,
-        );
-      } else {
-        await Future.delayed(const Duration(milliseconds: 500));
-        responseData = {
-          'token': 'mock_jwt_token_xyz123',
-          'petugas': {
-            'id_petugas': 'P-10928',
-            'nip': nip,
-            'nama': 'Budi Santoso',
-            'email': 'budi.santoso@jakarta.go.id',
-            'id_instansi': idInstansi,
-            'current_location': poskoLocation,
-            'role': 'petugas_layanan',
-          },
-        };
+      final apiProvider = _apiProvider;
+      if (apiProvider == null) {
+        throw StateError('ApiProvider belum tersedia');
       }
 
+      final responseData = await apiProvider.loginPetugas(
+        nip: nip,
+        password: password,
+        // Instansi dan lokasi akan dikirim setelah alur posko disepakati.
+      );
+
       final petugas = PetugasModel.fromJson(responseData['petugas']);
-      await _storage.write('auth_token', responseData['token']);
+      final token = responseData['token'];
+      if (token is String && token.isNotEmpty) {
+        await _storage.write('auth_token', token);
+      }
       await _storage.write('petugas_data', responseData['petugas']);
-      await _storage.write('current_location', poskoLocation);
 
       currentPetugas.value = petugas;
-      currentLocation.value = poskoLocation;
+      currentLocation.value = petugas.lokasiLayanan;
       isLoggedIn.value = true;
 
       return true;

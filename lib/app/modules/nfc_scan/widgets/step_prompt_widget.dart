@@ -1,9 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:digiktp/app/modules/nfc_scan/nfc_scan_controller.dart';
+import 'package:nfc_manager/nfc_manager.dart'; // Pastikan package ini terimpor
 
 class PromptWidget extends GetView<NfcScanController> {
   const PromptWidget({Key? key}) : super(key: key);
+
+  // Fungsi helper untuk mengecek ketersediaan & keaktifan NFC
+  Future<void> _handleStartScanning(BuildContext context) async {
+    try {
+      // 1. Cek apakah perangkat mendukung NFC
+      bool isAvailable = await NfcManager.instance.isAvailable();
+      
+      if (!isAvailable) {
+        // Jika HP tidak punya sensor NFC sama sekali
+        Get.snackbar(
+          'Perangkat Tidak Didukung',
+          'Smartphone Anda tidak memiliki sensor NFC atau modul NFC rusak.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: const Color(0xFFEF4444),
+          colorText: Colors.white,
+          duration: const Duration(seconds: 4),
+        );
+        return;
+      }
+
+      // 2. Jika perangkat mendukung tapi NFC-nya sedang MATI
+      // (Catatan: di beberapa device, isAvailable mengembalikan false jika NFC mati)
+      // Kita tambahkan pengecekan dengan memicu startSession atau langsung beri peringatan standar
+      if (controller.isScanning.value) return;
+
+      // Jalankan fungsi scan jika aman
+      controller.startNfcSession();
+      
+    } catch (e) {
+      // Jika NFC nonaktif, nfc_manager biasanya melempar exception atau gagal memulai session
+      Get.snackbar(
+        'NFC Belum Aktif',
+        'Harap aktifkan fitur NFC di pengaturan perangkat Anda sebelum memindai e-KTP.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFFD97706), // Warna oranye peringatan
+        colorText: Colors.white,
+        icon: const Icon(Icons.warning_amber_rounded, color: Colors.white),
+        duration: const Duration(seconds: 4),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,9 +172,10 @@ class PromptWidget extends GetView<NfcScanController> {
                               borderRadius: BorderRadius.circular(14),
                             ),
                           ),
+                          // 👉 Pengecekan NFC aktif dipicu saat tombol ditekan
                           onPressed: controller.isScanning.value
                               ? null
-                              : () => controller.startNfcSession(),
+                              : () => _handleStartScanning(context),
                           onLongPress: () => controller.bypassScan(),
                           icon: controller.isScanning.value
                               ? const SizedBox(

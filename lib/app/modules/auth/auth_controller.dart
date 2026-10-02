@@ -74,13 +74,18 @@ class AuthController extends GetxController {
     final success = await _authService.login(
       nip: nipController.text.trim(),
       password: passwordController.text.trim(),
-      idInstansi: selectedInstansi.value,
-      poskoLocation: selectedPosko.value,
+      // idInstansi: selectedInstansi.value,
+      // poskoLocation: selectedPosko.value,
     );
 
     Get.back();
 
     if (success) {
+      AppSnackbar.show(
+        message: 'Login berhasil. Selamat datang.',
+        icon: Icons.check_circle_outline,
+        backgroundColor: const Color(0xFF15803D),
+      );
       Get.offAllNamed(Routes.DASHBOARD);
     }
   }
@@ -149,23 +154,33 @@ class AuthController extends GetxController {
   }
 
   Future<void> contactAdmin() async {
-    final String subject = Uri.encodeComponent(
-      'Lupa Kata Sandi Petugas - DigiKTP',
-    );
+    final String email = 'admin@digiktp.go.id';
+    final String subject = Uri.encodeComponent('Lupa Kata Sandi Petugas - DigiKTP');
     final String body = Uri.encodeComponent(
-      'Halo Admin,\n\nSaya lupa kata sandi untuk akun saya. Berikut detail saya:\nNIP: ${nipController.text}\nInstansi: ${selectedInstansi.value}\n\nMohon bantuannya untuk mereset kata sandi saya.',
+      'Halo Admin,\n\nSaya lupa kata sandi untuk akun saya. Berikut detail saya:\n'
+      'NIP: ${nipController.text}\n'
+      'Instansi: ${selectedInstansi.value}\n\n'
+      'Mohon bantuannya untuk mereset kata sandi saya.',
     );
 
-    final Uri emailLaunchUri = Uri.parse(
-      'mailto:admin@digiktp.go.id?subject=$subject&body=$body',
-    );
+    final Uri emailLaunchUri = Uri.parse('mailto:$email?subject=$subject&body=$body');
 
-    if (await canLaunchUrl(emailLaunchUri)) {
-      await launchUrl(emailLaunchUri);
-    } else {
+    try {
+      bool launched = await launchUrl(
+        emailLaunchUri,
+        mode: LaunchMode.externalApplication,
+      );
+      
+      if (!launched) {
+        AppSnackbar.show(
+          message: 'Gagal membuka aplikasi email.',
+          icon: Icons.warning_amber_rounded,
+        );
+      }
+    } catch (e) {
       AppSnackbar.show(
-        message: 'Tidak dapat membuka aplikasi email.',
-        icon: Icons.warning_amber_rounded,
+        message: 'Terjadi kesalahan: $e',
+        icon: Icons.error_outline,
       );
     }
   }

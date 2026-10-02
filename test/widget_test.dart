@@ -7,24 +7,42 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:digiktp/main.dart';
+import 'package:digiktp/app/data/providers/api_provider.dart';
+import 'package:digiktp/app/modules/nfc_scan/nfc_scan_controller.dart';
+import 'package:digiktp/app/modules/nfc_scan/views/nfc_scan_view.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('NFC flow fits a narrow viewport', (WidgetTester tester) async {
+    await Supabase.initialize(
+      url: 'https://kocnlqtyfffwkfmaomcb.supabase.co',
+      anonKey: 'sb_publishable_xqV78cO7bMGLZO8CtM52Qw_6Ctx0ga-',
+    );
+    Get.put(ApiProvider());
+    Get.put(NfcScanController());
+    final errors = <FlutterErrorDetails>[];
+    final previousOnError = FlutterError.onError;
+    FlutterError.onError = errors.add;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    try {
+      await tester.binding.setSurfaceSize(const Size(320, 568));
+      await tester.pumpWidget(
+        const GetMaterialApp(home: NfcScanView()),
+      );
+      await tester.pump();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+      expect(
+        errors.where((error) =>
+            error.exceptionAsString().contains('RenderFlex overflowed')),
+        isEmpty,
+      );
+      expect(find.text('Pemindaian e-KTP'), findsOneWidget);
+    } finally {
+      FlutterError.onError = previousOnError;
+      await tester.binding.setSurfaceSize(null);
+      Get.reset();
+    }
   });
 }

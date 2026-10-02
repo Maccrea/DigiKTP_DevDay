@@ -10,10 +10,20 @@ class DashboardController extends GetxController {
   final RxString userNip = 'NIP. 199408122020121002'.obs;
   final RxString activePosko = 'Kelurahan Gambir • Posko Layanan Terpadu'.obs;
 
-  RxList<Map<String, dynamic>> dashboardActivities =
-      <Map<String, dynamic>>[].obs;
-  final RxInt eKtpScannedCount = 142.obs;
-  final RxInt dukcapilValidCount = 138.obs;
+  final RxList<Map<String, dynamic>> dashboardActivities = <Map<String, dynamic>>[].obs;
+
+  final RxBool isLoading = true.obs;
+  final RxString errorMessage = ''.obs;
+
+  int get eKtpScannedCount => dashboardActivities.length;
+  int get dukcapilValidCount =>
+      dashboardActivities.where((item) => item['isSuccess'] == true).length;
+
+  String get validityPercentage {
+    if (eKtpScannedCount == 0) return '0%';
+    double percentage = (dukcapilValidCount / eKtpScannedCount) * 100;
+    return '${percentage.toStringAsFixed(1)}% terverifikasi';
+  }
 
   final selectedTimeFilter = 'Semua'.obs;
   final selectedStatusFilter = 'Semua'.obs;
@@ -27,69 +37,26 @@ class DashboardController extends GetxController {
 
   Future<void> loadLayananLogs() async {
     try {
-      final logs = await _apiProvider.fetchLayananLogs();
+      isLoading.value = true;
+      errorMessage.value = '';
+      
+      // 👉 Berikan timeout 4 detik agar tidak loading selamanya jika endpoint lambat/mati
+      final logs = await _apiProvider.fetchLayananLogs().timeout(
+        const Duration(seconds: 4),
+        onTimeout: () {
+          print('⚠️ Keterlambatan koneksi API, memuat halaman secara offline/kosong.');
+          return []; // Kembalikan list kosong jika timeout
+        },
+      );
+
       dashboardActivities.assignAll(logs);
-      eKtpScannedCount.value = logs.length;
-      dukcapilValidCount.value = logs
-          .where((log) => log['isSuccess'] == true)
-          .length;
     } catch (error) {
+      errorMessage.value = 'Gagal memuat data dari server.';
       print('GAGAL MEMUAT RIWAYAT LAYANAN: $error');
+    } finally {
+      isLoading.value = false; 
     }
   }
-
-  final RxList<Map<String, dynamic>> recentActivities = <Map<String, dynamic>>[
-    {
-      'log_id': 'TX-9871239-0129-DKI',
-      'name': 'Siti Rahmawati',
-      'nik': '3171012345670003',
-      'service': 'BPJS PBI Baru',
-      'time': 'Baru saja',
-      'date_group': 'Hari Ini',
-      'status': 'VALID',
-      'isSuccess': true,
-    },
-    {
-      'log_id': 'TX-9871239-0128-DKI',
-      'name': 'Joko Supriyanto',
-      'nik': '3171041908920001',
-      'service': 'KTP-el Hilang',
-      'time': '15 mnt lalu',
-      'date_group': 'Hari Ini',
-      'status': 'VALID',
-      'isSuccess': true,
-    },
-    {
-      'log_id': 'TX-9871239-0127-DKI',
-      'name': 'Andi Wijaya',
-      'nik': '3201082502880004',
-      'service': 'Perekaman Baru',
-      'time': '45 mnt lalu',
-      'date_group': 'Hari Ini',
-      'status': 'UID TERBACA',
-      'isSuccess': false,
-    },
-    {
-      'log_id': 'TX-9871239-0120-DKI',
-      'name': 'Rini Astuti',
-      'nik': '317302520002',
-      'service': 'Update Alamat',
-      'time': 'Kemarin',
-      'date_group': 'Kemarin',
-      'status': 'VALID',
-      'isSuccess': true,
-    },
-    {
-      'log_id': 'TX-9871239-0119-DKI',
-      'name': 'Heru Prasetyo',
-      'nik': '317109150005',
-      'service': 'Aktivasi NFC',
-      'time': 'Kemarin',
-      'date_group': 'Kemarin',
-      'status': 'VALID',
-      'isSuccess': true,
-    },
-  ].obs;
 
   void changeBottomNavIndex(int index) {
     if (currentBottomNavIndex.value != index) {
@@ -123,14 +90,10 @@ class DashboardController extends GetxController {
   }
 
   List<Map<String, dynamic>> get filteredActivities {
-    return recentActivities.where((item) {
+    return dashboardActivities.where((item) {
       final searchLower = searchQuery.value.toLowerCase();
-      final nameMatches = (item['name'] ?? '').toLowerCase().contains(
-        searchLower,
-      );
-      final nikMatches = (item['nik'] ?? '').toLowerCase().contains(
-        searchLower,
-      );
+      final nameMatches = (item['name'] ?? '').toLowerCase().contains(searchLower);
+      final nikMatches = (item['nik'] ?? '').toLowerCase().contains(searchLower);
       final matchesSearch = searchLower.isEmpty || nameMatches || nikMatches;
 
       bool matchesStatus = true;

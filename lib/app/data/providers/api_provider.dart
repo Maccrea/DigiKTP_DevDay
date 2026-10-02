@@ -217,33 +217,43 @@ class ApiProvider extends GetxService {
   Future<Map<String, dynamic>> loginPetugas({
     required String nip,
     required String password,
-    required String idInstansi,
-    required String location,
+    // required String idInstansi,
+    // required String location,
   }) async {
     try {
+      print('LOGIN PETUGAS: mengirim NIP dan password ke login-petugas');
       final response = await supabase.functions.invoke(
-        'petugas-login',
+        'login-petugas',
         body: {
           'nip': nip,
           'password': password,
-          'id_instansi': idInstansi,
-          'location': location,
+          // 'id_instansi': idInstansi,
+          // 'location': location,
         },
       );
       final responseData = response.data is Map<String, dynamic>
           ? response.data as Map<String, dynamic>
           : Map<String, dynamic>.from(response.data as Map);
+      final nestedData = responseData['data'];
+      final nestedDataKeys = nestedData is Map ? nestedData.keys.join(', ') : 'none';
+
+      print(
+        'LOGIN PETUGAS: respons HTTP ${response.status}, '
+        'keys=${responseData.keys.join(', ')}, '
+        'data keys=$nestedDataKeys, '
+        'petugas tersedia=${responseData['petugas'] is Map}',
+      );
 
       if (responseData['petugas'] is! Map ||
-          responseData['petugas']['id_petugas'] == null ||
-          responseData['petugas']['id_instansi'] == null) {
+          responseData['petugas']['id_petugas'] == null) {
         throw Exception(
-          'Respons login tidak berisi ID petugas/instansi yang valid',
+          'Respons login tidak berisi ID petugas yang valid',
         );
       }
 
       return responseData;
     } catch (e) {
+      print('LOGIN PETUGAS GAGAL: $e');
       throw Exception('Login petugas gagal: $e');
     }
   }
@@ -286,7 +296,7 @@ class ApiProvider extends GetxService {
       return responseData;
     } catch (e) {
       print('❌ ERROR REGISTRASI KTP: $e');
-      throw Exception('Gagal mendaftarkan data KTP. Pastikan jaringan stabil.');
+      throw Exception('Gagal mendaftarkan KTP: $e');
     }
   }
 }

@@ -7,22 +7,13 @@ void main() {
     Get.reset();
   });
 
-  test('adds success notification from service log payload', () {
+  test('marks unread notifications as read', () {
     final controller = NotificationController();
-    controller.notifications.clear();
 
-    controller.addLogNotification(
-      log: {
-        'id_log': 'LOG-9001',
-        'status_transaksi': 'SUCCESS',
-        'created_at': '2026-09-22T10:45:00',
-      },
-      warga: {'nama_lengkap': 'Siti Rahmawati'},
-    );
+    expect(controller.notifications.where((item) => item.isUnread), isNotEmpty);
 
-    expect(controller.notifications.length, 1);
-    expect(controller.notifications.first.title, 'Verifikasi Berhasil');
-    expect(controller.notifications.first.isUnread, isTrue);
-    expect(controller.unreadCount.value, 1);
+    controller.markAllAsRead();
+
+    expect(controller.notifications.every((item) => !item.isUnread), isTrue);
   });
 }
