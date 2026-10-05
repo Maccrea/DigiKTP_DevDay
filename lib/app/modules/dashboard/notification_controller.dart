@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:digiktp/app/theme/app_colors.dart';
 
 enum NotifType { success, info, error, warning }
 
@@ -28,41 +29,41 @@ class NotificationController extends GetxController {
     NotificationItem(
       id: '1',
       dateGroup: 'Hari Ini',
-      title: 'Verifikasi Berhasil',
-      subtitle:
-          'E-KTP atas nama Siti Rahmawati telah berhasil diverifikasi dan direkam sistem.',
-      time: '10:45 WIB',
-      type: NotifType.success,
+        title: 'Tips pemindaian NFC',
+        subtitle:
+          'Lepas case tebal dan tahan e-KTP di area NFC sampai data terkonfirmasi.',
+        time: '08:30',
+        type: NotifType.info,
       isUnread: true,
     ),
     NotificationItem(
       id: '2',
       dateGroup: 'Hari Ini',
-      title: 'OTP Terkirim',
-      subtitle:
-          'Kode OTP untuk verifikasi data telah dikirimkan ke email sitirahmawati@gmail.com.',
-      time: '10:40 WIB',
+        title: 'Jadwal pemeliharaan',
+        subtitle:
+          '12 Oktober, 23.00–01.00 WIB. Beberapa layanan mungkin terasa lebih lambat.',
+        time: '07:15',
       type: NotifType.info,
       isUnread: true,
     ),
     NotificationItem(
       id: '3',
       dateGroup: 'Kemarin',
-      title: 'Pemindaian Gagal',
-      subtitle:
-          'Chip NFC KTP atas nama Budi Santoso gagal terbaca. Pastikan KTP tidak terhalang case.',
-      time: '14:20 WIB',
-      type: NotifType.error,
+        title: 'Pengingat keamanan',
+        subtitle:
+          'Periksa kecocokan data dan status verifikasi sebelum meneruskan layanan.',
+        time: 'Kemarin',
+        type: NotifType.warning,
       isUnread: false,
     ),
     NotificationItem(
       id: '4',
       dateGroup: 'Kemarin',
-      title: 'Sinkronisasi Data Tertunda',
-      subtitle:
-          'Data 5 warga belum disinkronkan ke server pusat. Ketuk untuk menyinkronkan ulang.',
-      time: '09:15 WIB',
-      type: NotifType.warning,
+        title: 'Terima kasih, petugas',
+        subtitle:
+          'Terima kasih sudah membantu warga mendapatkan layanan yang lebih mudah.',
+        time: 'Kemarin',
+        type: NotifType.success,
       isUnread: false,
     ),
   ].obs;
@@ -98,13 +99,13 @@ class NotificationController extends GetxController {
   Color getColor(NotifType type) {
     switch (type) {
       case NotifType.success:
-        return const Color(0xFF10B981);
+        return AppColors.success;
       case NotifType.info:
-        return const Color(0xFF3B82F6);
+        return AppColors.primary;
       case NotifType.error:
-        return const Color(0xFFEF4444);
+        return AppColors.danger;
       case NotifType.warning:
-        return const Color(0xFFF59E0B);
+        return AppColors.warning;
     }
   }
 }

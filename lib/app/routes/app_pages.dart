@@ -22,6 +22,8 @@ class AppPages {
       name: Routes.ONBOARDING,
       page: () => const OnboardingView(),
       binding: OnboardingBinding(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 420),
     ),
     GetPage(
       name: Routes.LOGIN,
@@ -37,6 +39,8 @@ class AppPages {
       name: Routes.DASHBOARD,
       page: () => const DashboardView(),
       binding: DashboardBinding(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 520),
     ),
     GetPage(
       name: Routes.NFC_SCAN,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:digiktp/app/modules/dashboard/dashboard_controller.dart';
+import 'package:digiktp/app/theme/app_colors.dart';
 
 class PetugasTabView extends GetView<DashboardController> {
   const PetugasTabView({Key? key}) : super(key: key);
@@ -8,19 +10,19 @@ class PetugasTabView extends GetView<DashboardController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F5F9),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Profil Operational Petugas',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
+              Text(
+                'Profil petugas',
+                style: GoogleFonts.nunito(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primary,
                 ),
               ),
               const SizedBox(height: 16),
@@ -38,7 +40,7 @@ class PetugasTabView extends GetView<DashboardController> {
                       child: Container(
                         width: 56,
                         height: 56,
-                        color: const Color(0xFF0F172A),
+                        color: AppColors.primary,
                         child: const Icon(
                           Icons.person,
                           color: Colors.white,
@@ -78,15 +80,15 @@ class PetugasTabView extends GetView<DashboardController> {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFEFF6FF),
-                              borderRadius: BorderRadius.circular(6),
+                              color: const Color(0xFFEAF0F8),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Text(
                               'Operator Posko Lapangan',
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF030164),
+                                color: AppColors.primary,
                               ),
                             ),
                           ),
@@ -101,9 +103,7 @@ class PetugasTabView extends GetView<DashboardController> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF030164), Color(0xFF1D4ED8)],
-                  ),
+                  color: AppColors.primary,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
@@ -132,7 +132,7 @@ class PetugasTabView extends GetView<DashboardController> {
                     const SizedBox(height: 12),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: AppColors.accent,
                         minimumSize: const Size(double.infinity, 38),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -142,13 +142,13 @@ class PetugasTabView extends GetView<DashboardController> {
                       icon: const Icon(
                         Icons.swap_horiz_rounded,
                         size: 18,
-                        color: Color(0xFF38BDF8),
+                        color: Colors.white,
                       ),
                       label: const Text(
                         'Ganti Posko Tugas',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF1D4ED8),
+                          color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -227,7 +227,7 @@ class PetugasTabView extends GetView<DashboardController> {
       ),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF030164), size: 22),
+          Icon(icon, color: AppColors.primary, size: 22),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -406,12 +406,12 @@ class PetugasTabView extends GetView<DashboardController> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Pilih Posko Tugas Aktif',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF0F172A),
+            Text(
+              'Pilih posko aktif',
+              style: GoogleFonts.nunito(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: AppColors.primary,
               ),
             ),
             const SizedBox(height: 12),
@@ -419,7 +419,7 @@ class PetugasTabView extends GetView<DashboardController> {
               (posko) => ListTile(
                 leading: const Icon(
                   Icons.location_on_outlined,
-                  color: Color(0xFF030164),
+                  color: AppColors.primary,
                 ),
                 title: Text(
                   posko,

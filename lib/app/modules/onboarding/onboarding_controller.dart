@@ -6,6 +6,6 @@ class OnboardingController extends GetxController {
   void goToNextPage() {
     GetStorage().write('has_seen_onboarding', true);
 
-    Get.offAllNamed('/login');
+    Get.offAllNamed(Routes.DASHBOARD);
   }
 }

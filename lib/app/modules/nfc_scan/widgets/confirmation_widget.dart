@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:digiktp/app/theme/app_colors.dart';
 import '../nfc_scan_controller.dart';
 
 class ConfirmationWidget extends GetView<NfcScanController> {
@@ -46,26 +48,26 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                             Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFEFF6FF),
+                                color: const Color(0xFFEAF0F8),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: const Icon(
                                 Icons.assignment_turned_in_outlined,
-                                color: Color(0xFF030164),
+                                color: AppColors.primary,
                                 size: 22,
                               ),
                             ),
                             const SizedBox(width: 12),
-                            const Expanded(
+                            Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     'Konfirmasi Pengajuan',
-                                    style: TextStyle(
+                                    style: GoogleFonts.nunito(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
-                                      color: Color(0xFF0F172A),
+                                      color: AppColors.textPrimary,
                                     ),
                                   ),
                                   SizedBox(height: 2),
@@ -142,7 +144,7 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                       children: const [
                         Icon(
                           Icons.shield_outlined,
-                          color: Color(0xFF030164),
+                          color: AppColors.primary,
                           size: 20,
                         ),
                         SizedBox(width: 10),
@@ -172,7 +174,7 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                             height: 52,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF030164),
+                                backgroundColor: AppColors.accent,
                                 elevation: 0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
@@ -190,12 +192,11 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                                         strokeWidth: 2.5,
                                       ),
                                     )
-                                  : const Text(
-                                      'PROSES & SIMPAN DATA',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                    : Text(
+                                        'Proses & simpan data',
+                                        style: GoogleFonts.inter(
+                                          fontWeight: FontWeight.w700,
                                         fontSize: 15,
-                                        letterSpacing: 0.5,
                                         color: Colors.white,
                                       ),
                                     ),
@@ -208,7 +209,7 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                           height: 48,
                           child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Color(0xFFCBD5E1)),
+                              side: const BorderSide(color: AppColors.border),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
@@ -220,7 +221,7 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
-                                color: Color(0xFF475569),
+                                color: AppColors.textSecondary,
                               ),
                             ),
                           ),

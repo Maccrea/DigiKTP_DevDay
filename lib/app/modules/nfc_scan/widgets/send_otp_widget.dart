@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:digiktp/app/theme/app_colors.dart';
 import '../nfc_scan_controller.dart';
 
 class SendOtpWidget extends GetView<NfcScanController> {
@@ -46,24 +48,24 @@ class SendOtpWidget extends GetView<NfcScanController> {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: const BoxDecoration(
-                            color: Color(0xFFEFF6FF),
+                            color: Color(0xFFFFEEE8),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
                             Icons.mark_email_read_rounded,
                             size: 52,
-                            color: Color(0xFF030164),
+                            color: AppColors.accent,
                           ),
                         ),
                         const SizedBox(height: 20),
 
-                        const Text(
+                        Text(
                           'Kode OTP Terkirim!',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: GoogleFonts.nunito(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
-                            color: Color(0xFF0F172A),
+                            color: AppColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -95,7 +97,7 @@ class SendOtpWidget extends GetView<NfcScanController> {
                               const Icon(
                                 Icons.email_outlined,
                                 size: 18,
-                                color: Color(0xFF030164),
+                                color: AppColors.primary,
                               ),
                               const SizedBox(width: 8),
                               Flexible(
@@ -149,19 +151,18 @@ class SendOtpWidget extends GetView<NfcScanController> {
                       height: 52,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF030164),
+                          backgroundColor: AppColors.accent,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                         onPressed: () => controller.goToStep(ScanStep.inputOtp),
-                        child: const Text(
-                          'MASUKKAN KODE OTP',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                        child: Text(
+                          'Masukkan kode OTP',
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w700,
                             fontSize: 15,
-                            letterSpacing: 0.5,
                             color: Colors.white,
                           ),
                         ),

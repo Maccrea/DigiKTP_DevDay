@@ -3,122 +3,189 @@ import 'package:get/get.dart';
 import 'home_tab_view.dart';
 import 'activity_tab_view.dart';
 import 'petugas_tab_view.dart';
+import 'insight_tab_view.dart';
 import 'package:digiktp/app/modules/dashboard/dashboard_controller.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class DashboardView extends GetView<DashboardController> {
-  const DashboardView({Key? key}) : super(key: key);
+  const DashboardView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        bool exitApp = controller.handleBackAction();
-        return exitApp;
-      },
+      onWillPop: () async => controller.handleBackAction(),
       child: Scaffold(
-        backgroundColor: const Color(0xFFF1F5F9),
+        backgroundColor: const Color(0xFFF8FAFC),
         body: Obx(() {
-          if (controller.isLoading.value && controller.dashboardActivities.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  CircularProgressIndicator(color: Color(0xFF030164)),
-                  SizedBox(height: 16),
-                  Text(
-                    'Memuat data posko & riwayat...',
-                    style: TextStyle(
-                      color: Color(0xFF64748B),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          if (controller.errorMessage.isNotEmpty && controller.dashboardActivities.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.wifi_off_rounded, size: 48, color: Colors.orange),
-                    const SizedBox(height: 16),
-                    Text(
-                      controller.errorMessage.value,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Color(0xFF334155), fontSize: 14),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF030164)),
-                      onPressed: () => controller.loadLayananLogs(),
-                      child: const Text('Coba Lagi', style: TextStyle(color: Colors.white)),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
           switch (controller.currentBottomNavIndex.value) {
             case 0:
               return const HomeTabView();
             case 1:
-              return const ActivityTabView();
+              return const InsightTabView();
             case 2:
+              return const ActivityTabView();
+            case 3:
               return const PetugasTabView();
             default:
               return const HomeTabView();
           }
         }),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: _ScanDockButton(
+          onPressed: controller.goToNfcScan,
+        ),
+        bottomNavigationBar: BottomAppBar(
+          height: 80,
+          color: Colors.white,
+          elevation: 12,
+          shape: const CircularNotchedRectangle(),
+          notchMargin: 8,
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              child: Obx(
+                () => Row(
+                  children: [
+                    Expanded(
+                      child: _DashboardNavItem(
+                        label: 'Beranda',
+                        icon: Icons.home_rounded,
+                        selected: controller.currentBottomNavIndex.value == 0,
+                        onTap: () => controller.changeBottomNavIndex(0),
+                      ),
+                    ),
+                    Expanded(
+                      child: _DashboardNavItem(
+                        label: 'Ringkas',
+                        icon: Icons.insights_rounded,
+                        selected: controller.currentBottomNavIndex.value == 1,
+                        onTap: () => controller.changeBottomNavIndex(1),
+                      ),
+                    ),
+                    const SizedBox(width: 72),
+                    Expanded(
+                      child: _DashboardNavItem(
+                        label: 'Riwayat',
+                        icon: Icons.history_rounded,
+                        selected: controller.currentBottomNavIndex.value == 2,
+                        onTap: () => controller.changeBottomNavIndex(2),
+                      ),
+                    ),
+                    Expanded(
+                      child: _DashboardNavItem(
+                        label: 'Profil',
+                        icon: Icons.person_outline_rounded,
+                        selected: controller.currentBottomNavIndex.value == 3,
+                        onTap: () => controller.changeBottomNavIndex(3),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: const Border(top: BorderSide(color: Color(0xFFE2E8F0))),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 10,
-                offset: const Offset(0, -4),
+class _DashboardNavItem extends StatelessWidget {
+  const _DashboardNavItem({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? const Color(0xFF1A365D) : const Color(0xFF94A3B8);
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: label,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: color, size: 21),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: GoogleFonts.inter(
+                  color: color,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  fontSize: 10,
+                ),
               ),
             ],
           ),
-          child: Obx(
-            () => BottomNavigationBar(
-              currentIndex: controller.currentBottomNavIndex.value,
-              onTap: (index) => controller.changeBottomNavIndex(index),
-              backgroundColor: Colors.white,
-              selectedItemColor: const Color(0xFF030164),
-              unselectedItemColor: const Color(0xFF94A3B8),
-              selectedLabelStyle: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
+        ),
+      ),
+    );
+  }
+}
+
+class _ScanDockButton extends StatelessWidget {
+  const _ScanDockButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: 'Mulai Scan e-KTP',
+      child: Tooltip(
+        message: 'Mulai Scan',
+        child: Material(
+          color: Colors.transparent,
+          shape: const CircleBorder(),
+          child: Ink(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFFFFB08F), Color(0xFFFF805D), Color(0xFFED6547)],
               ),
-              unselectedLabelStyle: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 11,
-              ),
-              elevation: 0,
-              type: BottomNavigationBarType.fixed,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home_rounded),
-                  label: 'Beranda',
+              border: Border.all(color: Colors.white, width: 4),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x55FF805D),
+                  blurRadius: 18,
+                  offset: Offset(0, 8),
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.history_rounded),
-                  label: 'Aktivitas',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person_outline_rounded),
-                  label: 'Petugas',
+                BoxShadow(
+                  color: Color(0x241A365D),
+                  blurRadius: 5,
+                  offset: Offset(0, 2),
                 ),
               ],
+            ),
+            child: InkWell(
+              onTap: onPressed,
+              customBorder: const CircleBorder(),
+              child: const Center(
+                child: Icon(
+                  Icons.nfc_rounded,
+                  color: Colors.white,
+                  size: 29,
+                ),
+              ),
             ),
           ),
         ),

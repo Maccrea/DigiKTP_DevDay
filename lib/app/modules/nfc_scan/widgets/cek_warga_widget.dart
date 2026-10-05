@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:digiktp/app/theme/app_colors.dart';
 import '../nfc_scan_controller.dart';
 import '../../../utils/custom_input_field.dart';
+import 'ktp_photo_preview.dart';
 
 class CekWargaWidget extends GetView<NfcScanController> {
   const CekWargaWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController nikRegController = TextEditingController();
-    final TextEditingController namaRegController = TextEditingController();
-    final TextEditingController alamatRegController = TextEditingController();
-    final TextEditingController emailRegController = TextEditingController();
-
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(24.0),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -38,31 +36,31 @@ class CekWargaWidget extends GetView<NfcScanController> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFEF3C7),
+                    color: const Color(0xFFFFEEE8),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.person_add_rounded,
-                    color: Color(0xFFD97706),
+                    color: AppColors.accent,
                     size: 24,
                   ),
                 ),
                 const SizedBox(width: 14),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Registrasi Warga Baru',
-                        style: TextStyle(
+                        'Data warga baru',
+                        style: GoogleFonts.nunito(
                           fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF0F172A),
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textPrimary,
                         ),
                       ),
                       SizedBox(height: 2),
                       Text(
-                        'UID NFC belum terdaftar di sistem.',
+                        'Foto e-KTP untuk isi data otomatis.',
                         style: TextStyle(
                           fontSize: 12,
                           color: Color(0xFF64748B),
@@ -79,12 +77,12 @@ class CekWargaWidget extends GetView<NfcScanController> {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: AppColors.background,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.nfc, color: Color(0xFF030164), size: 18),
+                  const Icon(Icons.nfc, color: AppColors.primary, size: 18),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
@@ -102,11 +100,63 @@ class CekWargaWidget extends GetView<NfcScanController> {
             ),
             const SizedBox(height: 20),
 
+            Obx(() {
+              final photo = controller.capturedKtpPhoto;
+              final isReading = controller.isReadingKtp.value;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (photo != null) ...[
+                    KtpPhotoPreview(path: photo.path, height: 150),
+                    const SizedBox(height: 10),
+                  ],
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.accent,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size.fromHeight(48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    onPressed: isReading ? null : controller.captureAndReadKtp,
+                    icon: isReading
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.document_scanner_outlined),
+                    label: Text(
+                      isReading
+                          ? 'Membaca e-KTP...'
+                          : photo == null
+                          ? 'Foto & baca e-KTP'
+                          : 'Ambil ulang foto',
+                    ),
+                  ),
+                  if (photo != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 7),
+                      child: Text(
+                        'Periksa lagi data hasil baca sebelum disimpan.',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                          color: AppColors.textSecondary,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            }),
+            const SizedBox(height: 18),
+
             CustomTextField(
               label: 'NIK Warga',
               hintText: 'Masukkan 16 digit NIK',
               prefixIcon: Icons.badge_outlined,
-              controller: nikRegController,
+              controller: controller.newNikController,
               keyboardType: TextInputType.number,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
@@ -119,7 +169,7 @@ class CekWargaWidget extends GetView<NfcScanController> {
               label: 'Nama Lengkap',
               hintText: 'Sesuai e-KTP',
               prefixIcon: Icons.person_outline,
-              controller: namaRegController,
+              controller: controller.newNameController,
               keyboardType: TextInputType.name,
             ),
             const SizedBox(height: 16),
@@ -128,7 +178,7 @@ class CekWargaWidget extends GetView<NfcScanController> {
               label: 'Alamat Email',
               hintText: 'Untuk pengiriman otp',
               prefixIcon: Icons.email_outlined,
-              controller: emailRegController,
+              controller: controller.newEmailController,
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 16),
@@ -137,7 +187,7 @@ class CekWargaWidget extends GetView<NfcScanController> {
               label: 'Alamat Sesuai e-KTP',
               hintText: 'Masukkan alamat domisili/KTP',
               prefixIcon: Icons.home_outlined,
-              controller: alamatRegController,
+              controller: controller.newAddressController,
               keyboardType: TextInputType.streetAddress,
             ),
             const SizedBox(height: 24),
@@ -147,17 +197,19 @@ class CekWargaWidget extends GetView<NfcScanController> {
               height: 52,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF030164),
+                  backgroundColor: AppColors.accent,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
                 onPressed: () {
-                  final cleanNik = nikRegController.text.trim();
-                  final cleanNama = namaRegController.text.trim();
-                  final cleanAlamat = alamatRegController.text.trim();
-                  final emailAddress = emailRegController.text.trim();
+                    final cleanNik = controller.newNikController.text.trim();
+                    final cleanNama = controller.newNameController.text.trim();
+                    final cleanAlamat =
+                      controller.newAddressController.text.trim();
+                    final emailAddress =
+                      controller.newEmailController.text.trim();
 
                   if (cleanNik.length != 16 ||
                       cleanNama.isEmpty ||
@@ -195,12 +247,11 @@ class CekWargaWidget extends GetView<NfcScanController> {
                             strokeWidth: 2.5,
                           ),
                         )
-                      : const Text(
-                          'SIMPAN & LANJUTKAN',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                      : Text(
+                          'Simpan & lanjutkan',
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w700,
                             color: Colors.white,
-                            letterSpacing: 0.5,
                           ),
                         ),
                 ),

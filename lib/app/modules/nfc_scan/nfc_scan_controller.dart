@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'dart:async';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../data/providers/api_provider.dart';
 import '../../data/services/auth_service.dart';
+import 'ktp_ocr_parser.dart';
 import 'package:digiktp/app/utils/app_snackbar.dart';
 
 enum ScanStep {
@@ -32,6 +36,16 @@ class NfcScanController extends GetxController {
 
   final selectedContact = 0.obs;
   final TextEditingController customEmailController = TextEditingController();
+  final newNikController = TextEditingController();
+  final newNameController = TextEditingController();
+  final newAddressController = TextEditingController();
+  final newEmailController = TextEditingController();
+  final scannedKtpFields = <String, String>{}.obs;
+  final isReadingKtp = false.obs;
+  final ktpPhotoRevision = 0.obs;
+  final ImagePicker _imagePicker = ImagePicker();
+  XFile? capturedKtpPhoto;
+  String serviceName = 'Verifikasi e-KTP';
 
   final isLoading = false.obs;
   final isAgreed = false.obs;
@@ -91,17 +105,35 @@ class NfcScanController extends GetxController {
   }
 
   bool get isEmailValid {
-    if (selectedContact.value == 0 || selectedContact.value == 1) return true;
-    if (selectedContact.value == 2) {
+    if (selectedContact.value < registeredEmails.length) return true;
+    if (selectedContact.value == registeredEmails.length) {
       final text = customEmailController.text.trim();
       return text.isNotEmpty && text.contains('@') && text.contains('.');
     }
     return false;
   }
 
+  List<String> get registeredEmails {
+    final values = [
+      verifiedWargaData['email'],
+      verifiedWargaData['email_cadangan'],
+      verifiedWargaData['email_alternatif'],
+    ];
+    return values
+        .whereType<String>()
+        .map((email) => email.trim())
+        .where((email) => email.isNotEmpty)
+        .toSet()
+        .toList();
+  }
+
   @override
   void onInit() {
     super.onInit();
+    final arguments = Get.arguments;
+    if (arguments is Map && arguments['service'] is String) {
+      serviceName = arguments['service'] as String;
+    }
     customEmailController.addListener(() {
       update();
     });
@@ -135,6 +167,10 @@ class NfcScanController extends GetxController {
     NfcManager.instance.stopSession();
     customEmailController.dispose();
     nikController.dispose();
+    newNikController.dispose();
+    newNameController.dispose();
+    newAddressController.dispose();
+    newEmailController.dispose();
 
     for (final c in otpControllers) {
       c.dispose();
@@ -148,6 +184,85 @@ class NfcScanController extends GetxController {
 
   void goToStep(ScanStep step) {
     currentStep.value = step;
+  }
+
+  Future<void> captureAndReadKtp() async {
+    if (defaultTargetPlatform != TargetPlatform.android &&
+        defaultTargetPlatform != TargetPlatform.iOS) {
+      Get.snackbar(
+        'Kamera tidak tersedia',
+        'Pindai e-KTP menggunakan aplikasi di perangkat Android atau iPhone.',
+      );
+      return;
+    }
+
+    try {
+      isReadingKtp.value = true;
+      final photo = await _imagePicker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 88,
+        maxWidth: 2000,
+      );
+      if (photo == null) return;
+
+      capturedKtpPhoto = photo;
+      ktpPhotoRevision.value++;
+
+      final recognizer = TextRecognizer(
+        script: TextRecognitionScript.latin,
+      );
+      try {
+        final recognized = await recognizer.processImage(
+          InputImage.fromFilePath(photo.path),
+        );
+        _fillRegistrationFields(recognized.text);
+      } finally {
+        await recognizer.close();
+      }
+
+      Get.snackbar(
+        'Foto terbaca',
+        'Periksa kembali data yang terisi sebelum menyimpan.',
+        snackPosition: SnackPosition.TOP,
+      );
+    } catch (error) {
+      Get.snackbar(
+        'Tidak dapat membaca e-KTP',
+        'Coba ambil foto yang lebih terang dan tidak terpotong.',
+        snackPosition: SnackPosition.TOP,
+      );
+      debugPrint('KTP OCR gagal: $error');
+    } finally {
+      isReadingKtp.value = false;
+    }
+  }
+
+  void _fillRegistrationFields(String text) {
+    final fields = KtpOcrParser.parse(text);
+    scannedKtpFields.assignAll(fields);
+    final nik = fields['nik'];
+    final name = fields['nama_lengkap'];
+    final address = fields['alamat'];
+    if (nik != null) newNikController.text = nik;
+    if (name != null) newNameController.text = name;
+    if (address != null) newAddressController.text = address;
+  }
+
+  void prepareNextScan() {
+    scannedUid.value = '';
+    _otpNfcUid = null;
+    _lastOtpRequestedAt = null;
+    verifiedWargaData.clear();
+    logData.clear();
+    capturedKtpPhoto = null;
+    ktpPhotoRevision.value++;
+    newNikController.clear();
+    newNameController.clear();
+    newAddressController.clear();
+    newEmailController.clear();
+    scannedKtpFields.clear();
+    clearOtpInput();
+    currentStep.value = ScanStep.prompt;
   }
 
   void bypassScan() {
@@ -259,12 +374,13 @@ class NfcScanController extends GetxController {
 
     final response = await _apiProvider.registerWargaBaru(formData: formData);
 
-    // Amankan pengecekan respons dari API/Supabase
     if (response != null) {
       if (response is Map && response.containsKey('data')) {
-        verifiedWargaData.value = Map<String, dynamic>.from(response['data'] as Map);
+        final responseWarga = response['data'] is Map
+            ? Map<String, dynamic>.from(response['data'] as Map)
+            : <String, dynamic>{};
+        verifiedWargaData.value = {...formData, ...responseWarga};
       } else {
-        // Jika respons langsung berupa data berhasil atau map sukses
         verifiedWargaData.value = Map<String, dynamic>.from(formData);
       }
 
@@ -275,7 +391,6 @@ class NfcScanController extends GetxController {
 
       currentStep.value = ScanStep.validation;
     } else {
-      // Jika kosong tapi tidak error, anggap tetap sukses karena masuk database
       verifiedWargaData.value = Map<String, dynamic>.from(formData);
       currentStep.value = ScanStep.validation;
     }
@@ -283,12 +398,9 @@ class NfcScanController extends GetxController {
   } catch (e) {
     print('❌ ERROR REGISTRASI KTP: $e');
     
-    // PERINGATAN: Cek apakah error ini sebenarnya duplikat data atau error koneksi asli.
-    // Jika error karena Unique Constraint (UID sudah ada), tangani secara khusus:
     String errorMessage = e.toString().replaceFirst('Exception: ', '');
     if (errorMessage.contains('duplicate key') || errorMessage.contains('already exists')) {
       errorMessage = 'UID NFC ini sudah terdaftar di sistem. Silakan lanjutkan verifikasi.';
-      // Opsional: Langsung arahkan ke step validasi karena datanya emang udah ada
       currentStep.value = ScanStep.validation;
       return;
     }
@@ -312,13 +424,14 @@ class NfcScanController extends GetxController {
       isLoading.value = true;
       update();
 
-      String targetEmail = '';
-      if (selectedOptionIndex == 0) {
-        targetEmail = 'macreynardosan@gmail.com';
-      } else if (selectedOptionIndex == 1) {
-        targetEmail = 'alyaaranaraya@gmail.com';
-      } else {
+      final emails = registeredEmails;
+      final String targetEmail;
+      if (selectedOptionIndex < emails.length) {
+        targetEmail = emails[selectedOptionIndex];
+      } else if (selectedOptionIndex == emails.length) {
         targetEmail = customEmailController.text.trim();
+      } else {
+        throw Exception('Pilih alamat email untuk menerima kode OTP.');
       }
 
       targetedEmail.value = targetEmail;
@@ -402,7 +515,7 @@ class NfcScanController extends GetxController {
         idPetugas: defaultPetugasId,
         idInstansi: petugas.idInstansi,
         lokasiTugas: authService.currentLocation.value,
-        jenisLayanan: 'Pendaftaran Layanan Kesehatan',
+        jenisLayanan: serviceName,
       );
 
       final warga = responseData['warga'] ?? {};
@@ -419,7 +532,7 @@ class NfcScanController extends GetxController {
         'log_id': log['id_log'] ?? log['id'] ?? 'UUID-UNKNOWN',
         'name': warga['nama_lengkap'] ?? 'Tanpa Nama',
         'nik': warga['nik'] ?? 'NIK-UNKNOWN',
-        'service': 'Pendaftaran Layanan Kesehatan',
+        'service': serviceName,
         'status': log['status_transaksi'] ?? 'SUCCESS',
         'isSuccess': (log['status_transaksi'] ?? '') == 'SUCCESS',
         'time': log['created_at'] ?? 'Baru saja',

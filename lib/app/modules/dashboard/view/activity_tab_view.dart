@@ -1,163 +1,119 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:digiktp/app/modules/dashboard/dashboard_controller.dart';
 import 'package:digiktp/app/modules/dashboard/widget/activity_tile.dart';
+import 'package:digiktp/app/theme/app_colors.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ActivityTabView extends GetView<DashboardController> {
-  const ActivityTabView({Key? key}) : super(key: key);
+  const ActivityTabView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F5F9),
+      backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(22, 18, 20, 12),
+              child: Row(
                 children: [
-                  const Text(
-                    'Riwayat Pemindaian',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF0F172A),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Riwayat layanan',
+                          style: GoogleFonts.nunito(
+                            color: AppColors.primary,
+                            fontSize: 23,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          'Catatan pemindaian warga',
+                          style: GoogleFonts.inter(
+                            color: AppColors.textSecondary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(
-                      Icons.help_outline_rounded,
-                      color: Color(0xFF64748B),
-                    ),
-                    onPressed: () {
-                      Get.bottomSheet(
-                        Container(
-                          padding: const EdgeInsets.all(24.0),
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20),
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: const [
-                                  Icon(
-                                    Icons.history_rounded,
-                                    color: Color(0xFF030164),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    'Tentang Riwayat Pemindaian',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF0F172A),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              const Text(
-                                'Halaman ini mencatat seluruh aktivitas pemindaian e-KTP dan verifikasi warga yang berhasil diproses oleh perangkat Anda secara real-time.',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Color(0xFF64748B),
-                                  height: 1.4,
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              SizedBox(
-                                width: double.infinity,
-                                height: 44,
-                                child: ElevatedButton(
-                                  onPressed: () => Get.back(),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF030164),
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'Mengerti',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        isScrollControlled: true,
-                      );
-                    },
+                    tooltip: 'Muat ulang',
+                    onPressed: controller.loadLayananLogs,
+                    icon: const Icon(Icons.refresh_rounded),
+                    color: AppColors.primary,
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-
-              Row(
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 22),
+              child: Obx(() {
+                final total = controller.dashboardActivities.length;
+                final successful = controller.dukcapilValidCount;
+                return Row(
+                  children: [
+                    Expanded(
+                      child: _HistoryMetric(
+                        label: 'Total',
+                        value: total.toString(),
+                        icon: Icons.receipt_long_outlined,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 9),
+                    Expanded(
+                      child: _HistoryMetric(
+                        label: 'Berhasil',
+                        value: successful.toString(),
+                        icon: Icons.check_circle_outline_rounded,
+                        color: AppColors.success,
+                      ),
+                    ),
+                  ],
+                );
+              }),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(22, 15, 22, 12),
+              child: Row(
                 children: [
                   Expanded(
                     child: TextField(
-                      onChanged: (val) => controller.searchQuery.value = val,
+                      onChanged: (value) => controller.searchQuery.value = value,
+                      style: GoogleFonts.inter(
+                        color: AppColors.textPrimary,
+                        fontSize: 13,
+                      ),
                       decoration: InputDecoration(
-                        hintText: 'Cari NIK atau Nama warga...',
-                        hintStyle: const TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF94A3B8),
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.search_rounded,
-                          color: Color(0xFF64748B),
-                          size: 20,
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE2E8F0),
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE2E8F0),
-                          ),
-                        ),
+                        hintText: 'Cari nama atau NIK',
+                        prefixIcon: const Icon(Icons.search_rounded, size: 20),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 9),
                   Material(
-                    color: Colors.transparent,
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
                     child: InkWell(
-                      onTap: () => _showFilterBottomSheet(context),
+                      onTap: () => _showFilters(context),
                       borderRadius: BorderRadius.circular(14),
                       child: Container(
-                        padding: const EdgeInsets.all(12),
+                        width: 48,
+                        height: 48,
                         decoration: BoxDecoration(
-                          color: Colors.white,
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                          border: Border.all(color: AppColors.border),
                         ),
                         child: const Icon(
                           Icons.tune_rounded,
-                          color: Color(0xFF030164),
+                          color: AppColors.primary,
                           size: 20,
                         ),
                       ),
@@ -165,180 +121,35 @@ class ActivityTabView extends GetView<DashboardController> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-
-              Obx(() {
-                if (controller.dashboardActivities.isEmpty) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Text(
-                        'Belum ada riwayat aktivitas pemindaian hari ini.',
-                      ),
-                    ),
+            ),
+            Expanded(
+              child: Obx(() {
+                final activities = controller.filteredActivities;
+                if (activities.isEmpty) {
+                  return _EmptyHistory(
+                    isLoading: controller.isLoading.value,
+                    hasQuery: controller.searchQuery.value.isNotEmpty ||
+                        controller.selectedStatusFilter.value != 'Semua' ||
+                        controller.selectedTimeFilter.value != 'Semua',
+                    onRefresh: controller.loadLayananLogs,
                   );
                 }
 
-                return ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: controller.dashboardActivities.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 10),
-                  itemBuilder: (context, index) {
-                    final activityItem = controller.dashboardActivities[index];
-                    return ActivityTile(item: activityItem);
-                  },
-                );
-              }),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showFilterBottomSheet(BuildContext context) {
-    Get.bottomSheet(
-      Container(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 48,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE2E8F0),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Filter Riwayat',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF0F172A),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    controller.resetFilters();
-                    Get.back();
-                  },
-                  borderRadius: BorderRadius.circular(8),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    child: Text(
-                      'Reset Ulang',
-                      style: TextStyle(
-                        color: Color(0xFFEF4444),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                      ),
+                return RefreshIndicator(
+                  onRefresh: controller.loadLayananLogs,
+                  color: AppColors.primary,
+                  child: ListView.separated(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(22, 2, 22, 28),
+                    itemCount: activities.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 9),
+                    itemBuilder: (context, index) => ActivityTile(
+                      item: Map<String, dynamic>.from(activities[index]),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            const Text(
-              'WAKTU PEMINDAIAN',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF64748B),
-                letterSpacing: 0.5,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Obx(
-              () => Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children:
-                    [
-                      'Semua',
-                      'Hari Ini',
-                      'Kemarin',
-                      'Minggu Lalu',
-                      'Bulan Lalu',
-                    ].map((time) {
-                      return _buildFilterChip(
-                        label: time,
-                        isSelected: controller.selectedTimeFilter.value == time,
-                        onSelected: (selected) {
-                          if (selected)
-                            controller.selectedTimeFilter.value = time;
-                        },
-                      );
-                    }).toList(),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            const Text(
-              'STATUS VALIDASI',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF64748B),
-                letterSpacing: 0.5,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Obx(
-              () => Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: ['Semua', 'Berhasil', 'Gagal'].map((status) {
-                  return _buildFilterChip(
-                    label: status,
-                    isSelected: controller.selectedStatusFilter.value == status,
-                    onSelected: (selected) {
-                      if (selected)
-                        controller.selectedStatusFilter.value = status;
-                    },
-                  );
-                }).toList(),
-              ),
-            ),
-            const SizedBox(height: 32),
-
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF030164),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                onPressed: () => Get.back(),
-                child: const Text(
-                  'TERAPKAN FILTER',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
+                );
+              }),
             ),
           ],
         ),
@@ -346,28 +157,224 @@ class ActivityTabView extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildFilterChip({
-    required String label,
-    required bool isSelected,
-    required Function(bool) onSelected,
-  }) {
-    return ChoiceChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: onSelected,
-      showCheckmark: false,
-      selectedColor: const Color(0xFFEFF6FF),
-      backgroundColor: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      labelStyle: TextStyle(
-        color: isSelected ? const Color(0xFF030164) : const Color(0xFF64748B),
-        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-        fontSize: 13,
+  void _showFilters(BuildContext context) {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.fromLTRB(22, 12, 22, 24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 38,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              'Filter riwayat',
+              style: GoogleFonts.nunito(
+                color: AppColors.primary,
+                fontSize: 19,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 18),
+            _FilterGroup(
+              title: 'Waktu',
+              options: const ['Semua', 'Hari Ini', 'Kemarin'],
+              selected: controller.selectedTimeFilter,
+            ),
+            const SizedBox(height: 17),
+            _FilterGroup(
+              title: 'Status',
+              options: const ['Semua', 'Berhasil', 'Gagal'],
+              selected: controller.selectedStatusFilter,
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: Get.back,
+                child: const Text('Terapkan'),
+              ),
+            ),
+          ],
+        ),
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      side: BorderSide(
-        color: isSelected ? const Color(0xFF030164) : const Color(0xFFE2E8F0),
-        width: isSelected ? 1.5 : 1.0,
+      isScrollControlled: true,
+    );
+  }
+}
+
+class _HistoryMetric extends StatelessWidget {
+  const _HistoryMetric({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.color,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 18),
+          const SizedBox(width: 8),
+          Text(
+            value,
+            style: GoogleFonts.nunito(
+              color: AppColors.primary,
+              fontSize: 19,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(
+                color: AppColors.textSecondary,
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterGroup extends StatelessWidget {
+  const _FilterGroup({
+    required this.title,
+    required this.options,
+    required this.selected,
+  });
+
+  final String title;
+  final List<String> options;
+  final RxString selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.inter(
+            color: AppColors.textSecondary,
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Obx(
+          () => Wrap(
+            spacing: 7,
+            runSpacing: 7,
+            children: options.map((option) {
+              final isSelected = selected.value == option;
+              return ChoiceChip(
+                label: Text(option),
+                selected: isSelected,
+                onSelected: (_) => selected.value = option,
+                showCheckmark: false,
+                selectedColor: const Color(0xFFEAF0F8),
+                backgroundColor: Colors.white,
+                side: BorderSide(
+                  color: isSelected ? AppColors.primary : AppColors.border,
+                ),
+                labelStyle: GoogleFonts.inter(
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.textSecondary,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _EmptyHistory extends StatelessWidget {
+  const _EmptyHistory({
+    required this.isLoading,
+    required this.hasQuery,
+    required this.onRefresh,
+  });
+
+  final bool isLoading;
+  final bool hasQuery;
+  final Future<void> Function() onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      color: AppColors.primary,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(32),
+        children: [
+          const SizedBox(height: 45),
+          Icon(
+            isLoading
+                ? Icons.sync_rounded
+                : hasQuery
+                ? Icons.search_off_rounded
+                : Icons.receipt_long_outlined,
+            size: 38,
+            color: AppColors.secondary,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            isLoading
+                ? 'Memuat riwayat'
+                : hasQuery
+                ? 'Tidak ada hasil'
+                : 'Belum ada transaksi',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.nunito(
+              color: AppColors.primary,
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
       ),
     );
   }

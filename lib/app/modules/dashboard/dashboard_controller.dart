@@ -1,14 +1,18 @@
 import 'package:get/get.dart';
 import 'package:digiktp/app/data/providers/api_provider.dart';
+import 'package:digiktp/app/data/services/auth_service.dart';
+import 'package:digiktp/app/routes/app_routes.dart';
 
 class DashboardController extends GetxController {
   final ApiProvider _apiProvider = Get.put(ApiProvider());
+  final AuthService _authService = Get.find<AuthService>();
   final RxInt currentBottomNavIndex = 0.obs;
   final List<int> _tabHistory = [0];
 
-  final RxString userName = 'Budi Santoso'.obs;
-  final RxString userNip = 'NIP. 199408122020121002'.obs;
-  final RxString activePosko = 'Kelurahan Gambir • Posko Layanan Terpadu'.obs;
+  final RxString userName = 'Teman'.obs;
+  final RxString userNip = ''.obs;
+  final RxString activePosko = ''.obs;
+  final RxString selectedService = 'Verifikasi e-KTP'.obs;
 
   final RxList<Map<String, dynamic>> dashboardActivities = <Map<String, dynamic>>[].obs;
 
@@ -32,6 +36,12 @@ class DashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    final petugas = _authService.currentPetugas.value;
+    if (petugas != null) {
+      userName.value = petugas.nama;
+      userNip.value = 'NIP ${petugas.nip}';
+      activePosko.value = _authService.currentLocation.value;
+    }
     loadLayananLogs();
   }
 
@@ -75,12 +85,22 @@ class DashboardController extends GetxController {
     return true;
   }
 
-  void goToNfcScan() {
-    Get.toNamed('/nfc-scan');
+  void goToNfcScan([String? service]) {
+    if (service != null) selectedService.value = service;
+
+    if (!_authService.isLoggedIn.value) {
+      Get.toNamed(Routes.LOGIN);
+      return;
+    }
+
+    Get.toNamed(
+      Routes.NFC_SCAN,
+      arguments: {'service': selectedService.value},
+    );
   }
 
-  void logout() {
-    Get.offAllNamed('/login');
+  Future<void> logout() async {
+    await _authService.logout();
   }
 
   void resetFilters() {

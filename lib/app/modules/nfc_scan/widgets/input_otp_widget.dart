@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:digiktp/app/theme/app_colors.dart';
 import '../nfc_scan_controller.dart';
 
 class InputOtpWidget extends GetView<NfcScanController> {
@@ -44,23 +46,23 @@ class InputOtpWidget extends GetView<NfcScanController> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: const BoxDecoration(
-                            color: Color(0xFFEFF6FF),
+                            color: Color(0xFFEAF0F8),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
                             Icons.pin_outlined,
                             size: 40,
-                            color: Color(0xFF030164),
+                            color: AppColors.primary,
                           ),
                         ),
                         const SizedBox(height: 16),
-                        const Text(
+                        Text(
                           'Masukkan Kode OTP',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: GoogleFonts.nunito(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
-                            color: Color(0xFF0F172A),
+                            color: AppColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -140,7 +142,7 @@ class InputOtpWidget extends GetView<NfcScanController> {
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
                                     borderSide: const BorderSide(
-                                      color: Color(0xFF030164),
+                                      color: AppColors.primary,
                                       width: 1.8,
                                     ),
                                   ),
@@ -180,7 +182,7 @@ class InputOtpWidget extends GetView<NfcScanController> {
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     color: canResend
-                                        ? const Color(0xFF030164)
+                                        ? AppColors.primary
                                         : const Color(0xFF94A3B8),
                                   ),
                                 ),
@@ -201,7 +203,7 @@ class InputOtpWidget extends GetView<NfcScanController> {
                       height: 52,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF030164),
+                          backgroundColor: AppColors.accent,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
@@ -220,12 +222,11 @@ class InputOtpWidget extends GetView<NfcScanController> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text(
-                                  'VERIFIKASI & LANJUTKAN',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                : Text(
+                                  'Verifikasi & lanjutkan',
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.w700,
                                     fontSize: 15,
-                                    letterSpacing: 0.5,
                                     color: Colors.white,
                                   ),
                                 ),

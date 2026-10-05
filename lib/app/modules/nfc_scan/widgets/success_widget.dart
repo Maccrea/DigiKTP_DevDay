@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:digiktp/app/theme/app_colors.dart';
 import '../nfc_scan_controller.dart';
 import '../../dashboard/dashboard_controller.dart';
+import 'ktp_photo_preview.dart';
 
 class SuccessWidget extends GetView<NfcScanController> {
   const SuccessWidget({Key? key}) : super(key: key);
@@ -53,17 +56,17 @@ class SuccessWidget extends GetView<NfcScanController> {
                           child: const Icon(
                             Icons.check_circle_rounded,
                             size: 56,
-                            color: Color(0xFF16A34A),
+                            color: AppColors.success,
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const Text(
+                        Text(
                           'Verifikasi & Registrasi Berhasil!',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: GoogleFonts.nunito(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
-                            color: Color(0xFF0F172A),
+                            color: AppColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -109,13 +112,21 @@ class SuccessWidget extends GetView<NfcScanController> {
                                     fontFamily: 'Monospace',
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF030164),
+                                    color: AppColors.primary,
                                   ),
                                 );
                               }),
                             ],
                           ),
                         ),
+                        const SizedBox(height: 18),
+                        Obx(() {
+                          controller.ktpPhotoRevision.value;
+                          final photo = controller.capturedKtpPhoto;
+                          if (photo == null) return const SizedBox.shrink();
+                          return KtpPhotoPreview(path: photo.path, height: 190);
+                        }),
+                        const SizedBox(height: 16),
                       ],
                     ),
                   ),
@@ -131,7 +142,7 @@ class SuccessWidget extends GetView<NfcScanController> {
                           height: 52,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF030164),
+                              backgroundColor: AppColors.accent,
                               elevation: 0,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
@@ -162,7 +173,7 @@ class SuccessWidget extends GetView<NfcScanController> {
                           child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(
-                                color: Color(0xFF030164),
+                                color: AppColors.primary,
                                 width: 1.5,
                               ),
                               shape: RoundedRectangleBorder(
@@ -178,7 +189,7 @@ class SuccessWidget extends GetView<NfcScanController> {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
-                                color: Color(0xFF030164),
+                                color: AppColors.primary,
                               ),
                             ),
                           ),

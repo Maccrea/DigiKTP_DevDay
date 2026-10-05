@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 class AppTheme {
@@ -16,53 +17,58 @@ class AppTheme {
         error: AppColors.danger,
       ),
 
-      textTheme: const TextTheme(
-        headlineMedium: TextStyle(
+      textTheme: GoogleFonts.interTextTheme().copyWith(
+        headlineMedium: GoogleFonts.nunito(
           color: AppColors.textPrimary,
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
+          fontWeight: FontWeight.w800,
+          fontSize: 22,
         ),
-        titleLarge: TextStyle(
+        titleLarge: GoogleFonts.nunito(
           color: AppColors.textPrimary,
-          fontWeight: FontWeight.w600,
-          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          fontSize: 18,
         ),
-        bodyLarge: TextStyle(color: AppColors.textPrimary, fontSize: 14),
-        bodyMedium: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+        bodyLarge: GoogleFonts.inter(
+          color: AppColors.textPrimary,
+          fontSize: 14,
+        ),
+        bodyMedium: GoogleFonts.inter(
+          color: AppColors.textSecondary,
+          fontSize: 13,
+        ),
       ),
 
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+      appBarTheme: AppBarTheme(
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.primary,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: TextStyle(
+        titleTextStyle: GoogleFonts.nunito(
           fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
+          fontWeight: FontWeight.w800,
+          color: AppColors.primary,
         ),
       ),
 
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFF030164),
+          backgroundColor: AppColors.accent,
           foregroundColor: Colors.white,
           elevation: 0,
-          minimumSize: const Size(double.infinity, 48),
+          minimumSize: const Size(double.infinity, 50),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
-          textStyle: const TextStyle(
+          textStyle: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
           ),
         ),
       ),
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surface,
+        fillColor: AppColors.background,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 14,
@@ -73,19 +79,19 @@ class AppTheme {
         ),
         prefixIconColor: AppColors.textSecondary,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF030164), width: 1.5),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: AppColors.danger),
         ),
       ),
@@ -94,7 +100,7 @@ class AppTheme {
         color: AppColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           side: const BorderSide(color: AppColors.border),
         ),
       ),

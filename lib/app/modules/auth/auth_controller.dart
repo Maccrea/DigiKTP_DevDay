@@ -81,6 +81,7 @@ class AuthController extends GetxController {
     Get.back();
 
     if (success) {
+      await _authService.updateLocation(selectedPosko.value);
       AppSnackbar.show(
         message: 'Login berhasil. Selamat datang.',
         icon: Icons.check_circle_outline,

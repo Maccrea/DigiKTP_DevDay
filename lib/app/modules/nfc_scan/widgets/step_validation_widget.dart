@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:digiktp/app/modules/nfc_scan/nfc_scan_controller.dart';
+import 'package:digiktp/app/theme/app_colors.dart';
 
 class StepValidationWidget extends GetView<NfcScanController> {
   const StepValidationWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final RxInt selectedOption = 0.obs;
-    final TextEditingController customEmailController = TextEditingController();
+    final selectedOption = controller.selectedContact;
+    final customEmailController = controller.customEmailController;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -63,7 +65,7 @@ class StepValidationWidget extends GetView<NfcScanController> {
                                 color: const Color(0xFFEFF6FF),
                                 child: const Icon(
                                   Icons.person_rounded,
-                                  color: Color(0xFF030164),
+                                  color: AppColors.primary,
                                   size: 38,
                                 ),
                               ),
@@ -129,17 +131,16 @@ class StepValidationWidget extends GetView<NfcScanController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'PILIH ALAMAT EMAIL / KONTAK AKTIF',
+                          'EMAIL WARGA',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF64748B),
-                            letterSpacing: 0.5,
                           ),
                         ),
                         const SizedBox(height: 6),
                         const Text(
-                          'Kode OTP verifikasi akan dikirimkan ke salah satu kontak terdaftar di bawah ini.',
+                          'Gunakan email yang tersimpan atau tambahkan email lain.',
                           style: TextStyle(
                             fontSize: 12,
                             color: Color(0xFF64748B),
@@ -148,88 +149,44 @@ class StepValidationWidget extends GetView<NfcScanController> {
                         ),
                         const SizedBox(height: 16),
 
-                        Obx(
-                          () => _buildContactRadioTile(
-                            index: 0,
-                            selectedIndex: selectedOption.value,
-                            title: 'macreynardosan@gmail.com',
-                            subtitle: 'Email Utama Dukcapil',
-                            onTap: () => selectedOption.value = 0,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-
-                        Obx(
-                          () => _buildContactRadioTile(
-                            index: 1,
-                            selectedIndex: selectedOption.value,
-                            title: 'alyaaranaraya@gmail.com',
-                            subtitle: 'Email Cadangan Terverifikasi',
-                            onTap: () => selectedOption.value = 1,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-
-                        Obx(
-                          () => _buildContactRadioTile(
-                            index: 2,
-                            selectedIndex: selectedOption.value,
-                            title: 'Gunakan Alamat Email Lain',
-                            subtitle: 'Kirim OTP ke email baru',
-                            onTap: () => selectedOption.value = 2,
-                          ),
-                        ),
-
                         Obx(() {
-                          if (selectedOption.value != 2)
-                            return const SizedBox.shrink();
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 12.0),
-                            child: TextField(
-                              controller: customEmailController,
-                              keyboardType: TextInputType.emailAddress,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: Color(0xFF0F172A),
+                          final emails = controller.registeredEmails;
+                          final addEmailIndex = emails.length;
+                          return Column(
+                            children: [
+                              for (final entry in emails.asMap().entries) ...[
+                                if (entry.key > 0)
+                                  const SizedBox(height: 10),
+                                _buildContactRadioTile(
+                                  index: entry.key,
+                                  selectedIndex: selectedOption.value,
+                                  title: entry.value,
+                                  subtitle: 'Email terdaftar',
+                                  onTap: () => selectedOption.value = entry.key,
+                                ),
+                              ],
+                              if (emails.isNotEmpty)
+                                const SizedBox(height: 10),
+                              _buildContactRadioTile(
+                                index: addEmailIndex,
+                                selectedIndex: selectedOption.value,
+                                title: 'Tambahkan email lain',
+                                subtitle: 'Gunakan alamat email berbeda',
+                                onTap: () => selectedOption.value = addEmailIndex,
                               ),
-                              decoration: InputDecoration(
-                                hintText: 'Masukkan email aktif...',
-                                hintStyle: const TextStyle(
-                                  color: Color(0xFF94A3B8),
-                                  fontSize: 13,
-                                ),
-                                prefixIcon: const Icon(
-                                  Icons.email_outlined,
-                                  color: Color(0xFF64748B),
-                                  size: 18,
-                                ),
-                                filled: true,
-                                fillColor: const Color(0xFFF8FAFC),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                  horizontal: 14,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFFCBD5E1),
+                              if (selectedOption.value == addEmailIndex)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 12),
+                                  child: TextField(
+                                    controller: customEmailController,
+                                    keyboardType: TextInputType.emailAddress,
+                                    decoration: const InputDecoration(
+                                      hintText: 'nama@email.com',
+                                      prefixIcon: Icon(Icons.email_outlined),
+                                    ),
                                   ),
                                 ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFFE2E8F0),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFF030164),
-                                    width: 1.5,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            ],
                           );
                         }),
                       ],
@@ -245,14 +202,15 @@ class StepValidationWidget extends GetView<NfcScanController> {
                       height: 52,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF030164),
+                          backgroundColor: AppColors.accent,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                         onPressed: () async {
-                          if (controller.selectedContact.value == 2 &&
+                            if (controller.selectedContact.value ==
+                              controller.registeredEmails.length &&
                               !controller.isEmailValid) {
                             Get.snackbar(
                               'Peringatan',
@@ -278,12 +236,11 @@ class StepValidationWidget extends GetView<NfcScanController> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text(
-                                  'KIRIM OTP',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                : Text(
+                                  'Kirim OTP',
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.w700,
                                     fontSize: 15,
-                                    letterSpacing: 0.5,
                                     color: Colors.white,
                                   ),
                                 ),
@@ -316,11 +273,11 @@ class StepValidationWidget extends GetView<NfcScanController> {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFEFF6FF) : const Color(0xFFF8FAFC),
+          color: isSelected ? const Color(0xFFEAF0F8) : const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF030164)
+                ? AppColors.primary
                 : const Color(0xFFE2E8F0),
             width: isSelected ? 1.5 : 1.0,
           ),
@@ -334,7 +291,7 @@ class StepValidationWidget extends GetView<NfcScanController> {
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: isSelected
-                      ? const Color(0xFF030164)
+                      ? AppColors.primary
                       : const Color(0xFF94A3B8),
                   width: isSelected ? 5.5 : 1.5,
                 ),

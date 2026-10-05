@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:digiktp/app/modules/nfc_scan/nfc_scan_controller.dart';
 import 'package:nfc_manager/nfc_manager.dart'; // Pastikan package ini terimpor
+import 'package:digiktp/app/theme/app_colors.dart';
 
 class PromptWidget extends GetView<NfcScanController> {
   const PromptWidget({Key? key}) : super(key: key);
@@ -88,30 +90,30 @@ class PromptWidget extends GetView<NfcScanController> {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: const BoxDecoration(
-                            color: Color(0xFFEFF6FF),
+                            color: Color(0xFFFFEEE8),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
                             Icons.contactless,
                             size: 56,
-                            color: Color(0xFF030164),
+                            color: AppColors.accent,
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const Text(
+                        Text(
                           'Tempelkan e-KTP di Belakang HP',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: GoogleFonts.nunito(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
-                            color: Color(0xFF0F172A),
+                            color: AppColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Posisikan chip e-KTP tepat pada area sensor NFC ponsel Anda.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: GoogleFonts.inter(
                             color: Color(0xFF475569),
                             fontSize: 13,
                             height: 1.4,
@@ -166,7 +168,7 @@ class PromptWidget extends GetView<NfcScanController> {
                         height: 52,
                         child: ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF030164),
+                            backgroundColor: AppColors.accent,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),

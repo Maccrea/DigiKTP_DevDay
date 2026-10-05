@@ -1,267 +1,176 @@
+import 'package:digiktp/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ActivityTile extends StatelessWidget {
-  final dynamic item;
+  const ActivityTile({required this.item, super.key});
 
-  const ActivityTile({super.key, required this.item});
+  final Map<String, dynamic> item;
+
+  bool get _succeeded =>
+      (item['status'] ?? '').toString().toUpperCase() == 'SUCCESS' ||
+      item['isSuccess'] == true;
+
+  String get _status => _succeeded ? 'Berhasil' : 'Perlu ditinjau';
 
   @override
   Widget build(BuildContext context) {
-    final bool isSuccess =
-        (item['status'] ?? '').toString().toUpperCase() == 'SUCCESS' ||
-        (item['isSuccess'] ?? false);
+    final statusColor = _succeeded ? AppColors.success : AppColors.warning;
+    final name = (item['name'] ?? 'Tanpa nama').toString();
+    final service = (item['service'] ?? 'Layanan warga').toString();
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(15),
+      child: InkWell(
+        onTap: () => _showDetails(context),
+        borderRadius: BorderRadius.circular(15),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: AppColors.border),
           ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          onTap: () => _showAuditLogDetailBottomSheet(context, item),
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildIcon(isSuccess),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              item['name'] ?? 'Tanpa Nama',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: Color(0xFF0F172A),
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          _buildStatusBadge(isSuccess),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-
-                      Text(
-                        'NIK: ${item['nik'] ?? '-'}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF64748B),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        item['service'] ?? 'Layanan Dukcapil',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF030164),
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 8),
-
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.access_time_rounded,
-                            size: 12,
-                            color: Color(0xFF94A3B8),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            _formatTimestamp(item['time']),
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: Color(0xFF94A3B8),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: statusColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ],
-            ),
+                child: Icon(
+                  _succeeded
+                      ? Icons.check_rounded
+                      : Icons.priority_high_rounded,
+                  color: statusColor,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 11),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                        color: AppColors.textPrimary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      service,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                        color: AppColors.textSecondary,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: statusColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      _status,
+                      style: GoogleFonts.inter(
+                        color: statusColor,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    _formatTime(item['time']),
+                    style: GoogleFonts.inter(
+                      color: AppColors.textSecondary,
+                      fontSize: 9,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildIcon(bool isSuccess) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: isSuccess ? const Color(0xFFEFF6FF) : const Color(0xFFFFFBEB),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(
-        isSuccess ? Icons.badge_rounded : Icons.warning_amber_rounded,
-        color: isSuccess ? const Color(0xFF030164) : const Color(0xFFD97706),
-        size: 20,
-      ),
-    );
+  String _formatTime(dynamic value) {
+    final parsed = DateTime.tryParse(value?.toString() ?? '')?.toLocal();
+    if (parsed == null) return 'Baru';
+    return '${parsed.hour.toString().padLeft(2, '0')}:${parsed.minute.toString().padLeft(2, '0')}';
   }
 
-  Widget _buildStatusBadge(bool isSuccess) {
-    final statusText = item['status'] ?? (isSuccess ? 'SUCCESS' : 'PENDING');
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: isSuccess ? const Color(0xFFDCFCE7) : const Color(0xFFFEF3C7),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        statusText,
-        style: TextStyle(
-          fontSize: 9,
-          fontWeight: FontWeight.bold,
-          color: isSuccess ? const Color(0xFF15803D) : const Color(0xFFD97706),
-        ),
-      ),
-    );
-  }
-
-  String _formatTimestamp(dynamic rawTime) {
-    if (rawTime == null) return '-';
-    try {
-      final parsedDate = DateTime.parse(rawTime.toString()).toLocal();
-      final hour = parsedDate.hour.toString().padLeft(2, '0');
-      final minute = parsedDate.minute.toString().padLeft(2, '0');
-      final day = parsedDate.day.toString().padLeft(2, '0');
-      final month = parsedDate.month.toString().padLeft(2, '0');
-      final year = parsedDate.year;
-      return '$day/$month/$year • $hour:$minute WIB';
-    } catch (e) {
-      return rawTime.toString();
-    }
-  }
-
-  void _showAuditLogDetailBottomSheet(
-    BuildContext context,
-    Map<String, dynamic> item,
-  ) {
+  void _showDetails(BuildContext context) {
     Get.bottomSheet(
       Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(22, 12, 22, 24),
         decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Detail Audit Log',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F172A),
-                  ),
+            Center(
+              child: Container(
+                width: 38,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(5),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.close, size: 20),
-                  onPressed: () => Get.back(),
-                ),
-              ],
+              ),
             ),
-            const SizedBox(height: 10),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: const Color(0xFF0F172A),
-                borderRadius: BorderRadius.circular(14),
+            const SizedBox(height: 18),
+            Text(
+              'Detail transaksi',
+              style: GoogleFonts.nunito(
+                color: AppColors.primary,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'ID LOG: ${item['log_id'] ?? '-'}',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF38BDF8),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Warga: ${item['name'] ?? '-'}',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'NIK: ${item['nik'] ?? '-'}',
-                    style: const TextStyle(fontSize: 12, color: Colors.white70),
-                  ),
-                ],
-              ),
+            ),
+            const SizedBox(height: 14),
+            _DetailLine(label: 'Warga', value: item['name'] ?? 'Tanpa nama'),
+            _DetailLine(label: 'NIK', value: item['nik'] ?? '-'),
+            _DetailLine(
+              label: 'Layanan',
+              value: item['service'] ?? 'Layanan warga',
+            ),
+            _DetailLine(label: 'Status', value: _status),
+            _DetailLine(
+              label: 'Waktu',
+              value: _formatDateTime(item['time']),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'KRONOLOGI VALIDASI',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF64748B),
-                letterSpacing: 0.5,
-              ),
-            ),
-            const SizedBox(height: 10),
-            _buildLogStep(
-              _formatTimestamp(item['time']),
-              'Validasi Selesai',
-              'Status transaksi: ${item['status'] ?? 'SUCCESS'} pada layanan ${item['service'] ?? ''}.',
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF030164),
-                minimumSize: const Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 0,
-              ),
-              onPressed: () => Get.back(),
-              child: const Text(
-                'TUTUP',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: Get.back,
+                child: const Text('Tutup'),
               ),
             ),
           ],
@@ -271,38 +180,48 @@ class ActivityTile extends StatelessWidget {
     );
   }
 
-  Widget _buildLogStep(String time, String title, String desc) {
+  String _formatDateTime(dynamic value) {
+    final parsed = DateTime.tryParse(value?.toString() ?? '')?.toLocal();
+    if (parsed == null) return value?.toString() ?? '-';
+    final day = parsed.day.toString().padLeft(2, '0');
+    final month = parsed.month.toString().padLeft(2, '0');
+    final hour = parsed.hour.toString().padLeft(2, '0');
+    final minute = parsed.minute.toString().padLeft(2, '0');
+    return '$day/$month/${parsed.year} · $hour:$minute';
+  }
+}
+
+class _DetailLine extends StatelessWidget {
+  const _DetailLine({required this.label, required this.value});
+
+  final String label;
+  final dynamic value;
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 4),
-            child: Icon(Icons.circle, size: 8, color: Color(0xFF030164)),
+          SizedBox(
+            width: 74,
+            child: Text(
+              label,
+              style: GoogleFonts.inter(
+                color: AppColors.textSecondary,
+                fontSize: 11,
+              ),
+            ),
           ),
-          const SizedBox(width: 10),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '$time — $title',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F172A),
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  desc,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFF64748B),
-                  ),
-                ),
-              ],
+            child: Text(
+              value.toString(),
+              style: GoogleFonts.inter(
+                color: AppColors.textPrimary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],

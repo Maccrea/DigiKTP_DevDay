@@ -1,201 +1,216 @@
+import 'package:digiktp/app/modules/dashboard/notification_controller.dart';
+import 'package:digiktp/app/theme/app_colors.dart';
+import 'package:digiktp/app/utils/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:digiktp/app/modules/dashboard/notification_controller.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class NotificationPage extends GetView<NotificationController> {
-  const NotificationPage({Key? key}) : super(key: key);
+  const NotificationPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     Get.put(NotificationController());
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFF0F172A),
-            size: 20,
-          ),
-          onPressed: () => Get.back(),
-        ),
-        title: const Text(
-          'Notifikasi',
-          style: TextStyle(
-            color: Color(0xFF0F172A),
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
-        actions: [
+      backgroundColor: AppColors.background,
+      appBar: CustomAppBar(
+        title: 'Notifikasi',
+        extraActions: [
           Obx(() {
-            bool hasUnread = controller.notifications.any((n) => n.isUnread);
-            if (!hasUnread) return const SizedBox.shrink();
-
+            final unread = controller.notifications.any((item) => item.isUnread);
+            if (!unread) return const SizedBox(width: 8);
             return TextButton(
-              onPressed: () => controller.markAllAsRead(),
-              child: const Text(
-                'Tandai dibaca',
-                style: TextStyle(
-                  color: Color(0xFF030164),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+              onPressed: controller.markAllAsRead,
+              child: Text(
+                'Baca semua',
+                style: GoogleFonts.inter(
+                  color: AppColors.primary,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             );
           }),
         ],
       ),
-      body: Obx(() {
-        if (controller.notifications.isEmpty) {
-          return const Center(
-            child: Text(
-              'Belum ada notifikasi.',
-              style: TextStyle(color: Color(0xFF94A3B8)),
-            ),
-          );
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.all(16.0),
-          physics: const BouncingScrollPhysics(),
-          itemCount: controller.notifications.length,
-          itemBuilder: (context, index) {
-            final notif = controller.notifications[index];
-
-            bool showHeader =
-                index == 0 ||
-                controller.notifications[index].dateGroup !=
-                    controller.notifications[index - 1].dateGroup;
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (showHeader)
-                  Padding(
-                    padding: EdgeInsets.only(
-                      left: 4,
-                      bottom: 12,
-                      top: index == 0 ? 0 : 16,
-                    ),
-                    child: Text(
-                      notif.dateGroup,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF64748B),
-                      ),
-                    ),
-                  ),
-                _buildNotifCard(notif),
-              ],
-            );
-          },
-        );
-      }),
-    );
-  }
-
-  Widget _buildNotifCard(NotificationItem notif) {
-    final iconColor = controller.getColor(notif.type);
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: notif.isUnread ? const Color(0xFFEFF6FF) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: notif.isUnread
-              ? const Color(0xFFBFDBFE)
-              : const Color(0xFFE2E8F0),
-        ),
-        boxShadow: notif.isUnread
-            ? []
-            : [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.02),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                controller.getIcon(notif.type),
-                color: iconColor,
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
+      body: SafeArea(
+        top: false,
+        child: Obx(() {
+          if (controller.notifications.isEmpty) {
+            return Center(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          notif.title,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: Color(0xFF0F172A),
-                          ),
-                        ),
-                      ),
-                      if (notif.isUnread)
-                        Container(
-                          margin: const EdgeInsets.only(right: 6),
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFEF4444),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      Text(
-                        notif.time,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: notif.isUnread
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                          color: notif.isUnread
-                              ? const Color(0xFF030164)
-                              : const Color(0xFF94A3B8),
-                        ),
-                      ),
-                    ],
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAF0F8),
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: const Icon(
+                      Icons.notifications_none_rounded,
+                      color: AppColors.primary,
+                      size: 28,
+                    ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 12),
                   Text(
-                    notif.subtitle,
-                    style: const TextStyle(
-                      fontSize: 12.5,
-                      color: Color(0xFF64748B),
-                      height: 1.4,
+                    'Semua sudah diperbarui',
+                    style: GoogleFonts.nunito(
+                      color: AppColors.primary,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ],
               ),
+            );
+          }
+
+          return ListView.builder(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+            itemCount: controller.notifications.length,
+            itemBuilder: (context, index) {
+              final item = controller.notifications[index];
+              final showDate = index == 0 ||
+                  item.dateGroup != controller.notifications[index - 1].dateGroup;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (showDate) ...[
+                    if (index > 0) const SizedBox(height: 15),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 2, bottom: 8),
+                      child: Text(
+                        item.dateGroup,
+                        style: GoogleFonts.inter(
+                          color: AppColors.textSecondary,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                  _NotificationCard(
+                    item: item,
+                    icon: controller.getIcon(item.type),
+                    color: controller.getColor(item.type),
+                    onTap: () => controller.markAsRead(item.id),
+                  ),
+                ],
+              );
+            },
+          );
+        }),
+      ),
+    );
+  }
+}
+
+class _NotificationCard extends StatelessWidget {
+  const _NotificationCard({
+    required this.item,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  final NotificationItem item;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(
+          color: item.isUnread ? color.withOpacity(0.4) : AppColors.border,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(15),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(15),
+          child: Padding(
+            padding: const EdgeInsets.all(13),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: color, size: 20),
+                ),
+                const SizedBox(width: 11),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              item.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                color: AppColors.textPrimary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          if (item.isUnread) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              width: 7,
+                              height: 7,
+                              decoration: const BoxDecoration(
+                                color: AppColors.accent,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        item.subtitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.inter(
+                          color: AppColors.textSecondary,
+                          fontSize: 11,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  item.time,
+                  style: GoogleFonts.inter(
+                    color: AppColors.textSecondary,
+                    fontSize: 9,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

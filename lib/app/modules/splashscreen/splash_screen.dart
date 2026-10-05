@@ -1,10 +1,12 @@
+import 'package:digiktp/app/routes/app_routes.dart';
+import 'package:digiktp/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:digiktp/app/routes/app_routes.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -12,353 +14,241 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
+  late final AnimationController _motionController;
+  late final Animation<double> _cardScale;
+  late final Animation<double> _cardRotation;
+  late final Animation<double> _ringScale;
+  late final Animation<double> _scanLineProgress;
 
   @override
   void initState() {
     super.initState();
-
-    _animationController = AnimationController(
+    _motionController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1800),
+    )..repeat(reverse: true);
+    _cardScale = Tween<double>(begin: 0.97, end: 1).animate(
+      CurvedAnimation(parent: _motionController, curve: Curves.easeInOut),
     );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    _cardRotation = Tween<double>(begin: -0.025, end: 0.025).animate(
+      CurvedAnimation(parent: _motionController, curve: Curves.easeInOut),
     );
+    _ringScale = Tween<double>(begin: 0.94, end: 1.08).animate(
+      CurvedAnimation(parent: _motionController, curve: Curves.easeOut),
+    );
+    _scanLineProgress = Tween<double>(begin: 0, end: 72).animate(
+      CurvedAnimation(parent: _motionController, curve: Curves.easeInOut),
+    );
+    _openNextScreen();
+  }
 
-    _slideAnimation =
-        Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
-          CurvedAnimation(
-            parent: _animationController,
-            curve: Curves.easeOutCubic,
-          ),
-        );
+  Future<void> _openNextScreen() async {
+    await Future<void>.delayed(const Duration(milliseconds: 2100));
+    if (!mounted) return;
 
-    _animationController.forward();
-
-    Future.delayed(const Duration(milliseconds: 3500), () {
-      final hasSeenOnboarding =
-          GetStorage().read<bool>('has_seen_onboarding') ?? false;
-
-      if (hasSeenOnboarding) {
-        Get.offAllNamed('/login');
-      } else {
-        Get.offAllNamed('/onboarding');
-      }
-    });
+    final hasSeenOnboarding =
+        GetStorage().read<bool>('has_seen_onboarding') ?? false;
+    Get.offAllNamed(
+      hasSeenOnboarding ? Routes.DASHBOARD : Routes.ONBOARDING,
+    );
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _motionController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF030164), Color(0xFF1D286F), Color(0xFF0284C7)],
-            stops: [0.0, 0.5, 1.0],
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 24.0,
-              vertical: 32.0,
-            ),
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        const SizedBox(height: 40),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.2),
+      backgroundColor: AppColors.primary,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(28, 28, 28, 24),
+              child: Column(
+                children: [
+                  const Spacer(),
+                  AnimatedBuilder(
+                    animation: _motionController,
+                    builder: (context, child) => Transform.scale(
+                      scale: _ringScale.value,
+                      child: Container(
+                        width: 274,
+                        height: 274,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.11),
+                            width: 1,
+                          ),
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 220,
+                            height: 220,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: _peach.withOpacity(0.3),
+                                width: 1.2,
+                              ),
                             ),
-                          ),
-                          child: const Icon(
-                            Icons.badge_outlined,
-                            size: 42,
-                            color: Colors.white,
+                            child: Center(child: child),
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'NIKita',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Sistem Validasi Identitas Digital',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.7),
-                            fontSize: 13,
-                            letterSpacing: 0.5,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-
-                    Center(
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Container(
-                            width: 280,
-                            height: 280,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.08),
-                                width: 1.5,
-                              ),
+                    child: AnimatedBuilder(
+                      animation: _motionController,
+                      builder: (context, child) => Transform.rotate(
+                        angle: _cardRotation.value,
+                        child: Transform.scale(
+                          scale: _cardScale.value,
+                          child: child,
+                        ),
+                      ),
+                      child: Container(
+                        width: 178,
+                        height: 116,
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 38,
+                              offset: const Offset(0, 18),
                             ),
-                          ),
-                          Container(
-                            width: 210,
-                            height: 210,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.2),
-                                width: 1.5,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.white.withOpacity(0.05),
-                                  blurRadius: 30,
-                                  spreadRadius: 5,
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          Transform.rotate(
-                            angle: -0.12,
-                            child: Container(
-                              width: 240,
-                              height: 152,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Color(0xFF1E40AF),
-                                    Color(0xFF030164),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.4),
-                                  width: 1.2,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.4),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 12),
+                          ],
+                        ),
+                        child: Stack(
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  width: 54,
+                                  height: 72,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFEAF0F8),
+                                    borderRadius: BorderRadius.circular(14),
                                   ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Center(
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          'PROVINSI JAWA TENGAH',
-                                          style: TextStyle(
-                                            color: Colors.white.withOpacity(
-                                              0.9,
-                                            ),
-                                            fontSize: 7.5,
-                                            fontWeight: FontWeight.bold,
-                                            letterSpacing: 0.8,
-                                          ),
-                                        ),
-                                        Text(
-                                          'KOTA SEMARANG',
-                                          style: TextStyle(
-                                            color: Colors.white.withOpacity(
-                                              0.9,
-                                            ),
-                                            fontSize: 7.5,
-                                            fontWeight: FontWeight.bold,
-                                            letterSpacing: 0.8,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                  child: const Icon(
+                                    Icons.person_rounded,
+                                    color: AppColors.primary,
+                                    size: 32,
                                   ),
-                                  const SizedBox(height: 10),
-
-                                  Row(
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text(
-                                        'NIK',
-                                        style: TextStyle(
-                                          color: Colors.white.withOpacity(0.9),
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
+                                      Container(
+                                        width: 72,
+                                        height: 8,
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primary,
+                                          borderRadius: BorderRadius.circular(8),
                                         ),
                                       ),
-                                      const SizedBox(width: 8),
-                                      const Text(
-                                        '3374012345678901',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 13,
-                                          fontFamily: 'Monospace',
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1.5,
+                                      const SizedBox(height: 9),
+                                      Container(
+                                        width: 58,
+                                        height: 6,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFCBD5E1),
+                                          borderRadius: BorderRadius.circular(8),
                                         ),
+                                      ),
+                                      const Spacer(),
+                                      const Icon(
+                                        Icons.contactless_rounded,
+                                        color: _peach,
+                                        size: 25,
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 8),
-
-                                  Expanded(
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              _buildAbstractLine(110, 4, 0.8),
-                                              const SizedBox(height: 6),
-                                              _buildAbstractLine(70, 4, 0.6),
-                                              const SizedBox(height: 6),
-                                              _buildAbstractLine(120, 4, 0.5),
-                                              const SizedBox(height: 6),
-                                              _buildAbstractLine(80, 4, 0.4),
-                                              const SizedBox(height: 6),
-                                              _buildAbstractLine(95, 4, 0.3),
-                                            ],
-                                          ),
-                                        ),
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Container(
-                                              width: 36,
-                                              height: 46,
-                                              decoration: BoxDecoration(
-                                                color: Colors.white.withOpacity(
-                                                  0.15,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(4),
-                                                border: Border.all(
-                                                  color: Colors.white
-                                                      .withOpacity(0.4),
-                                                  width: 1,
-                                                ),
-                                              ),
-                                              child: Center(
-                                                child: Icon(
-                                                  Icons.person,
-                                                  color: Colors.white
-                                                      .withOpacity(0.5),
-                                                  size: 28,
-                                                ),
-                                              ),
-                                            ),
-                                            Icon(
-                                              Icons.contactless_rounded,
-                                              color: Colors.white.withOpacity(
-                                                0.8,
-                                              ),
-                                              size: 14,
-                                            ),
-                                          ],
-                                        ),
+                                ),
+                              ],
+                            ),
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              top: 3,
+                              child: AnimatedBuilder(
+                                animation: _scanLineProgress,
+                                builder: (context, child) => Transform.translate(
+                                  offset: Offset(0, _scanLineProgress.value),
+                                  child: child,
+                                ),
+                                child: Container(
+                                  height: 2,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.transparent,
+                                        _peach.withOpacity(0.9),
+                                        Colors.transparent,
                                       ],
                                     ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: _peach.withOpacity(0.55),
+                                        blurRadius: 8,
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-
-                    Column(
-                      children: [
-                        const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2.5,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          'MEMUAT SISTEM...',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.5),
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 2.0,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
+                  ),
+                  const SizedBox(height: 42),
+                  Text(
+                    'NIKita',
+                    style: GoogleFonts.nunito(
+                      color: Colors.white,
+                      fontSize: 36,
+                      fontWeight: FontWeight.w900,
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Layanan warga, lebih dekat',
+                    style: GoogleFonts.inter(
+                      color: Colors.white.withOpacity(0.76),
+                      fontSize: 14,
+                    ),
+                  ),
+                  const Spacer(),
+                  SizedBox(
+                    width: 42,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: const LinearProgressIndicator(
+                        minHeight: 3,
+                          backgroundColor: Color(0x55FFFFFF),
+                        valueColor: AlwaysStoppedAnimation<Color>(_peach),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAbstractLine(double width, double height, double opacity) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(opacity),
-        borderRadius: BorderRadius.circular(height / 2),
+        ],
       ),
     );
   }
 }
+
+const _peach = Color(0xFFFF8A65);

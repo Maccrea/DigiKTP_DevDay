@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_colors.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -40,15 +41,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          widget.label.toUpperCase(),
-          style: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
+          widget.label,
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
             color: AppColors.textSecondary,
-            letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         TextFormField(
           controller: widget.controller,
           obscureText: widget.isPassword ? _obscureText : false,
@@ -56,7 +56,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
           keyboardType: widget.keyboardType,
           inputFormatters: widget.inputFormatters,
           onChanged: widget.onChanged,
-          style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
+          style: GoogleFonts.inter(
+            fontSize: 15,
+            color: AppColors.textPrimary,
+          ),
           decoration: InputDecoration(
             hintText: widget.hintText,
             prefixIcon: Icon(
@@ -108,15 +111,14 @@ class CustomDropdownField<T> extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label.toUpperCase(),
-          style: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
             color: AppColors.textSecondary,
-            letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         DropdownButtonFormField<T>(
           value: value,
           items: items,
@@ -125,7 +127,10 @@ class CustomDropdownField<T> extends StatelessWidget {
             Icons.keyboard_arrow_down_rounded,
             color: AppColors.textSecondary,
           ),
-          style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
+          style: GoogleFonts.inter(
+            fontSize: 15,
+            color: AppColors.textPrimary,
+          ),
           decoration: InputDecoration(
             hintText: hintText,
             prefixIcon: Icon(
