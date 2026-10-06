@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:digiktp/app/modules/nfc_scan/nfc_scan_controller.dart';
 import '../widgets/step_prompt_widget.dart';
 import '../widgets/step_result_widget.dart';
@@ -136,10 +137,10 @@ class NfcScanView extends GetView<NfcScanController> {
                 ),
                 child: Text(
                   'LANGKAH ${currentPhase + 1} DARI $totalPhases',
-                  style: const TextStyle(
+                  style: GoogleFonts.inter(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF030164),
+                    color: const Color(0xFF030164),
                     letterSpacing: 1.2,
                   ),
                 ),
@@ -149,10 +150,10 @@ class NfcScanView extends GetView<NfcScanController> {
               Text(
                 _getStepTitle(currentStep),
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: GoogleFonts.nunito(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF0F172A),
+                  color: const Color(0xFF0F172A),
                   letterSpacing: -0.5,
                 ),
               ),
@@ -176,8 +177,8 @@ class NfcScanView extends GetView<NfcScanController> {
                         color: isCompleted
                             ? const Color(0xFF10B981)
                             : (isActive
-                                  ? const Color(0xFF030164)
-                                  : const Color(0xFFF1F5F9)),
+                                ? const Color(0xFF030164)
+                                : const Color(0xFFF1F5F9)),
                         border: isActive
                             ? Border.all(
                                 color: const Color(0xFFDBEAFE),
@@ -192,9 +193,7 @@ class NfcScanView extends GetView<NfcScanController> {
                         boxShadow: isActive
                             ? [
                                 BoxShadow(
-                                  color: const Color(
-                                    0xFF030164,
-                                  ).withOpacity(0.3),
+                                  color: const Color(0xFF030164).withOpacity(0.3),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),
@@ -210,7 +209,7 @@ class NfcScanView extends GetView<NfcScanController> {
                               )
                             : Text(
                                 '${index + 1}',
-                                style: TextStyle(
+                                style: GoogleFonts.inter(
                                   fontSize: isActive ? 13 : 11,
                                   fontWeight: FontWeight.bold,
                                   color: isActive

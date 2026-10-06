@@ -14,6 +14,7 @@ class CekWargaWidget extends GetView<NfcScanController> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24.0),
+      physics: const BouncingScrollPhysics(),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -36,12 +37,12 @@ class CekWargaWidget extends GetView<NfcScanController> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFEEE8),
+                    color: const Color(0xFFEFF6FF),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
-                    Icons.person_add_rounded,
-                    color: AppColors.accent,
+                    Icons.badge_rounded,
+                    color: AppColors.primary,
                     size: 24,
                   ),
                 ),
@@ -51,52 +52,25 @@ class CekWargaWidget extends GetView<NfcScanController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Data warga baru',
+                        'Registrasi Warga',
                         style: GoogleFonts.nunito(
-                          fontSize: 16,
+                          fontSize: 18,
                           fontWeight: FontWeight.w800,
                           color: AppColors.textPrimary,
                         ),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Text(
-                        'Foto e-KTP untuk isi data otomatis.',
-                        style: TextStyle(
+                        'Pindai fisik e-KTP untuk auto-fill data.',
+                        style: GoogleFonts.inter(
                           fontSize: 12,
-                          color: Color(0xFF64748B),
+                          color: const Color(0xFF64748B),
                         ),
                       ),
                     ],
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 18),
-
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.nfc, color: AppColors.primary, size: 18),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'UID: ${controller.activeNfcUid}',
-                      style: const TextStyle(
-                        fontFamily: 'Monospace',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                        color: Color(0xFF0F172A),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ),
             const SizedBox(height: 20),
 
@@ -107,14 +81,46 @@ class CekWargaWidget extends GetView<NfcScanController> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   if (photo != null) ...[
-                    KtpPhotoPreview(path: photo.path, height: 150),
-                    const SizedBox(height: 10),
+                    KtpPhotoPreview(path: photo.path, height: 180),
+                    const SizedBox(height: 12),
+                  ] else ...[
+                    Container(
+                      height: 180,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: const Color(0xFFCBD5E1),
+                          style: BorderStyle.solid,
+                        ),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.document_scanner_outlined, size: 42, color: Color(0xFF94A3B8)),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Area Pemindaian KTP',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF64748B),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
                   ],
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.accent,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size.fromHeight(48),
+                      backgroundColor: photo == null ? AppColors.primary : Colors.white,
+                      foregroundColor: photo == null ? Colors.white : AppColors.primary,
+                      minimumSize: const Size.fromHeight(50),
+                      elevation: 0,
+                      side: photo != null ? const BorderSide(color: AppColors.primary) : null,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -124,38 +130,30 @@ class CekWargaWidget extends GetView<NfcScanController> {
                         ? const SizedBox(
                             width: 18,
                             height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                           )
-                        : const Icon(Icons.document_scanner_outlined),
+                        : Icon(photo == null ? Icons.camera_alt_rounded : Icons.refresh_rounded),
                     label: Text(
                       isReading
-                          ? 'Membaca e-KTP...'
+                          ? 'Menganalisis Data...'
                           : photo == null
-                          ? 'Foto & baca e-KTP'
-                          : 'Ambil ulang foto',
+                          ? 'Mulai Pemindaian OCR'
+                          : 'Pindai Ulang KTP',
+                      style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
                     ),
                   ),
-                  if (photo != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 7),
-                      child: Text(
-                        'Periksa lagi data hasil baca sebelum disimpan.',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(
-                          color: AppColors.textSecondary,
-                          fontSize: 11,
-                        ),
-                      ),
-                    ),
                 ],
               );
             }),
-            const SizedBox(height: 18),
+            const SizedBox(height: 24),
+            
+            const Divider(height: 1, color: Color(0xFFF1F5F9)),
+            const SizedBox(height: 20),
 
             CustomTextField(
               label: 'NIK Warga',
-              hintText: 'Masukkan 16 digit NIK',
-              prefixIcon: Icons.badge_outlined,
+              hintText: '16 digit angka',
+              prefixIcon: Icons.pin_outlined,
               controller: controller.newNikController,
               keyboardType: TextInputType.number,
               inputFormatters: [
@@ -164,31 +162,20 @@ class CekWargaWidget extends GetView<NfcScanController> {
               ],
             ),
             const SizedBox(height: 16),
-
             CustomTextField(
               label: 'Nama Lengkap',
-              hintText: 'Sesuai e-KTP',
+              hintText: 'Sesuai KTP',
               prefixIcon: Icons.person_outline,
               controller: controller.newNameController,
               keyboardType: TextInputType.name,
             ),
             const SizedBox(height: 16),
-
             CustomTextField(
-              label: 'Alamat Email',
-              hintText: 'Untuk pengiriman otp',
-              prefixIcon: Icons.email_outlined,
+              label: 'Email Verifikasi',
+              hintText: 'Untuk pengiriman OTP',
+              prefixIcon: Icons.alternate_email_rounded,
               controller: controller.newEmailController,
               keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 16),
-
-            CustomTextField(
-              label: 'Alamat Sesuai e-KTP',
-              hintText: 'Masukkan alamat domisili/KTP',
-              prefixIcon: Icons.home_outlined,
-              controller: controller.newAddressController,
-              keyboardType: TextInputType.streetAddress,
             ),
             const SizedBox(height: 24),
 
@@ -204,53 +191,22 @@ class CekWargaWidget extends GetView<NfcScanController> {
                   ),
                 ),
                 onPressed: () {
-                    final cleanNik = controller.newNikController.text.trim();
-                    final cleanNama = controller.newNameController.text.trim();
-                    final cleanAlamat =
-                      controller.newAddressController.text.trim();
-                    final emailAddress =
-                      controller.newEmailController.text.trim();
-
-                  if (cleanNik.length != 16 ||
-                      cleanNama.isEmpty ||
-                      emailAddress.isEmpty) {
-                    Get.snackbar(
-                      'Peringatan',
-                      'Pastikan NIK (16 digit), Nama Lengkap, dan Email terisi.',
-                      snackPosition: SnackPosition.TOP,
-                      backgroundColor: const Color(0xFFEF4444),
-                      colorText: Colors.white,
-                    );
-                    return;
-                  }
-
                   final formData = {
                     "uid_nfc": controller.activeNfcUid,
-                    "nik": cleanNik,
-                    "nama_lengkap": cleanNama,
-                    "email": emailAddress,
+                    "nik": controller.newNikController.text.trim(),
+                    "nama_lengkap": controller.newNameController.text.trim(),
+                    "email": controller.newEmailController.text.trim(),
                   };
-
-                  if (cleanAlamat.isNotEmpty) {
-                    formData["alamat"] = cleanAlamat;
-                  }
-
                   controller.submitRegistrasiWarga(formData);
                 },
                 child: Obx(
                   () => controller.isLoading.value
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2.5,
-                          ),
-                        )
+                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
                       : Text(
-                          'Simpan & lanjutkan',
+                          'Simpan & Lanjutkan',
                           style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
                             color: Colors.white,
                           ),
                         ),

@@ -5,11 +5,13 @@ import 'package:nfc_manager/nfc_manager.dart';
 import 'dart:async';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:image_cropper/image_cropper.dart';
 import '../../data/providers/api_provider.dart';
 import '../../data/services/auth_service.dart';
 import 'ktp_ocr_parser.dart';
 import 'package:digiktp/app/utils/app_snackbar.dart';
+import 'package:ktp_extractor/ktp_extractor.dart';
+import 'dart:io';
 
 enum ScanStep {
   cekWarga,
@@ -114,6 +116,7 @@ class NfcScanController extends GetxController {
   }
 
   List<String> get registeredEmails {
+    final data = verifiedWargaData;
     final values = [
       verifiedWargaData['email'],
       verifiedWargaData['email_cadangan'],
@@ -198,40 +201,53 @@ class NfcScanController extends GetxController {
 
     try {
       isReadingKtp.value = true;
+      
       final photo = await _imagePicker.pickImage(
         source: ImageSource.camera,
-        imageQuality: 88,
-        maxWidth: 2000,
+        imageQuality: 90,
       );
-      if (photo == null) return;
-
-      capturedKtpPhoto = photo;
-      ktpPhotoRevision.value++;
-
-      final recognizer = TextRecognizer(
-        script: TextRecognitionScript.latin,
-      );
-      try {
-        final recognized = await recognizer.processImage(
-          InputImage.fromFilePath(photo.path),
-        );
-        _fillRegistrationFields(recognized.text);
-      } finally {
-        await recognizer.close();
+      
+      if (photo == null) {
+        isReadingKtp.value = false;
+        return;
       }
 
+      File imageFile = File(photo.path);
+
+      File? croppedImage = await KtpExtractor.cropImageForKtp(imageFile);
+      
+      File imageToProcess = croppedImage ?? imageFile;
+
+      capturedKtpPhoto = XFile(imageToProcess.path);
+      ktpPhotoRevision.value++;
+
+      KtpModel ktpData = await KtpExtractor.extractKtp(imageToProcess);
+      
+      if (ktpData.nik != null) newNikController.text = ktpData.nik!;
+      if (ktpData.name != null) newNameController.text = ktpData.name!;
+      if (ktpData.address != null) newAddressController.text = ktpData.address!;
+      
+      scannedKtpFields.clear();
+      scannedKtpFields['nik'] = ktpData.nik ?? '';
+      scannedKtpFields['nama_lengkap'] = ktpData.name ?? '';
+      scannedKtpFields['alamat'] = ktpData.address ?? '';
+      scannedKtpFields['tempat_tanggal_lahir'] = ktpData.birthDay ?? '';
+      
+      verifiedWargaData['photo_path'] = imageToProcess.path;
+
       Get.snackbar(
-        'Foto terbaca',
-        'Periksa kembali data yang terisi sebelum menyimpan.',
+        'KTP Terbaca',
+        'Data berhasil diekstrak. Silakan periksa kembali.',
         snackPosition: SnackPosition.TOP,
       );
     } catch (error) {
       Get.snackbar(
-        'Tidak dapat membaca e-KTP',
-        'Coba ambil foto yang lebih terang dan tidak terpotong.',
-        snackPosition: SnackPosition.TOP,
+        'Pemindaian Gagal',
+        'Gagal membaca KTP. Pastikan pencahayaan cukup dan KTP tidak buram.',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
       );
-      debugPrint('KTP OCR gagal: $error');
+      debugPrint('KTP Extractor Error: $error');
     } finally {
       isReadingKtp.value = false;
     }
@@ -379,9 +395,9 @@ class NfcScanController extends GetxController {
         final responseWarga = response['data'] is Map
             ? Map<String, dynamic>.from(response['data'] as Map)
             : <String, dynamic>{};
-        verifiedWargaData.value = {...formData, ...responseWarga};
+        verifiedWargaData.assignAll({...formData, ...responseWarga});
       } else {
-        verifiedWargaData.value = Map<String, dynamic>.from(formData);
+        verifiedWargaData.assignAll(Map<String, dynamic>.from(formData));
       }
 
       AppSnackbar.show(
@@ -401,6 +417,9 @@ class NfcScanController extends GetxController {
     String errorMessage = e.toString().replaceFirst('Exception: ', '');
     if (errorMessage.contains('duplicate key') || errorMessage.contains('already exists')) {
       errorMessage = 'UID NFC ini sudah terdaftar di sistem. Silakan lanjutkan verifikasi.';
+
+      verifiedWargaData.assignAll(Map<String, dynamic>.from(formData));
+  
       currentStep.value = ScanStep.validation;
       return;
     }
@@ -503,7 +522,8 @@ class NfcScanController extends GetxController {
       if (petugas == null || petugas.idPetugas.trim().isEmpty) {
         throw Exception('Sesi petugas tidak ditemukan. Silakan login ulang.');
       }
-      final nikWarga = (verifiedWargaData['nik'] ?? '').toString().trim();
+      // final nikWarga = (verifiedWargaData['nik'] ?? '').toString().trim();
+      String nikWarga = (verifiedWargaData['nik'] ?? '').toString().trim();
       if (nikWarga.isEmpty) {
         throw Exception('NIK warga belum tersedia untuk mencatat layanan.');
       }

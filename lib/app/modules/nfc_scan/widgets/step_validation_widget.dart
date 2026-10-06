@@ -12,248 +12,236 @@ class StepValidationWidget extends GetView<NfcScanController> {
     final selectedOption = controller.selectedContact;
     final customEmailController = controller.customEmailController;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: constraints.maxHeight - 32.0,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            child: IntrinsicHeight(
-              child: Column(
-                children: [
-                  const SizedBox(height: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'BIODATA WARGA',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF94A3B8),
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 14.0),
+                  child: Divider(height: 1, color: Color(0xFFF1F5F9)),
+                ),
+                Obx(() {
+                  final data = controller.verifiedWargaData;
+                  final scanned = controller.scannedKtpFields;
+                  
+                  final nama = data['nama_masking'] ?? data['nama_lengkap'] ?? scanned['nama_lengkap'] ?? 'Nama warga';
+                  final nik = data['nik'] ?? scanned['nik'] ?? '-';
+                  final alamat = data['wilayah'] ?? data['alamat'] ?? scanned['alamat'] ?? '-';
 
-                  const SizedBox(height: 14),
-
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
+                  return Row(
+                    children: [
+                      Container(
+                        width: 54,
+                        height: 54,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEAF0F8),
+                          borderRadius: BorderRadius.circular(14),
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'BIODATA WARGA TERKAIT',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF64748B),
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        const Divider(height: 20, color: Color(0xFFF1F5F9)),
-                        Row(
+                        child: const Icon(Icons.person_rounded, color: AppColors.primary, size: 32),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Container(
-                                width: 54,
-                                height: 64,
-                                color: const Color(0xFFEFF6FF),
-                                child: const Icon(
-                                  Icons.person_rounded,
-                                  color: AppColors.primary,
-                                  size: 38,
-                                ),
+                            Text(
+                              nama.toString(),
+                              style: GoogleFonts.nunito(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 16,
+                                color: const Color(0xFF0F172A),
                               ),
                             ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    controller
-                                            .verifiedWargaData['nama_masking'] ??
-                                        'Nama warga',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      color: Color(0xFF0F172A),
-                                    ),
-                                  ),
-                                  SizedBox(height: 2),
-                                  Text(
-                                    'NIK: ${controller.verifiedWargaData['nik'] ?? '-'}',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xFF475569),
-                                      fontFamily: 'Monospace',
-                                    ),
-                                  ),
-                                  SizedBox(height: 2),
-                                  Text(
-                                    '${controller.verifiedWargaData['wilayah'] ?? '-'} • ${controller.verifiedWargaData['phone_last_digits'] ?? '-'}',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: Color(0xFF94A3B8),
-                                    ),
-                                  ),
-                                ],
+                            const SizedBox(height: 4),
+                            Text(
+                              'NIK: $nik',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF475569),
+                              ).copyWith(fontFamily: 'Monospace'),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              alamat.toString(),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: const Color(0xFF94A3B8),
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  );
+                }),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'EMAIL VERIFIKASI',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF94A3B8),
+                    letterSpacing: 0.5,
                   ),
-                  const SizedBox(height: 14),
-
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Pilih email terdaftar atau masukkan alamat baru untuk pengiriman OTP.',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF64748B),
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Obx(() {
+                  final emails = controller.registeredEmails;
+                  final addEmailIndex = emails.length;
+                  return Column(
+                    children: [
+                      for (final entry in emails.asMap().entries) ...[
+                        if (entry.key > 0) const SizedBox(height: 12),
+                        _buildContactRadioTile(
+                          index: entry.key,
+                          selectedIndex: selectedOption.value,
+                          title: entry.value,
+                          subtitle: 'Email terdaftar',
+                          onTap: () => selectedOption.value = entry.key,
                         ),
                       ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'EMAIL WARGA',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF64748B),
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        const Text(
-                          'Gunakan email yang tersimpan atau tambahkan email lain.',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF64748B),
-                            height: 1.3,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        Obx(() {
-                          final emails = controller.registeredEmails;
-                          final addEmailIndex = emails.length;
-                          return Column(
-                            children: [
-                              for (final entry in emails.asMap().entries) ...[
-                                if (entry.key > 0)
-                                  const SizedBox(height: 10),
-                                _buildContactRadioTile(
-                                  index: entry.key,
-                                  selectedIndex: selectedOption.value,
-                                  title: entry.value,
-                                  subtitle: 'Email terdaftar',
-                                  onTap: () => selectedOption.value = entry.key,
-                                ),
-                              ],
-                              if (emails.isNotEmpty)
-                                const SizedBox(height: 10),
-                              _buildContactRadioTile(
-                                index: addEmailIndex,
-                                selectedIndex: selectedOption.value,
-                                title: 'Tambahkan email lain',
-                                subtitle: 'Gunakan alamat email berbeda',
-                                onTap: () => selectedOption.value = addEmailIndex,
+                      if (emails.isNotEmpty) const SizedBox(height: 12),
+                      _buildContactRadioTile(
+                        index: addEmailIndex,
+                        selectedIndex: selectedOption.value,
+                        title: 'Gunakan email lain',
+                        subtitle: 'Masukkan secara manual',
+                        onTap: () => selectedOption.value = addEmailIndex,
+                      ),
+                      if (selectedOption.value == addEmailIndex)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 14),
+                          child: TextField(
+                            controller: customEmailController,
+                            keyboardType: TextInputType.emailAddress,
+                            style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),
+                            decoration: InputDecoration(
+                              hintText: 'nama@email.com',
+                              hintStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+                              prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
+                              filled: true,
+                              fillColor: const Color(0xFFF8FAFC),
+                              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
                               ),
-                              if (selectedOption.value == addEmailIndex)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 12),
-                                  child: TextField(
-                                    controller: customEmailController,
-                                    keyboardType: TextInputType.emailAddress,
-                                    decoration: const InputDecoration(
-                                      hintText: 'nama@email.com',
-                                      prefixIcon: Icon(Icons.email_outlined),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          );
-                        }),
-                      ],
-                    ),
-                  ),
-
-                  const Spacer(),
-
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.accent,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                              ),
+                            ),
                           ),
                         ),
-                        onPressed: () async {
-                            if (controller.selectedContact.value ==
-                              controller.registeredEmails.length &&
-                              !controller.isEmailValid) {
-                            Get.snackbar(
-                              'Peringatan',
-                              'Masukkan format email aktif yang valid.',
-                              snackPosition: SnackPosition.TOP,
-                              backgroundColor: const Color(0xFFEF4444),
-                              colorText: Colors.white,
-                            );
-                            return;
-                          }
-
-                          await controller.requestOtpApi(
-                            controller.selectedContact.value,
-                          );
-                        },
-                        child: Obx(
-                          () => controller.isLoading.value
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                                : Text(
-                                  'Kirim OTP',
-                                  style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                    ],
+                  );
+                }),
+              ],
+            ),
+          ),
+          const SizedBox(height: 32),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.accent,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+              onPressed: () async {
+                if (controller.selectedContact.value == controller.registeredEmails.length && !controller.isEmailValid) {
+                  Get.snackbar(
+                    'Peringatan',
+                    'Masukkan format email aktif yang valid.',
+                    backgroundColor: const Color(0xFFEF4444),
+                    colorText: Colors.white,
+                  );
+                  return;
+                }
+                await controller.requestOtpApi(controller.selectedContact.value);
+              },
+              child: Obx(
+                () => controller.isLoading.value
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                    : Text(
+                        'Kirim OTP',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
+                          color: Colors.white,
                         ),
                       ),
-                    ),
-                  ),
-                ],
               ),
             ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
@@ -265,62 +253,53 @@ class StepValidationWidget extends GetView<NfcScanController> {
     required VoidCallback onTap,
   }) {
     final isSelected = index == selectedIndex;
-
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(14),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFEAF0F8) : const Color(0xFFF8FAFC),
-          borderRadius: BorderRadius.circular(12),
+          color: isSelected ? const Color(0xFFEFF6FF) : const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isSelected
-                ? AppColors.primary
-                : const Color(0xFFE2E8F0),
+            color: isSelected ? AppColors.primary : const Color(0xFFE2E8F0),
             width: isSelected ? 1.5 : 1.0,
           ),
         ),
         child: Row(
           children: [
             Container(
-              width: 18,
-              height: 18,
+              width: 20,
+              height: 20,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected
-                      ? AppColors.primary
-                      : const Color(0xFF94A3B8),
-                  width: isSelected ? 5.5 : 1.5,
+                  color: isSelected ? AppColors.primary : const Color(0xFF94A3B8),
+                  width: isSelected ? 6.0 : 1.5,
                 ),
                 color: Colors.white,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                      color: isSelected
-                          ? const Color(0xFF1E40AF)
-                          : const Color(0xFF0F172A),
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                      color: isSelected ? const Color(0xFF1E40AF) : const Color(0xFF0F172A),
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: isSelected
-                          ? const Color(0xFF3B82F6)
-                          : const Color(0xFF64748B),
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: isSelected ? const Color(0xFF3B82F6) : const Color(0xFF64748B),
                     ),
                   ),
                 ],

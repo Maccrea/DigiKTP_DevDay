@@ -50,12 +50,11 @@ class DashboardController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
       
-      // 👉 Berikan timeout 4 detik agar tidak loading selamanya jika endpoint lambat/mati
       final logs = await _apiProvider.fetchLayananLogs().timeout(
         const Duration(seconds: 4),
         onTimeout: () {
           print('⚠️ Keterlambatan koneksi API, memuat halaman secara offline/kosong.');
-          return []; // Kembalikan list kosong jika timeout
+          return []; 
         },
       );
 

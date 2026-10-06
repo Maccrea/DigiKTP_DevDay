@@ -16,6 +16,7 @@ class DashboardView extends GetView<DashboardController> {
       onWillPop: () async => controller.handleBackAction(),
       child: Scaffold(
         backgroundColor: const Color(0xFFF8FAFC),
+        resizeToAvoidBottomInset: false,
         body: Obx(() {
           switch (controller.currentBottomNavIndex.value) {
             case 0:
@@ -35,15 +36,17 @@ class DashboardView extends GetView<DashboardController> {
           onPressed: controller.goToNfcScan,
         ),
         bottomNavigationBar: BottomAppBar(
-          height: 80,
+          height: 56, 
           color: Colors.white,
-          elevation: 12,
+          elevation: 8,
           shape: const CircularNotchedRectangle(),
-          notchMargin: 8,
+          notchMargin: 6,
+          surfaceTintColor: Colors.white,
+          shadowColor: Colors.black26,
           child: SafeArea(
             top: false,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
               child: Obx(
                 () => Row(
                   children: [
@@ -63,7 +66,7 @@ class DashboardView extends GetView<DashboardController> {
                         onTap: () => controller.changeBottomNavIndex(1),
                       ),
                     ),
-                    const SizedBox(width: 72),
+                    const SizedBox(width: 60), 
                     Expanded(
                       child: _DashboardNavItem(
                         label: 'Riwayat',
@@ -113,22 +116,14 @@ class _DashboardNavItem extends StatelessWidget {
       label: label,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox(
+          height: double.infinity,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center, 
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: color, size: 21),
-              const SizedBox(height: 2),
-              Text(
-                label,
-                style: GoogleFonts.inter(
-                  color: color,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  fontSize: 10,
-                ),
-              ),
+              Icon(icon, color: color, size: 26),
             ],
           ),
         ),
@@ -144,46 +139,39 @@ class _ScanDockButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: 'Mulai Scan e-KTP',
-      child: Tooltip(
-        message: 'Mulai Scan',
-        child: Material(
-          color: Colors.transparent,
-          shape: const CircleBorder(),
-          child: Ink(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFFFFB08F), Color(0xFFFF805D), Color(0xFFED6547)],
+    return Container(
+      width: 56, 
+      height: 56,
+      margin: const EdgeInsets.only(top: 10),
+      child: Semantics(
+        button: true,
+        label: 'Mulai Scan e-KTP',
+        child: Tooltip(
+          message: 'Mulai Scan',
+          child: Material(
+            color: Colors.transparent,
+            clipBehavior: Clip.antiAlias,
+            shape: const CircleBorder(),
+            elevation: 4,
+            child: Ink(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFFFFB08F), Color(0xFFFF805D), Color(0xFFED6547)],
+                ),
+                border: Border.all(color: Colors.white, width: 3),
               ),
-              border: Border.all(color: Colors.white, width: 4),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x55FF805D),
-                  blurRadius: 18,
-                  offset: Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Color(0x241A365D),
-                  blurRadius: 5,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: InkWell(
-              onTap: onPressed,
-              customBorder: const CircleBorder(),
-              child: const Center(
-                child: Icon(
-                  Icons.nfc_rounded,
-                  color: Colors.white,
-                  size: 29,
+              child: InkWell(
+                onTap: onPressed,
+                customBorder: const CircleBorder(),
+                child: const Center(
+                  child: Icon(
+                    Icons.nfc_rounded,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
               ),
             ),
