@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:digiktp/app/modules/nfc_scan/nfc_scan_controller.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:digiktp/app/theme/app_colors.dart';
+import 'package:digiktp/app/utils/app_snackbar.dart';
 
 class PromptWidget extends GetView<NfcScanController> {
   const PromptWidget({Key? key}) : super(key: key);
@@ -12,24 +13,18 @@ class PromptWidget extends GetView<NfcScanController> {
     try {
       bool isAvailable = await NfcManager.instance.isAvailable();
       if (!isAvailable) {
-        Get.snackbar(
-          'Perangkat Tidak Didukung',
-          'Smartphone Anda tidak memiliki sensor NFC aktif.',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: const Color(0xFFEF4444),
-          colorText: Colors.white,
+        AppSnackbar.show(
+          title: 'Perangkat Tidak Didukung',
+          message: 'Smartphone Anda tidak memiliki sensor NFC aktif.',
         );
         return;
       }
       if (controller.isScanning.value) return;
       controller.startNfcSession();
     } catch (e) {
-      Get.snackbar(
-        'NFC Belum Aktif',
-        'Harap aktifkan fitur NFC di pengaturan perangkat Anda.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFFD97706),
-        colorText: Colors.white,
+      AppSnackbar.show(
+        title: "NFC Belum Aktif",
+        message: "Harap aktifkan fitur NFC di pengaturan perangkat Anda.",
       );
     }
   }
@@ -64,7 +59,11 @@ class PromptWidget extends GetView<NfcScanController> {
                     color: Color(0xFFFFEEE8),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.contactless_rounded, size: 56, color: AppColors.accent),
+                  child: const Icon(
+                    Icons.contactless_rounded,
+                    size: 56,
+                    color: AppColors.accent,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Text(
@@ -78,7 +77,7 @@ class PromptWidget extends GetView<NfcScanController> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Posisikan chip e-KTP tepat pada area sensor NFC di bagian belakang ponsel Anda.',
+                  'Posisikan e-KTP di bagian belakang ponsel Anda, sesuaikan posisi sensor NFC perangkat Anda.',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.inter(
                     color: const Color(0xFF64748B),
@@ -131,15 +130,32 @@ class PromptWidget extends GetView<NfcScanController> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.accent,
                   elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
-                onPressed: controller.isScanning.value ? null : () => _handleStartScanning(context),
+                onPressed: controller.isScanning.value
+                    ? null
+                    : () => _handleStartScanning(context),
                 onLongPress: () => controller.bypassScan(),
                 icon: controller.isScanning.value
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
-                    : const Icon(Icons.wifi_tethering_rounded, color: Colors.white, size: 22),
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
+                      )
+                    : const Icon(
+                        Icons.wifi_tethering_rounded,
+                        color: Colors.white,
+                        size: 22,
+                      ),
                 label: Text(
-                  controller.isScanning.value ? 'MENUNGGU KTP...' : 'MULAI PEMINDAIAN',
+                  controller.isScanning.value
+                      ? 'MENUNGGU KTP...'
+                      : 'MULAI PEMINDAIAN',
                   style: GoogleFonts.inter(
                     fontWeight: FontWeight.w800,
                     fontSize: 15,

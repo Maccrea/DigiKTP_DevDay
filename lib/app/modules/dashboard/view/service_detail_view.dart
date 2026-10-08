@@ -16,7 +16,8 @@ class ServiceDetailView extends StatelessWidget {
     'Administrasi Kependudukan': _ServiceGuide(
       title: 'Administrasi\nKependudukan',
       category: 'ADMINDUK',
-      description: 'Verifikasi domisili, sinkronisasi KK, hingga draf surat pengantar.',
+      description:
+          'Verifikasi domisili, sinkronisasi KK, hingga draf surat pengantar.',
       icon: Icons.badge_outlined,
       gradient: [Color(0xFF1E3A8A), Color(0xFF3B82F6)],
       checklist: [
@@ -28,7 +29,8 @@ class ServiceDetailView extends StatelessWidget {
     'Layanan Kesehatan': _ServiceGuide(
       title: 'Layanan\nKesehatan',
       category: 'KESEHATAN',
-      description: 'Validasi identitas pasien darurat dan antrean fasilitas faskes.',
+      description:
+          'Validasi identitas pasien darurat dan antrean fasilitas faskes.',
       icon: Icons.health_and_safety_outlined,
       gradient: [Color(0xFF047857), Color(0xFF10B981)],
       checklist: [
@@ -52,7 +54,8 @@ class ServiceDetailView extends StatelessWidget {
     'Pendataan Program MBG': _ServiceGuide(
       title: 'Pendataan\nProgram MBG',
       category: 'PROGRAM MBG',
-      description: 'Pencatatan penerima dan distribusi porsi makan bergizi harian.',
+      description:
+          'Pencatatan penerima dan distribusi porsi makan bergizi harian.',
       icon: Icons.lunch_dining_rounded,
       gradient: [Color(0xFFBE123C), Color(0xFFF43F5E)],
       checklist: [
@@ -219,8 +222,8 @@ class ServiceDetailView extends StatelessWidget {
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton.icon(
-                    onPressed: () =>
-                        Get.find<DashboardController>().goToNfcScan(serviceName),
+                    onPressed: () => Get.find<DashboardController>()
+                        .goToNfcScan(serviceName),
                     icon: const Icon(Icons.nfc_rounded, size: 20),
                     label: Text(
                       'Mulai Verifikasi e-KTP',
@@ -297,7 +300,11 @@ class _ServiceHero extends StatelessWidget {
           Positioned(
             right: -24,
             bottom: -28,
-            child: Icon(guide.icon, size: 150, color: Colors.white.withOpacity(0.10)),
+            child: Icon(
+              guide.icon,
+              size: 150,
+              color: Colors.white.withOpacity(0.10),
+            ),
           ),
           Positioned(
             right: 18,
@@ -313,7 +320,10 @@ class _ServiceHero extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),

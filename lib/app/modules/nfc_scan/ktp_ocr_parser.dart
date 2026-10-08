@@ -18,9 +18,19 @@ class KtpOcrParser {
       RegExp(r'TEMPAT\s*/\s*TGL\s+LAHIR|TEMPAT\s+TGL\s+LAHIR|TTL'),
     );
     _putField(fields, lines, 'jenis_kelamin', RegExp(r'JENIS\s+KELAMIN'));
-    _putField(fields, lines, 'golongan_darah', RegExp(r'GOL(?:\.|ONGAN)?\s+DARAH'));
+    _putField(
+      fields,
+      lines,
+      'golongan_darah',
+      RegExp(r'GOL(?:\.|ONGAN)?\s+DARAH'),
+    );
     _putField(fields, lines, 'agama', RegExp(r'AGAMA'));
-    _putField(fields, lines, 'status_perkawinan', RegExp(r'STATUS\s+PERKAWINAN'));
+    _putField(
+      fields,
+      lines,
+      'status_perkawinan',
+      RegExp(r'STATUS\s+PERKAWINAN'),
+    );
     _putField(fields, lines, 'pekerjaan', RegExp(r'PEKERJAAN'));
     _putField(fields, lines, 'kewarganegaraan', RegExp(r'KEWARGANEGARAAN'));
     _putField(fields, lines, 'berlaku_hingga', RegExp(r'BERLAKU\s+HINGGA'));
@@ -28,7 +38,12 @@ class KtpOcrParser {
     final address = _readAddress(lines);
     if (address != null) fields['alamat'] = address;
     _putField(fields, lines, 'rt_rw', RegExp(r'RT\s*/\s*RW'));
-    _putField(fields, lines, 'kelurahan_desa', RegExp(r'KEL\s*/\s*DESA|KELURAHAN'));
+    _putField(
+      fields,
+      lines,
+      'kelurahan_desa',
+      RegExp(r'KEL\s*/\s*DESA|KELURAHAN'),
+    );
     _putField(fields, lines, 'kecamatan', RegExp(r'KECAMATAN'));
 
     return fields;
@@ -62,14 +77,20 @@ class KtpOcrParser {
 
   static String? _readAddress(List<String> lines) {
     for (var index = 0; index < lines.length; index++) {
-      final match = RegExp(r'^\s*ALAMAT\s*[:.]?\s*(.*)$', caseSensitive: false)
-          .firstMatch(lines[index]);
+      final match = RegExp(
+        r'^\s*ALAMAT\s*[:.]?\s*(.*)$',
+        caseSensitive: false,
+      ).firstMatch(lines[index]);
       if (match == null) continue;
 
       final parts = <String>[];
       final inline = match.group(1)?.trim() ?? '';
       if (inline.isNotEmpty) parts.add(inline);
-      for (var next = index + 1; next < lines.length && parts.length < 3; next++) {
+      for (
+        var next = index + 1;
+        next < lines.length && parts.length < 3;
+        next++
+      ) {
         if (_isFieldLabel(lines[next])) break;
         parts.add(lines[next].trim());
       }

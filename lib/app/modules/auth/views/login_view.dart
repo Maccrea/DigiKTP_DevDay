@@ -100,99 +100,99 @@ class LoginView extends GetView<AuthController> {
                 ),
                 child: Column(
                   children: [
-              CustomTextField(
-                label: 'NIP Petugas',
-                hintText: 'Contoh: 19940812',
-                prefixIcon: Icons.person_outline_rounded,
-                controller: controller.nipController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              ),
-              const SizedBox(height: 18),
-              CustomTextField(
-                label: 'Kata Sandi',
-                hintText: 'Masukkan kata sandi',
-                prefixIcon: Icons.lock_outline_rounded,
-                isPassword: true,
-                controller: controller.passwordController,
-                onChanged: controller.checkPasswordStrength,
-              ),
-              const SizedBox(height: 10),
-              Obx(
-                () => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: controller.passwordStrength.value,
-                        color: controller.passwordStrengthColor.value,
-                        backgroundColor: AppColors.border,
-                        minHeight: 6,
+                    CustomTextField(
+                      label: 'NIP Petugas',
+                      hintText: 'Contoh: 19940812',
+                      prefixIcon: Icons.person_outline_rounded,
+                      controller: controller.nipController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    ),
+                    const SizedBox(height: 18),
+                    CustomTextField(
+                      label: 'Kata Sandi',
+                      hintText: 'Masukkan kata sandi',
+                      prefixIcon: Icons.lock_outline_rounded,
+                      isPassword: true,
+                      controller: controller.passwordController,
+                      onChanged: controller.checkPasswordStrength,
+                    ),
+                    const SizedBox(height: 10),
+                    Obx(
+                      () => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: LinearProgressIndicator(
+                              value: controller.passwordStrength.value,
+                              color: controller.passwordStrengthColor.value,
+                              backgroundColor: AppColors.border,
+                              minHeight: 6,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Keamanan kata sandi',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                              Text(
+                                controller.passwordStrengthText.value.isEmpty
+                                    ? 'Belum diisi'
+                                    : controller.passwordStrengthText.value,
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: controller.passwordStrengthColor.value,
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (controller.password.value.isNotEmpty &&
+                              controller.passwordStrength.value < 1) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              controller.passwordHint.value,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: AppColors.textSecondary,
+                                height: 1.4,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Keamanan kata sandi',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        Text(
-                          controller.passwordStrengthText.value.isEmpty
-                              ? 'Belum diisi'
-                              : controller.passwordStrengthText.value,
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: controller.passwordStrengthColor.value,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (controller.password.value.isNotEmpty &&
-                        controller.passwordStrength.value < 1) ...[
-                      const SizedBox(height: 6),
-                      Text(
-                        controller.passwordHint.value,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          color: AppColors.textSecondary,
-                          height: 1.4,
-                        ),
+                    const SizedBox(height: 20),
+                    Obx(
+                      () => CustomDropdownField<String>(
+                        label: 'Instansi Induk',
+                        hintText: 'Pilih instansi',
+                        prefixIcon: Icons.apartment_outlined,
+                        value: controller.selectedInstansi.value.isEmpty
+                            ? null
+                            : controller.selectedInstansi.value,
+                        items: controller.listInstansi
+                            .map(
+                              (instansi) => DropdownMenuItem(
+                                value: instansi,
+                                child: Text(instansi),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          controller.selectedInstansi.value = value ?? '';
+                        },
                       ),
-                    ],
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              Obx(
-                () => CustomDropdownField<String>(
-                  label: 'Instansi Induk',
-                  hintText: 'Pilih instansi',
-                  prefixIcon: Icons.apartment_outlined,
-                  value: controller.selectedInstansi.value.isEmpty
-                      ? null
-                      : controller.selectedInstansi.value,
-                  items: controller.listInstansi
-                      .map(
-                        (instansi) => DropdownMenuItem(
-                          value: instansi,
-                          child: Text(instansi),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (value) {
-                    controller.selectedInstansi.value = value ?? '';
-                  },
-                ),
-              ),
+                    ),
                   ],
                 ),
               ),

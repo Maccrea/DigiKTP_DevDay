@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1800),
     )..repeat(reverse: true);
-    
+
     _cardScale = Tween<double>(begin: 0.95, end: 1.02).animate(
       CurvedAnimation(parent: _motionController, curve: Curves.easeInOut),
     );
@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen>
     _scanLineProgress = Tween<double>(begin: 0, end: 90).animate(
       CurvedAnimation(parent: _motionController, curve: Curves.easeInOut),
     );
-    
+
     _openNextScreen();
   }
 
@@ -51,9 +51,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     final hasSeenOnboarding =
         GetStorage().read<bool>('has_seen_onboarding') ?? false;
-    Get.offAllNamed(
-      hasSeenOnboarding ? Routes.DASHBOARD : Routes.ONBOARDING,
-    );
+    Get.offAllNamed(hasSeenOnboarding ? Routes.DASHBOARD : Routes.ONBOARDING);
   }
 
   @override
@@ -64,7 +62,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    const baseColor = Color(0xFF0D233A); 
+    const baseColor = Color(0xFF0D233A);
     const darkColor = Color(0xFF081625);
 
     return Scaffold(
@@ -81,7 +79,7 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
           ),
-          
+
           Positioned(
             top: -50,
             right: -80,
@@ -92,7 +90,10 @@ class _SplashScreenState extends State<SplashScreen>
                 height: 220,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white.withOpacity(0.15), width: 3),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.15),
+                    width: 3,
+                  ),
                   gradient: LinearGradient(
                     colors: [
                       Colors.white.withOpacity(0.08),
@@ -115,12 +116,10 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
           ),
-          
+
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 40.0, sigmaY: 40.0),
-            child: Container(
-              color: Colors.transparent,
-            ),
+            child: Container(color: Colors.transparent),
           ),
 
           SafeArea(
@@ -129,7 +128,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: Column(
                 children: [
                   const Spacer(),
-                  
+
                   AnimatedBuilder(
                     animation: _motionController,
                     builder: (context, child) => Transform.scale(
@@ -184,7 +183,7 @@ class _SplashScreenState extends State<SplashScreen>
                           gradient: const LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
-                            colors: [Color(0xFFE2F0F9), Color(0xFFC7E0F4)], 
+                            colors: [Color(0xFFE2F0F9), Color(0xFFC7E0F4)],
                           ),
                           borderRadius: BorderRadius.circular(14),
                           boxShadow: [
@@ -197,7 +196,7 @@ class _SplashScreenState extends State<SplashScreen>
                               color: Colors.white.withOpacity(0.8),
                               blurRadius: 2,
                               spreadRadius: -1,
-                              offset: const Offset(0, 1), 
+                              offset: const Offset(0, 1),
                             ),
                           ],
                         ),
@@ -212,19 +211,23 @@ class _SplashScreenState extends State<SplashScreen>
                                     height: 4,
                                     margin: const EdgeInsets.only(bottom: 8),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF0F172A).withOpacity(0.8),
+                                      color: const Color(
+                                        0xFF0F172A,
+                                      ).withOpacity(0.8),
                                       borderRadius: BorderRadius.circular(2),
                                     ),
                                   ),
                                 ),
-                                
+
                                 Expanded(
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             const SizedBox(height: 4),
                                             _buildDataLine(60, 6),
@@ -237,7 +240,7 @@ class _SplashScreenState extends State<SplashScreen>
                                             const Spacer(),
                                             const Icon(
                                               Icons.memory_rounded,
-                                              color: Color(0xFFB48529), 
+                                              color: Color(0xFFB48529),
                                               size: 20,
                                             ),
                                           ],
@@ -248,9 +251,17 @@ class _SplashScreenState extends State<SplashScreen>
                                         width: 42,
                                         height: 56,
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFF94A3B8).withOpacity(0.4),
-                                          borderRadius: BorderRadius.circular(6),
-                                          border: Border.all(color: Colors.white.withOpacity(0.5)),
+                                          color: const Color(
+                                            0xFF94A3B8,
+                                          ).withOpacity(0.4),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
+                                          border: Border.all(
+                                            color: Colors.white.withOpacity(
+                                              0.5,
+                                            ),
+                                          ),
                                         ),
                                         child: Icon(
                                           Icons.person_rounded,
@@ -263,17 +274,21 @@ class _SplashScreenState extends State<SplashScreen>
                                 ),
                               ],
                             ),
-                            
+
                             Positioned(
                               left: 0,
                               right: 0,
                               top: 0,
                               child: AnimatedBuilder(
                                 animation: _scanLineProgress,
-                                builder: (context, child) => Transform.translate(
-                                  offset: Offset(0, _scanLineProgress.value),
-                                  child: child,
-                                ),
+                                builder: (context, child) =>
+                                    Transform.translate(
+                                      offset: Offset(
+                                        0,
+                                        _scanLineProgress.value,
+                                      ),
+                                      child: child,
+                                    ),
                                 child: Container(
                                   height: 3,
                                   decoration: BoxDecoration(
@@ -300,9 +315,9 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 56),
-                  
+
                   Text(
                     'NIKKita',
                     style: GoogleFonts.nunito(
@@ -321,7 +336,10 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                   Container(
                     margin: const EdgeInsets.only(top: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
@@ -337,33 +355,8 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                     ),
                   ),
-                  
+
                   const Spacer(),
-                  
-                  // // PROGRESS INDICATOR
-                  // Column(
-                  //   children: [
-                  //     Text(
-                  //       'Memuat sistem keamanan...',
-                  //       style: GoogleFonts.inter(
-                  //         color: Colors.white.withOpacity(0.5),
-                  //         fontSize: 11,
-                  //       ),
-                  //     ),
-                  //     const SizedBox(height: 12),
-                  //     SizedBox(
-                  //       width: 80,
-                  //       child: ClipRRect(
-                  //         borderRadius: BorderRadius.circular(4),
-                  //         child: const LinearProgressIndicator(
-                  //           minHeight: 4,
-                  //           backgroundColor: Color(0x33FFFFFF),
-                  //           valueColor: AlwaysStoppedAnimation<Color>(_peach),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
                 ],
               ),
             ),

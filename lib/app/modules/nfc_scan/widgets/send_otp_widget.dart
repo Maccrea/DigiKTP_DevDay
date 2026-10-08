@@ -66,7 +66,10 @@ class SendOtpWidget extends GetView<NfcScanController> {
                 const SizedBox(height: 16),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(14),
@@ -75,7 +78,11 @@ class SendOtpWidget extends GetView<NfcScanController> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.email_outlined, size: 18, color: AppColors.primary),
+                      const Icon(
+                        Icons.email_outlined,
+                        size: 18,
+                        color: AppColors.primary,
+                      ),
                       const SizedBox(width: 10),
                       Flexible(
                         child: Obx(
@@ -97,7 +104,11 @@ class SendOtpWidget extends GetView<NfcScanController> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.info_outline, size: 15, color: Color(0xFF94A3B8)),
+                    const Icon(
+                      Icons.info_outline,
+                      size: 15,
+                      color: Color(0xFF94A3B8),
+                    ),
                     const SizedBox(width: 6),
                     Flexible(
                       child: Text(

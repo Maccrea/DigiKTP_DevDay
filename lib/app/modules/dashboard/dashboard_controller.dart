@@ -14,7 +14,8 @@ class DashboardController extends GetxController {
   final RxString activePosko = ''.obs;
   final RxString selectedService = 'Verifikasi e-KTP'.obs;
 
-  final RxList<Map<String, dynamic>> dashboardActivities = <Map<String, dynamic>>[].obs;
+  final RxList<Map<String, dynamic>> dashboardActivities =
+      <Map<String, dynamic>>[].obs;
 
   final RxBool isLoading = true.obs;
   final RxString errorMessage = ''.obs;
@@ -49,12 +50,14 @@ class DashboardController extends GetxController {
     try {
       isLoading.value = true;
       errorMessage.value = '';
-      
+
       final logs = await _apiProvider.fetchLayananLogs().timeout(
         const Duration(seconds: 4),
         onTimeout: () {
-          print('⚠️ Keterlambatan koneksi API, memuat halaman secara offline/kosong.');
-          return []; 
+          print(
+            '⚠️ Keterlambatan koneksi API, memuat halaman secara offline/kosong.',
+          );
+          return [];
         },
       );
 
@@ -63,7 +66,7 @@ class DashboardController extends GetxController {
       errorMessage.value = 'Gagal memuat data dari server.';
       print('GAGAL MEMUAT RIWAYAT LAYANAN: $error');
     } finally {
-      isLoading.value = false; 
+      isLoading.value = false;
     }
   }
 
@@ -92,10 +95,7 @@ class DashboardController extends GetxController {
       return;
     }
 
-    Get.toNamed(
-      Routes.NFC_SCAN,
-      arguments: {'service': selectedService.value},
-    );
+    Get.toNamed(Routes.NFC_SCAN, arguments: {'service': selectedService.value});
   }
 
   Future<void> logout() async {
@@ -111,8 +111,12 @@ class DashboardController extends GetxController {
   List<Map<String, dynamic>> get filteredActivities {
     return dashboardActivities.where((item) {
       final searchLower = searchQuery.value.toLowerCase();
-      final nameMatches = (item['name'] ?? '').toLowerCase().contains(searchLower);
-      final nikMatches = (item['nik'] ?? '').toLowerCase().contains(searchLower);
+      final nameMatches = (item['name'] ?? '').toLowerCase().contains(
+        searchLower,
+      );
+      final nikMatches = (item['nik'] ?? '').toLowerCase().contains(
+        searchLower,
+      );
       final matchesSearch = searchLower.isEmpty || nameMatches || nikMatches;
 
       bool matchesStatus = true;

@@ -27,7 +27,10 @@ class MiniKtpCard extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            border: Border.all(color: Colors.white.withOpacity(0.7), width: 0.8),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.7),
+              width: 0.8,
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.28),
@@ -87,7 +90,11 @@ class MiniKtpCard extends StatelessWidget {
                       color: _ink.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Icon(Icons.person_rounded, size: 24, color: _ink.withOpacity(0.45)),
+                    child: Icon(
+                      Icons.person_rounded,
+                      size: 24,
+                      color: _ink.withOpacity(0.45),
+                    ),
                   ),
                 ],
               ),
@@ -99,13 +106,13 @@ class MiniKtpCard extends StatelessWidget {
   }
 
   Widget _bar(double w) => Container(
-        width: w,
-        height: 3,
-        decoration: BoxDecoration(
-          color: _ink.withOpacity(0.25),
-          borderRadius: BorderRadius.circular(2),
-        ),
-      );
+    width: w,
+    height: 3,
+    decoration: BoxDecoration(
+      color: _ink.withOpacity(0.25),
+      borderRadius: BorderRadius.circular(2),
+    ),
+  );
 }
 
 class _KtpChip extends StatelessWidget {
@@ -135,9 +142,21 @@ class _ChipLinesPainter extends CustomPainter {
     final p = Paint()
       ..color = const Color(0xFF7A5A12).withOpacity(0.55)
       ..strokeWidth = 0.6;
-    canvas.drawLine(Offset(0, size.height / 3), Offset(size.width, size.height / 3), p);
-    canvas.drawLine(Offset(0, size.height * 2 / 3), Offset(size.width, size.height * 2 / 3), p);
-    canvas.drawLine(Offset(size.width / 2, 0), Offset(size.width / 2, size.height), p);
+    canvas.drawLine(
+      Offset(0, size.height / 3),
+      Offset(size.width, size.height / 3),
+      p,
+    );
+    canvas.drawLine(
+      Offset(0, size.height * 2 / 3),
+      Offset(size.width, size.height * 2 / 3),
+      p,
+    );
+    canvas.drawLine(
+      Offset(size.width / 2, 0),
+      Offset(size.width / 2, size.height),
+      p,
+    );
   }
 
   @override

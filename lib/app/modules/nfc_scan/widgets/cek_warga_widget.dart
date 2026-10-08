@@ -98,7 +98,11 @@ class CekWargaWidget extends GetView<NfcScanController> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.document_scanner_outlined, size: 42, color: Color(0xFF94A3B8)),
+                            const Icon(
+                              Icons.document_scanner_outlined,
+                              size: 42,
+                              color: Color(0xFF94A3B8),
+                            ),
                             const SizedBox(height: 10),
                             Text(
                               'Area Pemindaian KTP',
@@ -116,11 +120,17 @@ class CekWargaWidget extends GetView<NfcScanController> {
                   ],
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: photo == null ? AppColors.primary : Colors.white,
-                      foregroundColor: photo == null ? Colors.white : AppColors.primary,
+                      backgroundColor: photo == null
+                          ? AppColors.primary
+                          : Colors.white,
+                      foregroundColor: photo == null
+                          ? Colors.white
+                          : AppColors.primary,
                       minimumSize: const Size.fromHeight(50),
                       elevation: 0,
-                      side: photo != null ? const BorderSide(color: AppColors.primary) : null,
+                      side: photo != null
+                          ? const BorderSide(color: AppColors.primary)
+                          : null,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -130,23 +140,33 @@ class CekWargaWidget extends GetView<NfcScanController> {
                         ? const SizedBox(
                             width: 18,
                             height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           )
-                        : Icon(photo == null ? Icons.camera_alt_rounded : Icons.refresh_rounded),
+                        : Icon(
+                            photo == null
+                                ? Icons.camera_alt_rounded
+                                : Icons.refresh_rounded,
+                          ),
                     label: Text(
                       isReading
                           ? 'Menganalisis Data...'
                           : photo == null
                           ? 'Mulai Pemindaian OCR'
                           : 'Pindai Ulang KTP',
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ],
               );
             }),
             const SizedBox(height: 24),
-            
+
             const Divider(height: 1, color: Color(0xFFF1F5F9)),
             const SizedBox(height: 20),
 
@@ -197,11 +217,18 @@ class CekWargaWidget extends GetView<NfcScanController> {
                     "nama_lengkap": controller.newNameController.text.trim(),
                     "email": controller.newEmailController.text.trim(),
                   };
-                  controller.submitRegistrasiWarga(formData);
+                  controller.submitRegistrasiWarga();
                 },
                 child: Obx(
                   () => controller.isLoading.value
-                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
                       : Text(
                           'Simpan & Lanjutkan',
                           style: GoogleFonts.inter(

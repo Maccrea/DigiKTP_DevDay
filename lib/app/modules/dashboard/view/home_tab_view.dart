@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math' as math;
-
 import 'package:digiktp/app/modules/dashboard/dashboard_controller.dart';
 import 'package:digiktp/app/modules/dashboard/view/ktp_card.dart';
 import 'package:digiktp/app/modules/dashboard/view/service_detail_view.dart';
@@ -8,13 +7,19 @@ import 'package:digiktp/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:digiktp/app/modules/dashboard/view/notification_page.dart';
+
 
 List<Map<String, dynamic>> _todayActivities(
   Iterable<Map<String, dynamic>> activities,
 ) {
   final now = DateTime.now();
+
   return activities.where((activity) {
-    final time = DateTime.tryParse(activity['time']?.toString() ?? '')?.toLocal();
+    final time = DateTime.tryParse(
+      activity['time']?.toString() ?? '',
+    )?.toLocal();
+
     return time != null &&
         time.year == now.year &&
         time.month == now.month &&
@@ -29,86 +34,96 @@ class HomeTabView extends GetView<DashboardController> {
   Widget build(BuildContext context) {
     return ColoredBox(
       color: AppColors.background,
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DashboardHeader(controller: controller),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Transform.translate(
-                    offset: const Offset(0, -22),
-                    child: DailyStatsRow(controller: controller),
-                  ),
-                  Transform.translate(
-                    offset: const Offset(0, -10),
-                    child: const GovNewsSlider(),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Pilar Layanan',
-                        style: GoogleFonts.nunito(
-                          color: AppColors.primary,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      Text(
-                        'Pilih modul warga',
-                        style: GoogleFonts.inter(
-                          color: AppColors.textSecondary,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  ServiceCategoryGrid(onSelect: _openService),
-                  const SizedBox(height: 28),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Aktivitas Terbaru',
-                        style: GoogleFonts.nunito(
-                          color: AppColors.primary,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      TextButton.icon(
-                        onPressed: () => controller.changeBottomNavIndex(2),
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppColors.primary,
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                        ),
-                        iconAlignment: IconAlignment.end,
-                        icon: const Icon(Icons.arrow_forward_rounded, size: 15),
-                        label: Text(
-                          'Lihat Semua',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
+      child: RefreshIndicator(
+        onRefresh: controller.loadLayananLogs,
+        color: AppColors.primary,
+        backgroundColor: Colors.white,
+        displacement: 24,
+        strokeWidth: 2.5,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DashboardHeader(controller: controller),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Transform.translate(
+                      offset: const Offset(0, -22),
+                      child: DailyStatsRow(controller: controller),
+                    ),
+                    Transform.translate(
+                      offset: const Offset(0, -10),
+                      child: const GovNewsSlider(),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Pilar Layanan',
+                          style: GoogleFonts.nunito(
+                            color: AppColors.primary,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  RecentActivityList(controller: controller),
-                ],
+                        Text(
+                          'Pilih modul warga',
+                          style: GoogleFonts.inter(
+                            color: AppColors.textSecondary,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    ServiceCategoryGrid(onSelect: _openService),
+                    const SizedBox(height: 28),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Aktivitas Terbaru',
+                          style: GoogleFonts.nunito(
+                            color: AppColors.primary,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: () => controller.changeBottomNavIndex(2),
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.primary,
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                          ),
+                          iconAlignment: IconAlignment.end,
+                          icon: const Icon(
+                            Icons.arrow_forward_rounded,
+                            size: 15,
+                          ),
+                          label: Text(
+                            'Lihat Semua',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    RecentActivityList(controller: controller),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -119,7 +134,6 @@ class HomeTabView extends GetView<DashboardController> {
   }
 }
 
-
 class KtpHero extends StatefulWidget {
   const KtpHero({super.key});
 
@@ -128,8 +142,10 @@ class KtpHero extends StatefulWidget {
 }
 
 class _KtpHeroState extends State<KtpHero> with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl =
-      AnimationController(vsync: this, duration: const Duration(seconds: 4))..repeat();
+  late final AnimationController _ctrl = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 4),
+  )..repeat();
 
   @override
   void dispose() {
@@ -146,6 +162,7 @@ class _KtpHeroState extends State<KtpHero> with SingleTickerProviderStateMixin {
         animation: _ctrl,
         builder: (context, _) {
           final float = math.sin(_ctrl.value * 2 * math.pi) * 3;
+
           return Stack(
             clipBehavior: Clip.none,
             children: [
@@ -186,25 +203,30 @@ class _KtpHeroState extends State<KtpHero> with SingleTickerProviderStateMixin {
 
 class _PulsePainter extends CustomPainter {
   _PulsePainter(this.t);
+
   final double t;
 
   @override
   void paint(Canvas canvas, Size size) {
     final c = Offset(size.width * 0.5, size.height * 0.52);
+
     for (int i = 0; i < 3; i++) {
       final p = (t + i / 3) % 1.0;
+
       final paint = Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1
         ..color = Colors.white.withOpacity((1 - p) * 0.16);
+
       canvas.drawCircle(c, 50 + 80 * p, paint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant _PulsePainter old) => old.t != t;
+  bool shouldRepaint(covariant _PulsePainter old) {
+    return old.t != t;
+  }
 }
-
 
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({required this.controller, super.key});
@@ -242,7 +264,11 @@ class DashboardHeader extends StatelessWidget {
                               color: Colors.white.withOpacity(0.15),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: const Icon(Icons.contactless_rounded, color: Colors.white, size: 18),
+                            child: const Icon(
+                              Icons.contactless_rounded,
+                              color: Colors.white,
+                              size: 18,
+                            ),
                           ),
                           const SizedBox(width: 10),
                           Column(
@@ -270,22 +296,37 @@ class DashboardHeader extends StatelessWidget {
                           ),
                         ],
                       ),
-                      Container(
-                        width: 42,
-                        height: 42,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white.withOpacity(0.2)),
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(() => const NotificationPage());
+                        },
+                        child: Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.2),
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.notifications_none_rounded,
+                            color: Colors.white,
+                            size: 22,
+                          ),
                         ),
-                        child: const Icon(Icons.person_outline_rounded, color: Colors.white, size: 22),
                       ),
                     ],
                   ),
                   const SizedBox(height: 28),
                   Obx(() {
                     final name = controller.userName.value.trim();
-                    final firstName = name.isEmpty ? 'Petugas' : name.split(RegExp(r'\s+')).first;
+
+                    final firstName = name.isEmpty
+                        ? 'Petugas'
+                        : name.split(RegExp(r'\s+')).first;
+
                     return Padding(
                       padding: const EdgeInsets.only(right: 130),
                       child: Column(
@@ -335,6 +376,7 @@ class DailyStatsRow extends StatelessWidget {
         Expanded(
           child: Obx(() {
             final today = _todayActivities(controller.dashboardActivities);
+
             return _StatCard(
               label: 'Total Scan',
               value: today.length.toString(),
@@ -347,10 +389,14 @@ class DailyStatsRow extends StatelessWidget {
         const SizedBox(width: 14),
         Expanded(
           child: Obx(() {
-            final successful = _todayActivities(controller.dashboardActivities).where((item) {
-              return (item['status'] ?? '').toString().toUpperCase() == 'SUCCESS' ||
-                  item['isSuccess'] == true;
-            }).length;
+            final successful = _todayActivities(controller.dashboardActivities)
+                .where((item) {
+                  return (item['status'] ?? '').toString().toUpperCase() ==
+                          'SUCCESS' ||
+                      item['isSuccess'] == true;
+                })
+                .length;
+
             return _StatCard(
               label: 'Berhasil',
               value: successful.toString(),
@@ -411,7 +457,10 @@ class _StatCard extends StatelessWidget {
               Container(
                 width: 40,
                 height: 40,
-                decoration: BoxDecoration(color: tint, borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(
+                  color: tint,
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Icon(icon, color: iconColor, size: 20),
               ),
               const SizedBox(width: 14),
@@ -457,10 +506,30 @@ class ServiceCategoryGrid extends StatelessWidget {
   final ValueChanged<String> onSelect;
 
   static const _services = [
-    ('Administrasi', Icons.badge_outlined, 'Administrasi Kependudukan', AppColors.primary),
-    ('Kesehatan', Icons.health_and_safety_outlined, 'Layanan Kesehatan', AppColors.success),
-    ('Bansos', Icons.volunteer_activism_outlined, 'Verifikasi Bantuan Sosial', Color(0xFFD97706)),
-    ('Program MBG', Icons.lunch_dining_rounded, 'Pendataan Program MBG', Color(0xFFE11D48)),
+    (
+      'Administrasi',
+      Icons.badge_outlined,
+      'Administrasi Kependudukan',
+      AppColors.primary,
+    ),
+    (
+      'Kesehatan',
+      Icons.health_and_safety_outlined,
+      'Layanan Kesehatan',
+      AppColors.success,
+    ),
+    (
+      'Bansos',
+      Icons.volunteer_activism_outlined,
+      'Verifikasi Bantuan Sosial',
+      Color(0xFFD97706),
+    ),
+    (
+      'Program MBG',
+      Icons.lunch_dining_rounded,
+      'Pendataan Program MBG',
+      Color(0xFFE11D48),
+    ),
   ];
 
   @override
@@ -506,6 +575,7 @@ class _ServiceBubbleState extends State<_ServiceBubble> {
   @override
   Widget build(BuildContext context) {
     final c = widget.color;
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: widget.onTap,
@@ -554,7 +624,9 @@ class RecentActivityList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final latest = _todayActivities(controller.dashboardActivities).take(3).toList();
+      final latest = _todayActivities(
+        controller.dashboardActivities,
+      ).take(3).toList();
 
       return Container(
         width: double.infinity,
@@ -578,7 +650,12 @@ class RecentActivityList extends StatelessWidget {
                   for (int i = 0; i < latest.length; i++) ...[
                     _ActivityRow(activity: latest[i]),
                     if (i != latest.length - 1)
-                      const Divider(height: 1, thickness: 1, indent: 70, color: Color(0xFFF1F5F9)),
+                      const Divider(
+                        height: 1,
+                        thickness: 1,
+                        indent: 70,
+                        color: Color(0xFFF1F5F9),
+                      ),
                   ],
                 ],
               ),
@@ -603,7 +680,11 @@ class _EmptyActivity extends StatelessWidget {
               color: AppColors.primary.withOpacity(0.08),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.nfc_rounded, color: AppColors.primary, size: 20),
+            child: const Icon(
+              Icons.nfc_rounded,
+              color: AppColors.primary,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -621,7 +702,10 @@ class _EmptyActivity extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   'Tempelkan e-KTP warga untuk memulai.',
-                  style: GoogleFonts.inter(color: AppColors.textSecondary, fontSize: 11),
+                  style: GoogleFonts.inter(
+                    color: AppColors.textSecondary,
+                    fontSize: 11,
+                  ),
                 ),
               ],
             ),
@@ -640,9 +724,13 @@ class _ActivityRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = (activity['status'] ?? '').toString().toUpperCase();
+
     final ok = status == 'SUCCESS' || activity['isSuccess'] == true;
+
     final accent = ok ? AppColors.success : const Color(0xFFEF4444);
+
     final name = (activity['name'] ?? '').toString().trim();
+
     final initial = name.isEmpty ? 'W' : name[0].toUpperCase();
 
     return Padding(
@@ -686,7 +774,10 @@ class _ActivityRow extends StatelessWidget {
                   '${activity['service'] ?? 'Layanan Warga'}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(color: AppColors.textSecondary, fontSize: 11),
+                  style: GoogleFonts.inter(
+                    color: AppColors.textSecondary,
+                    fontSize: 11,
+                  ),
                 ),
               ],
             ),
@@ -710,7 +801,10 @@ class _ActivityRow extends StatelessWidget {
                   Container(
                     width: 6,
                     height: 6,
-                    decoration: BoxDecoration(color: accent, shape: BoxShape.circle),
+                    decoration: BoxDecoration(
+                      color: accent,
+                      shape: BoxShape.circle,
+                    ),
                   ),
                   const SizedBox(width: 5),
                   Text(
@@ -732,14 +826,21 @@ class _ActivityRow extends StatelessWidget {
 
   String _maskName(String name) {
     if (name.isEmpty) return 'Warga';
+
     final parts = name.split(RegExp(r'\s+'));
-    return parts.length == 1 ? '${parts.first[0]}***' : '${parts.first[0]}*** ${parts.last}';
+
+    return parts.length == 1
+        ? '${parts.first[0]}***'
+        : '${parts.first[0]}*** ${parts.last}';
   }
 
   String _timeOfDay(dynamic rawTime) {
     final parsed = DateTime.tryParse(rawTime?.toString() ?? '')?.toLocal();
+
     if (parsed == null) return '';
-    return '${parsed.hour.toString().padLeft(2, '0')}:${parsed.minute.toString().padLeft(2, '0')}';
+
+    return '${parsed.hour.toString().padLeft(2, '0')}:'
+        '${parsed.minute.toString().padLeft(2, '0')}';
   }
 }
 
@@ -752,6 +853,7 @@ class GovNewsSlider extends StatefulWidget {
 
 class _GovNewsSliderState extends State<GovNewsSlider> {
   final PageController _pageController = PageController();
+
   Timer? _timer;
   int _currentPage = 0;
 
@@ -759,24 +861,30 @@ class _GovNewsSliderState extends State<GovNewsSlider> {
     {
       'badge': 'New Update',
       'title': 'Scan e-KTP Kini Lebih Cepat',
-      'subtitle': 'Proses verifikasi data warga selesai dalam waktu kurang dari 3 detik.',
-      'imageAsset': 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop',
+      'subtitle':
+          'Proses verifikasi data warga selesai dalam waktu kurang dari 3 detik.',
+      'imageAsset':
+          'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop',
       'visual': 'ktp',
       'icon': Icons.nfc_rounded,
     },
     {
       'badge': 'Info Dukcapil',
       'title': 'Integrasi Pusat 100% Aktif',
-      'subtitle': 'Sinkronisasi data kependudukan langsung dari server pusat tanpa kendala.',
-      'imageAsset': 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1000&auto=format&fit=crop',
+      'subtitle':
+          'Sinkronisasi data kependudukan langsung dari server pusat tanpa kendala.',
+      'imageAsset':
+          'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1000&auto=format&fit=crop',
       'visual': 'icon',
       'icon': Icons.hub_rounded,
     },
     {
       'badge': 'Keamanan Data',
       'title': 'Standar Enkripsi B2G Resmi',
-      'subtitle': 'Seluruh data pemindaian dijamin aman sesuai regulasi perlindungan data.',
-      'imageAsset': 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1000&auto=format&fit=crop',
+      'subtitle':
+          'Seluruh data pemindaian dijamin aman sesuai regulasi perlindungan data.',
+      'imageAsset':
+          'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1000&auto=format&fit=crop',
       'visual': 'icon',
       'icon': Icons.shield_rounded,
     },
@@ -785,13 +893,16 @@ class _GovNewsSliderState extends State<GovNewsSlider> {
   @override
   void initState() {
     super.initState();
+
     _timer = Timer.periodic(const Duration(seconds: 6), (Timer timer) {
       if (!mounted) return;
+
       if (_currentPage < _news.length - 1) {
         _currentPage++;
       } else {
         _currentPage = 0;
       }
+
       if (_pageController.hasClients) {
         _pageController.animateToPage(
           _currentPage,
@@ -826,6 +937,7 @@ class _GovNewsSliderState extends State<GovNewsSlider> {
             itemBuilder: (context, index) {
               final item = _news[index];
               final isKtp = item['visual'] == 'ktp';
+
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
                 clipBehavior: Clip.antiAlias,
@@ -848,7 +960,8 @@ class _GovNewsSliderState extends State<GovNewsSlider> {
                       fit: BoxFit.cover,
                       color: Colors.black.withOpacity(0.55),
                       colorBlendMode: BlendMode.darken,
-                      errorBuilder: (_, __, ___) => const ColoredBox(color: AppColors.primary),
+                      errorBuilder: (_, __, ___) =>
+                          const ColoredBox(color: AppColors.primary),
                     ),
                     const DecoratedBox(
                       decoration: BoxDecoration(
@@ -859,7 +972,6 @@ class _GovNewsSliderState extends State<GovNewsSlider> {
                         ),
                       ),
                     ),
-
                     if (isKtp) ...[
                       Positioned(
                         right: -20,
@@ -888,9 +1000,8 @@ class _GovNewsSliderState extends State<GovNewsSlider> {
                           color: Colors.white.withOpacity(0.12),
                         ),
                       ),
-
                     Padding(
-                      padding: const EdgeInsets.all(18.0),
+                      padding: const EdgeInsets.all(18),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -898,11 +1009,16 @@ class _GovNewsSliderState extends State<GovNewsSlider> {
                           Align(
                             alignment: Alignment.topLeft,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: Colors.white.withOpacity(0.3)),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.3),
+                                ),
                               ),
                               child: Text(
                                 item['badge'] as String,
@@ -953,7 +1069,9 @@ class _GovNewsSliderState extends State<GovNewsSlider> {
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.2),
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white.withOpacity(0.3)),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.3),
+                                  ),
                                 ),
                                 child: const Icon(
                                   Icons.arrow_forward_rounded,
@@ -983,7 +1101,9 @@ class _GovNewsSliderState extends State<GovNewsSlider> {
               height: 4,
               width: _currentPage == index ? 16 : 6,
               decoration: BoxDecoration(
-                color: _currentPage == index ? AppColors.primary : const Color(0xFFCBD5E1),
+                color: _currentPage == index
+                    ? AppColors.primary
+                    : const Color(0xFFCBD5E1),
                 borderRadius: BorderRadius.circular(4),
               ),
             ),

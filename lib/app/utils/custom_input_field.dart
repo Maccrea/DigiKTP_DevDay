@@ -56,10 +56,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           keyboardType: widget.keyboardType,
           inputFormatters: widget.inputFormatters,
           onChanged: widget.onChanged,
-          style: GoogleFonts.inter(
-            fontSize: 15,
-            color: AppColors.textPrimary,
-          ),
+          style: GoogleFonts.inter(fontSize: 15, color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: widget.hintText,
             prefixIcon: Icon(
@@ -127,10 +124,7 @@ class CustomDropdownField<T> extends StatelessWidget {
             Icons.keyboard_arrow_down_rounded,
             color: AppColors.textSecondary,
           ),
-          style: GoogleFonts.inter(
-            fontSize: 15,
-            color: AppColors.textPrimary,
-          ),
+          style: GoogleFonts.inter(fontSize: 15, color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: hintText,
             prefixIcon: Icon(

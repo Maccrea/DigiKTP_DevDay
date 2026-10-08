@@ -109,17 +109,28 @@ class ActivityTabView extends GetView<DashboardController> {
                         ],
                       ),
                       child: TextField(
-                        onChanged: (value) => controller.searchQuery.value = value,
+                        onChanged: (value) =>
+                            controller.searchQuery.value = value,
                         style: GoogleFonts.inter(
                           color: AppColors.textPrimary,
                           fontSize: 13,
                         ),
                         decoration: InputDecoration(
                           hintText: 'Cari nama warga atau NIK...',
-                          hintStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 12),
-                          prefixIcon: const Icon(Icons.search_rounded, size: 20, color: Color(0xFF94A3B8)),
+                          hintStyle: GoogleFonts.inter(
+                            color: const Color(0xFF94A3B8),
+                            fontSize: 12,
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.search_rounded,
+                            size: 20,
+                            color: Color(0xFF94A3B8),
+                          ),
                           border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
                         ),
                       ),
                     ),
@@ -157,7 +168,8 @@ class ActivityTabView extends GetView<DashboardController> {
                 if (activities.isEmpty) {
                   return _EmptyHistory(
                     isLoading: controller.isLoading.value,
-                    hasQuery: controller.searchQuery.value.isNotEmpty ||
+                    hasQuery:
+                        controller.searchQuery.value.isNotEmpty ||
                         controller.selectedStatusFilter.value != 'Semua' ||
                         controller.selectedTimeFilter.value != 'Semua',
                     onRefresh: controller.loadLayananLogs,
@@ -210,7 +222,7 @@ class ActivityTabView extends GetView<DashboardController> {
             ),
             const SizedBox(height: 20),
             Text(
-                  'Filter Riwayat',
+              'Filter Riwayat',
               style: GoogleFonts.nunito(
                 color: AppColors.primary,
                 fontSize: 20,
@@ -374,7 +386,9 @@ class _FilterGroup extends StatelessWidget {
                 selectedColor: const Color(0xFFEFF6FF),
                 backgroundColor: Colors.white,
                 side: BorderSide(
-                  color: isSelected ? AppColors.primary : const Color(0xFFE2E8F0),
+                  color: isSelected
+                      ? AppColors.primary
+                      : const Color(0xFFE2E8F0),
                 ),
                 labelStyle: GoogleFonts.inter(
                   color: isSelected

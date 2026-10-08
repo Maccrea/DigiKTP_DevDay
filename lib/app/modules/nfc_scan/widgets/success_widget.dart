@@ -87,7 +87,8 @@ class SuccessWidget extends GetView<NfcScanController> {
                       ),
                       const SizedBox(height: 6),
                       Obx(() {
-                        final logId = controller.logData['id'] ??
+                        final logId =
+                            controller.logData['id'] ??
                             controller.logData['id_log'] ??
                             'ID belum tersedia';
                         return Text(
@@ -123,7 +124,9 @@ class SuccessWidget extends GetView<NfcScanController> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.accent,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   onPressed: () {
                     if (Get.isRegistered<DashboardController>()) {
@@ -147,8 +150,13 @@ class SuccessWidget extends GetView<NfcScanController> {
                 height: 52,
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.primary, width: 1.5),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    side: const BorderSide(
+                      color: AppColors.primary,
+                      width: 1.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   onPressed: () {
                     controller.prepareNextScan();

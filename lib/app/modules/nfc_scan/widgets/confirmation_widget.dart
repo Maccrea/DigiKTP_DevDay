@@ -40,7 +40,11 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                         color: const Color(0xFFEAF0F8),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.assignment_turned_in_rounded, color: AppColors.primary, size: 24),
+                      child: const Icon(
+                        Icons.assignment_turned_in_rounded,
+                        color: AppColors.primary,
+                        size: 24,
+                      ),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
@@ -72,34 +76,39 @@ class ConfirmationWidget extends GetView<NfcScanController> {
                   padding: EdgeInsets.symmetric(vertical: 16.0),
                   child: Divider(height: 1, color: Color(0xFFF1F5F9)),
                 ),
-                Obx(() => Column(
-                  children: [
-                    _buildSummaryItem(
-                      icon: Icons.person_outline,
-                      label: 'Nama Lengkap',
-                      value: controller.verifiedWargaData['nama_lengkap'] ?? 'Memuat...',
-                    ),
-                    const SizedBox(height: 10),
-                    _buildSummaryItem(
-                      icon: Icons.badge_outlined,
-                      label: 'NIK Warga',
-                      value: controller.verifiedWargaData['nik'] ?? 'Memuat...',
-                    ),
-                    const SizedBox(height: 10),
-                    _buildSummaryItem(
-                      icon: Icons.nfc_rounded,
-                      label: 'UID e-KTP',
-                      value: controller.activeNfcUid,
-                      isMonospace: true,
-                    ),
-                    const SizedBox(height: 10),
-                    _buildSummaryItem(
-                      icon: Icons.mark_email_read_outlined,
-                      label: 'Email Terverifikasi',
-                      value: controller.targetedEmail.value,
-                    ),
-                  ],
-                )),
+                Obx(
+                  () => Column(
+                    children: [
+                      _buildSummaryItem(
+                        icon: Icons.person_outline,
+                        label: 'Nama Lengkap',
+                        value:
+                            controller.verifiedWargaData['nama_lengkap'] ??
+                            'Memuat...',
+                      ),
+                      const SizedBox(height: 10),
+                      _buildSummaryItem(
+                        icon: Icons.badge_outlined,
+                        label: 'NIK Warga',
+                        value:
+                            controller.verifiedWargaData['nik'] ?? 'Memuat...',
+                      ),
+                      const SizedBox(height: 10),
+                      _buildSummaryItem(
+                        icon: Icons.nfc_rounded,
+                        label: 'UID e-KTP',
+                        value: controller.activeNfcUid,
+                        isMonospace: true,
+                      ),
+                      const SizedBox(height: 10),
+                      _buildSummaryItem(
+                        icon: Icons.mark_email_read_outlined,
+                        label: 'Email Terverifikasi',
+                        value: controller.targetedEmail.value,
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -114,7 +123,11 @@ class ConfirmationWidget extends GetView<NfcScanController> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.shield_rounded, color: AppColors.primary, size: 22),
+                const Icon(
+                  Icons.shield_rounded,
+                  color: AppColors.primary,
+                  size: 22,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -137,14 +150,29 @@ class ConfirmationWidget extends GetView<NfcScanController> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.success,
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
-              onPressed: controller.isLoading.value ? null : () => controller.verifyOtpAndFetchData(),
+              onPressed: controller.isLoading.value
+                  ? null
+                  : () => controller.verifyOtpAndFetchData(),
               child: controller.isLoading.value
-                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2.5,
+                      ),
+                    )
                   : Text(
                       'Sah! Simpan Data',
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 15, color: Colors.white),
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: Colors.white,
+                      ),
                     ),
             ),
           ),
@@ -153,7 +181,12 @@ class ConfirmationWidget extends GetView<NfcScanController> {
     );
   }
 
-  Widget _buildSummaryItem({required IconData icon, required String label, required String value, bool isMonospace = false}) {
+  Widget _buildSummaryItem({
+    required IconData icon,
+    required String label,
+    required String value,
+    bool isMonospace = false,
+  }) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -168,7 +201,14 @@ class ConfirmationWidget extends GetView<NfcScanController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B), fontWeight: FontWeight.w600)),
+                Text(
+                  label,
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: const Color(0xFF64748B),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 const SizedBox(height: 2),
                 Text(
                   value,

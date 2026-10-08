@@ -36,7 +36,7 @@ class DashboardView extends GetView<DashboardController> {
           onPressed: controller.goToNfcScan,
         ),
         bottomNavigationBar: BottomAppBar(
-          height: 56, 
+          height: 56,
           color: Colors.white,
           elevation: 8,
           shape: const CircularNotchedRectangle(),
@@ -66,7 +66,7 @@ class DashboardView extends GetView<DashboardController> {
                         onTap: () => controller.changeBottomNavIndex(1),
                       ),
                     ),
-                    const SizedBox(width: 60), 
+                    const SizedBox(width: 60),
                     Expanded(
                       child: _DashboardNavItem(
                         label: 'Riwayat',
@@ -120,11 +120,9 @@ class _DashboardNavItem extends StatelessWidget {
         child: SizedBox(
           height: double.infinity,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, 
+            mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: color, size: 26),
-            ],
+            children: [Icon(icon, color: color, size: 26)],
           ),
         ),
       ),
@@ -140,7 +138,7 @@ class _ScanDockButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 56, 
+      width: 56,
       height: 56,
       margin: const EdgeInsets.only(top: 10),
       child: Semantics(
@@ -159,7 +157,11 @@ class _ScanDockButton extends StatelessWidget {
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Color(0xFFFFB08F), Color(0xFFFF805D), Color(0xFFED6547)],
+                  colors: [
+                    Color(0xFFFFB08F),
+                    Color(0xFFFF805D),
+                    Color(0xFFED6547),
+                  ],
                 ),
                 border: Border.all(color: Colors.white, width: 3),
               ),
@@ -167,11 +169,7 @@ class _ScanDockButton extends StatelessWidget {
                 onTap: onPressed,
                 customBorder: const CircleBorder(),
                 child: const Center(
-                  child: Icon(
-                    Icons.nfc_rounded,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                  child: Icon(Icons.nfc_rounded, color: Colors.white, size: 24),
                 ),
               ),
             ),

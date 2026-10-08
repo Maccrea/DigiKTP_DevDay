@@ -100,7 +100,9 @@ class InputOtpWidget extends GetView<NfcScanController> {
                         textAlign: TextAlign.center,
                         keyboardType: TextInputType.number,
                         maxLength: 1,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                         style: GoogleFonts.inter(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
@@ -113,15 +115,22 @@ class InputOtpWidget extends GetView<NfcScanController> {
                           contentPadding: EdgeInsets.zero,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFCBD5E1),
+                            ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE2E8F0),
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                            borderSide: const BorderSide(
+                              color: AppColors.primary,
+                              width: 2,
+                            ),
                           ),
                         ),
                       ),
@@ -141,15 +150,21 @@ class InputOtpWidget extends GetView<NfcScanController> {
                     ),
                     Obx(() {
                       final canResend = controller.canResend.value;
-                      final seconds = controller.countdown.value.toString().padLeft(2, '0');
+                      final seconds = controller.countdown.value
+                          .toString()
+                          .padLeft(2, '0');
                       return GestureDetector(
                         onTap: canResend ? () => controller.resendOtp() : null,
                         child: Text(
-                          canResend ? 'Kirim Ulang' : 'Kirim Ulang (00:$seconds)',
+                          canResend
+                              ? 'Kirim Ulang'
+                              : 'Kirim Ulang (00:$seconds)',
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: canResend ? AppColors.primary : const Color(0xFF94A3B8),
+                            color: canResend
+                                ? AppColors.primary
+                                : const Color(0xFF94A3B8),
                           ),
                         ),
                       );
@@ -179,7 +194,10 @@ class InputOtpWidget extends GetView<NfcScanController> {
                     ? const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
                       )
                     : Text(
                         'Verifikasi & Lanjutkan',

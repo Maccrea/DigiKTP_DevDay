@@ -21,7 +21,8 @@ class StepResultWidget extends GetView<NfcScanController> {
           const SizedBox(height: 14),
           Obx(() {
             final data = controller.verifiedWargaData;
-            final hasData = data.isNotEmpty &&
+            final hasData =
+                data.isNotEmpty &&
                 (data['nama_lengkap'] ?? data['nama_masking']) != null;
             if (!hasData) return const _ResidentLoadingCard();
             final displayData = Map<String, dynamic>.from(data)
@@ -52,7 +53,8 @@ class StepResultWidget extends GetView<NfcScanController> {
           const SizedBox(height: 18),
           Obx(() {
             final data = controller.verifiedWargaData;
-            final hasData = data.isNotEmpty &&
+            final hasData =
+                data.isNotEmpty &&
                 (data['nama_lengkap'] ?? data['nama_masking']) != null;
             if (!hasData) return const SizedBox.shrink();
             return SizedBox(
@@ -131,7 +133,11 @@ class _ChipReadStatus extends StatelessWidget {
               ),
             ),
             if (hasUid)
-              const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 18),
+              const Icon(
+                Icons.check_circle_rounded,
+                color: AppColors.success,
+                size: 18,
+              ),
           ],
         ),
       );

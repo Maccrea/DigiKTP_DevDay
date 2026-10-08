@@ -12,6 +12,7 @@ import 'ktp_ocr_parser.dart';
 import 'package:digiktp/app/utils/app_snackbar.dart';
 import 'package:ktp_extractor/ktp_extractor.dart';
 import 'dart:io';
+import 'dart:convert';
 
 enum ScanStep {
   cekWarga,
@@ -192,21 +193,23 @@ class NfcScanController extends GetxController {
   Future<void> captureAndReadKtp() async {
     if (defaultTargetPlatform != TargetPlatform.android &&
         defaultTargetPlatform != TargetPlatform.iOS) {
-      Get.snackbar(
-        'Kamera tidak tersedia',
-        'Pindai e-KTP menggunakan aplikasi di perangkat Android atau iPhone.',
+      AppSnackbar.warning(
+        title: 'Kamera tidak tersedia',
+        message:
+            'Pindai e-KTP menggunakan aplikasi di perangkat Android atau iPhone.',
       );
       return;
     }
 
     try {
       isReadingKtp.value = true;
-      
+
       final photo = await _imagePicker.pickImage(
         source: ImageSource.camera,
-        imageQuality: 90,
+        imageQuality: 70,
+        maxWidth: 1200,
       );
-      
+
       if (photo == null) {
         isReadingKtp.value = false;
         return;
@@ -215,37 +218,35 @@ class NfcScanController extends GetxController {
       File imageFile = File(photo.path);
 
       File? croppedImage = await KtpExtractor.cropImageForKtp(imageFile);
-      
+
       File imageToProcess = croppedImage ?? imageFile;
 
       capturedKtpPhoto = XFile(imageToProcess.path);
       ktpPhotoRevision.value++;
 
       KtpModel ktpData = await KtpExtractor.extractKtp(imageToProcess);
-      
+
       if (ktpData.nik != null) newNikController.text = ktpData.nik!;
       if (ktpData.name != null) newNameController.text = ktpData.name!;
       if (ktpData.address != null) newAddressController.text = ktpData.address!;
-      
+
       scannedKtpFields.clear();
       scannedKtpFields['nik'] = ktpData.nik ?? '';
       scannedKtpFields['nama_lengkap'] = ktpData.name ?? '';
       scannedKtpFields['alamat'] = ktpData.address ?? '';
       scannedKtpFields['tempat_tanggal_lahir'] = ktpData.birthDay ?? '';
-      
+
       verifiedWargaData['photo_path'] = imageToProcess.path;
 
-      Get.snackbar(
-        'KTP Terbaca',
-        'Data berhasil diekstrak. Silakan periksa kembali.',
-        snackPosition: SnackPosition.TOP,
+      AppSnackbar.success(
+        title: 'KTP Terbaca',
+        message: 'Data berhasil diekstrak. Silakan periksa kembali.',
       );
     } catch (error) {
-      Get.snackbar(
-        'Pemindaian Gagal',
-        'Gagal membaca KTP. Pastikan pencahayaan cukup dan KTP tidak buram.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
+      AppSnackbar.error(
+        title: 'Pemindaian Gagal',
+        message:
+            'Gagal membaca KTP. Pastikan pencahayaan cukup dan KTP tidak buram.',
       );
       debugPrint('KTP Extractor Error: $error');
     } finally {
@@ -320,21 +321,18 @@ class NfcScanController extends GetxController {
     final nfcUid = activeNfcUid;
 
     if (nfcUid.isEmpty) {
-      Get.snackbar(
-        'NFC Belum Dipindai',
-        'Silakan scan e-KTP terlebih dahulu.',
-        snackPosition: SnackPosition.TOP,
+      AppSnackbar.warning(
+        title: 'NFC Belum Dipindai',
+        message: 'Silakan scan e-KTP terlebih dahulu.',
       );
       return;
     }
 
     if (nik.length != 16) {
-      Get.snackbar(
-        'NIK Tidak Valid',
-        'NIK harus terdiri dari 16 digit angka. Terbaca ${nik.length} digit.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
+      AppSnackbar.error(
+        title: 'NIK Tidak Valid',
+        message:
+            'NIK harus terdiri dari 16 digit angka. Terbaca ${nik.length} digit.',
       );
       return;
     }
@@ -349,13 +347,7 @@ class NfcScanController extends GetxController {
       verifiedWargaData.value = warga;
     } catch (e) {
       final message = e.toString().replaceFirst('Exception: ', '');
-      Get.snackbar(
-        'Cek Data Warga Gagal',
-        message,
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
+      AppSnackbar.error(title: 'Cek Data Warga Gagal', message: message);
     } finally {
       isLoading.value = false;
     }
@@ -383,60 +375,84 @@ class NfcScanController extends GetxController {
     }
   }
 
-  Future<void> submitRegistrasiWarga(Map<String, dynamic> formData) async {
-  try {
-    isLoading.value = true;
-    update();
+  Future<void> submitRegistrasiWarga() async {
+    try {
+      isLoading.value = true;
+      update();
 
-    final response = await _apiProvider.registerWargaBaru(formData: formData);
+      final nfcUid = activeNfcUid;
+      if (nfcUid.isEmpty) {
+        throw Exception(
+          'UID NFC belum tersedia. Silakan scan e-KTP terlebih dahulu.',
+        );
+      }
 
-    if (response != null) {
-      if (response is Map && response.containsKey('data')) {
+      final photoPath =
+          capturedKtpPhoto?.path ?? verifiedWargaData['photo_path'];
+      if (photoPath == null || photoPath.toString().isEmpty) {
+        throw Exception(
+          'Foto KTP belum tersedia. Silakan ambil foto KTP terlebih dahulu.',
+        );
+      }
+
+      final imageFile = File(photoPath);
+      if (!await imageFile.exists()) {
+        throw Exception('File foto KTP tidak ditemukan di perangkat.');
+      }
+
+      final bytes = await imageFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final response = await _apiProvider.registerWargaBaru(
+        nfcUid: nfcUid,
+        base64Image: base64Image,
+      );
+
+      if (response != null && response.containsKey('data')) {
         final responseWarga = response['data'] is Map
             ? Map<String, dynamic>.from(response['data'] as Map)
             : <String, dynamic>{};
-        verifiedWargaData.assignAll({...formData, ...responseWarga});
+        verifiedWargaData.assignAll(responseWarga);
       } else {
-        verifiedWargaData.assignAll(Map<String, dynamic>.from(formData));
+        verifiedWargaData.assignAll(Map<String, dynamic>.from(response));
       }
 
+      // if (nikWarga.isNotEmpty) {
+      //   try {
+      //     await _apiProvider.uploadKtpPhoto(nik: nikWarga, file: imageFile);
+      //   } catch (e) {
+      //     debugPrint('UPLOAD FOTO KTP GAGAL: $e');
+      //     AppSnackbar.warning(
+      //       title: 'Foto Belum Tersimpan',
+      //       message: 'Registrasi berhasil, tetapi foto KTP gagal diunggah.',
+      //     );
+      //   }
+      // }
+
       AppSnackbar.show(
-        message: 'Registrasi KTP Berhasil!',
+        message: 'Registrasi & OCR KTP Berhasil!',
         icon: Icons.check_circle_outline,
       );
 
       currentStep.value = ScanStep.validation;
-    } else {
-      verifiedWargaData.value = Map<String, dynamic>.from(formData);
-      currentStep.value = ScanStep.validation;
-    }
-    
-  } catch (e) {
-    print('❌ ERROR REGISTRASI KTP: $e');
-    
-    String errorMessage = e.toString().replaceFirst('Exception: ', '');
-    if (errorMessage.contains('duplicate key') || errorMessage.contains('already exists')) {
-      errorMessage = 'UID NFC ini sudah terdaftar di sistem. Silakan lanjutkan verifikasi.';
+    } catch (e) {
+      print('❌ ERROR REGISTRASI KTP OCR: $e');
 
-      verifiedWargaData.assignAll(Map<String, dynamic>.from(formData));
-  
-      currentStep.value = ScanStep.validation;
-      return;
-    }
+      String errorMessage = e.toString().replaceFirst('Exception: ', '');
+      if (errorMessage.contains('duplicate key') ||
+          errorMessage.contains('already exists')) {
+        errorMessage =
+            'UID NFC ini sudah terdaftar di sistem. Silakan lanjutkan verifikasi.';
+        currentStep.value = ScanStep.validation;
+        return;
+      }
 
-    Get.snackbar(
-      '',
-      errorMessage,
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFFEF4444),
-      colorText: Colors.white,
-      duration: const Duration(seconds: 4),
-    );
-  } finally {
-    isLoading.value = false;
-    update();
+      AppSnackbar.show(message: errorMessage);
+    } finally {
+      isLoading.value = false;
+      update();
+    }
   }
-}
 
   Future<void> requestOtpApi(int selectedOptionIndex) async {
     try {
@@ -487,28 +503,25 @@ class NfcScanController extends GetxController {
     final nfcUid = activeNfcUid;
 
     if (nfcUid.trim().isEmpty) {
-      Get.snackbar(
-        'Peringatan',
-        'UID NFC belum tersedia. Silakan scan e-KTP lagi.',
-        snackPosition: SnackPosition.TOP,
+      AppSnackbar.warning(
+        title: 'Peringatan',
+        message: 'UID NFC belum tersedia. Silakan scan e-KTP lagi.',
       );
       return;
     }
 
     if (!hasValidOtpSession) {
-      Get.snackbar(
-        'Peringatan',
-        'Sesi OTP sudah kadaluarsa. Silakan kirim OTP baru.',
-        snackPosition: SnackPosition.TOP,
+      AppSnackbar.show(
+        title: 'Peringatan',
+        message: 'Sesi OTP sudah kadaluarsa. Silakan kirim OTP baru.',
       );
       return;
     }
 
     if (enteredOtp.length != 6) {
-      Get.snackbar(
-        'Peringatan',
-        'Masukkan 6 digit kode OTP secara lengkap.',
-        snackPosition: SnackPosition.TOP,
+      AppSnackbar.show(
+        title: 'Peringatan',
+        message: 'Masukkan 6 digit kode OTP secara lengkap.',
       );
       return;
     }
@@ -522,7 +535,6 @@ class NfcScanController extends GetxController {
       if (petugas == null || petugas.idPetugas.trim().isEmpty) {
         throw Exception('Sesi petugas tidak ditemukan. Silakan login ulang.');
       }
-      // final nikWarga = (verifiedWargaData['nik'] ?? '').toString().trim();
       String nikWarga = (verifiedWargaData['nik'] ?? '').toString().trim();
       if (nikWarga.isEmpty) {
         throw Exception('NIK warga belum tersedia untuk mencatat layanan.');
@@ -541,6 +553,13 @@ class NfcScanController extends GetxController {
       final warga = responseData['warga'] ?? {};
       final log = responseData['log'] ?? {};
 
+      debugPrint('========== VERIFY OTP ==========');
+      debugPrint('WARGA RESPONSE: $warga');
+      debugPrint('WARGA PHOTO: ${warga['photo_path']}');
+      debugPrint('VERIFIED DATA: $verifiedWargaData');
+      debugPrint('VERIFIED PHOTO: ${verifiedWargaData['photo_path']}');
+      debugPrint('LOG RESPONSE: $log');
+
       if (warga.isNotEmpty) {
         verifiedWargaData.value = Map<String, dynamic>.from(warga);
       }
@@ -558,6 +577,11 @@ class NfcScanController extends GetxController {
         'time': log['created_at'] ?? 'Baru saja',
       };
 
+      mappedActivityItem['photo_path'] =
+          warga['link_foto'] ?? verifiedWargaData['link_foto'];
+
+      debugPrint('FINAL ACTIVITY ITEM: $mappedActivityItem');
+
       dashboardActivities.insert(0, mappedActivityItem);
 
       AppSnackbar.show(message: 'OTP Valid! Data berhasil diambil.');
@@ -574,25 +598,15 @@ class NfcScanController extends GetxController {
           lowerError.contains('tidak valid') ||
           lowerError.contains('expired')) {
         clearOtpInput();
-        Get.snackbar(
-          'OTP Tidak Valid',
-          'Kode OTP salah atau sudah kadaluarsa. Silakan kirim ulang OTP.',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: const Color(0xFFEF4444),
-          colorText: Colors.white,
-          duration: const Duration(seconds: 4),
+        AppSnackbar.error(
+          title: 'OTP Tidak Valid',
+          message:
+              'Kode OTP salah atau sudah kadaluarsa. Silakan kirim ulang OTP.',
         );
         return;
       }
 
-      Get.snackbar(
-        'Verifikasi Gagal',
-        cleanError,
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 4),
-      );
+      AppSnackbar.error(title: 'Verifikasi Gagal', message: cleanError);
     } finally {
       isLoading.value = false;
       update();

@@ -28,14 +28,14 @@ void main() {
 
     try {
       await tester.binding.setSurfaceSize(const Size(320, 568));
-      await tester.pumpWidget(
-        const GetMaterialApp(home: NfcScanView()),
-      );
+      await tester.pumpWidget(const GetMaterialApp(home: NfcScanView()));
       await tester.pump();
 
       expect(
-        errors.where((error) =>
-            error.exceptionAsString().contains('RenderFlex overflowed')),
+        errors.where(
+          (error) =>
+              error.exceptionAsString().contains('RenderFlex overflowed'),
+        ),
         isEmpty,
       );
       expect(find.text('Pemindaian e-KTP'), findsOneWidget);

@@ -14,62 +14,86 @@ class InsightTabView extends GetView<DashboardController> {
       body: SafeArea(
         child: Obx(() {
           final activities = controller.dashboardActivities.toList();
+
           final now = DateTime.now();
-          final today = activities.where((item) => _isSameDay(item, now)).toList();
+
+          final today = activities
+              .where((item) => _isSameDay(item, now))
+              .toList();
+
           final todaySuccess = today.where(_isSuccess).length;
-          final successRatio = today.isEmpty ? 0.0 : todaySuccess / today.length;
+
+          final successRatio = today.isEmpty
+              ? 0.0
+              : todaySuccess / today.length;
+
           final lastSevenDays = List.generate(
             7,
             (index) => DateTime(now.year, now.month, now.day - 6 + index),
           );
+
           final dailyCounts = lastSevenDays
-              .map((day) => activities.where((item) => _isSameDay(item, day)).length)
+              .map(
+                (day) =>
+                    activities.where((item) => _isSameDay(item, day)).length,
+              )
               .toList();
-          final maxDailyCount = dailyCounts.fold<int>(0, (max, count) =>
-              count > max ? count : max);
+
+          final maxDailyCount = dailyCounts.fold<int>(
+            0,
+            (max, count) => count > max ? count : max,
+          );
+
           final serviceCounts = _serviceCounts(activities);
 
-          return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Ringkasan',
-                  style: GoogleFonts.nunito(
-                    color: AppColors.primary,
-                    fontSize: 25,
-                    fontWeight: FontWeight.w800,
+          return RefreshIndicator(
+            onRefresh: controller.loadLayananLogs,
+            color: AppColors.primary,
+            backgroundColor: Colors.white,
+            displacement: 24,
+            strokeWidth: 2.5,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Ringkasan',
+                    style: GoogleFonts.nunito(
+                      color: AppColors.primary,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Aktivitas layanan warga',
-                  style: GoogleFonts.inter(
-                    color: AppColors.textSecondary,
-                    fontSize: 13,
+                  const SizedBox(height: 4),
+                  Text(
+                    'Aktivitas layanan warga',
+                    style: GoogleFonts.inter(
+                      color: AppColors.textSecondary,
+                      fontSize: 13,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                _TodayOverview(
-                  total: today.length,
-                  successful: todaySuccess,
-                  successRatio: successRatio,
-                ),
-                const SizedBox(height: 24),
-                _SectionHeading(title: '7 hari terakhir'),
-                const SizedBox(height: 12),
-                _WeeklyActivityChart(
-                  days: lastSevenDays,
-                  counts: dailyCounts,
-                  maxCount: maxDailyCount,
-                ),
-                const SizedBox(height: 24),
-                _SectionHeading(title: 'Layanan teratas'),
-                const SizedBox(height: 12),
-                _ServiceBreakdown(items: serviceCounts),
-              ],
+                  const SizedBox(height: 20),
+                  _TodayOverview(
+                    total: today.length,
+                    successful: todaySuccess,
+                    successRatio: successRatio,
+                  ),
+                  const SizedBox(height: 24),
+                  _SectionHeading(title: '7 hari terakhir'),
+                  const SizedBox(height: 12),
+                  _WeeklyActivityChart(
+                    days: lastSevenDays,
+                    counts: dailyCounts,
+                    maxCount: maxDailyCount,
+                  ),
+                  const SizedBox(height: 24),
+                  _SectionHeading(title: 'Layanan teratas'),
+                  const SizedBox(height: 12),
+                  _ServiceBreakdown(items: serviceCounts),
+                ],
+              ),
             ),
           );
         }),
@@ -78,8 +102,10 @@ class InsightTabView extends GetView<DashboardController> {
   }
 
   bool _isSameDay(Map<String, dynamic> item, DateTime date) {
-    final createdAt = DateTime.tryParse(item['time']?.toString() ?? '')
-        ?.toLocal();
+    final createdAt = DateTime.tryParse(
+      item['time']?.toString() ?? '',
+    )?.toLocal();
+
     return createdAt != null &&
         createdAt.year == date.year &&
         createdAt.month == date.month &&
@@ -95,16 +121,26 @@ class InsightTabView extends GetView<DashboardController> {
     List<Map<String, dynamic>> activities,
   ) {
     final cutoff = DateTime.now().subtract(const Duration(days: 7));
+
     final counts = <String, int>{};
+
     for (final item in activities) {
-      final createdAt = DateTime.tryParse(item['time']?.toString() ?? '')
-          ?.toLocal();
-      if (createdAt == null || createdAt.isBefore(cutoff)) continue;
+      final createdAt = DateTime.tryParse(
+        item['time']?.toString() ?? '',
+      )?.toLocal();
+
+      if (createdAt == null || createdAt.isBefore(cutoff)) {
+        continue;
+      }
+
       final service = (item['service'] ?? 'Layanan lainnya').toString().trim();
+
       counts.update(service, (count) => count + 1, ifAbsent: () => 1);
     }
+
     final result = counts.entries.toList()
       ..sort((left, right) => right.value.compareTo(left.value));
+
     return result.take(3).toList();
   }
 }
@@ -123,6 +159,7 @@ class _TodayOverview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final percentage = (successRatio * 100).round();
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -255,7 +292,15 @@ class _WeeklyActivityChart extends StatelessWidget {
   final List<int> counts;
   final int maxCount;
 
-  static const _weekdayLabels = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+  static const _weekdayLabels = [
+    'Min',
+    'Sen',
+    'Sel',
+    'Rab',
+    'Kam',
+    'Jum',
+    'Sab',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -274,9 +319,11 @@ class _WeeklyActivityChart extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: List.generate(days.length, (index) {
                 final count = counts[index];
+
                 final barHeight = maxCount == 0
                     ? 5.0
                     : 10 + (count / maxCount) * 62;
+
                 return Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -360,6 +407,7 @@ class _ServiceBreakdown extends StatelessWidget {
     }
 
     final maxCount = items.first.value;
+
     return Column(
       children: [
         for (var index = 0; index < items.length; index++) ...[

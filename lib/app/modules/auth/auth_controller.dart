@@ -53,7 +53,10 @@ class AuthController extends GetxController {
 
   Future<void> submitLogin() async {
     if (nipController.text.isEmpty || passwordController.text.isEmpty) {
-      Get.snackbar('Peringatan', 'NIP dan Kata Sandi harus diisi!');
+      AppSnackbar.warning(
+        title: 'Peringatan',
+        message: 'NIP dan Kata Sandi harus diisi!',
+      );
       return;
     }
 
@@ -82,11 +85,7 @@ class AuthController extends GetxController {
 
     if (success) {
       await _authService.updateLocation(selectedPosko.value);
-      AppSnackbar.show(
-        message: 'Login berhasil. Selamat datang.',
-        icon: Icons.check_circle_outline,
-        backgroundColor: const Color(0xFF15803D),
-      );
+      AppSnackbar.show(message: 'Login berhasil. Selamat datang.');
       Get.offAllNamed(Routes.DASHBOARD);
     }
   }
@@ -147,7 +146,7 @@ class AuthController extends GetxController {
   void goToSetPosko() {
     if (nipController.text.trim().isEmpty ||
         passwordController.text.trim().isEmpty) {
-      AppSnackbar.show(message: 'NIP dan Kata Sandi wajib diisi.');
+      AppSnackbar.warning(message: 'NIP dan Kata Sandi wajib diisi.');
       return;
     }
 
@@ -156,7 +155,9 @@ class AuthController extends GetxController {
 
   Future<void> contactAdmin() async {
     final String email = 'admin@digiktp.go.id';
-    final String subject = Uri.encodeComponent('Lupa Kata Sandi Petugas - DigiKTP');
+    final String subject = Uri.encodeComponent(
+      'Lupa Kata Sandi Petugas - DigiKTP',
+    );
     final String body = Uri.encodeComponent(
       'Halo Admin,\n\nSaya lupa kata sandi untuk akun saya. Berikut detail saya:\n'
       'NIP: ${nipController.text}\n'
@@ -164,14 +165,16 @@ class AuthController extends GetxController {
       'Mohon bantuannya untuk mereset kata sandi saya.',
     );
 
-    final Uri emailLaunchUri = Uri.parse('mailto:$email?subject=$subject&body=$body');
+    final Uri emailLaunchUri = Uri.parse(
+      'mailto:$email?subject=$subject&body=$body',
+    );
 
     try {
       bool launched = await launchUrl(
         emailLaunchUri,
         mode: LaunchMode.externalApplication,
       );
-      
+
       if (!launched) {
         AppSnackbar.show(
           message: 'Gagal membuka aplikasi email.',

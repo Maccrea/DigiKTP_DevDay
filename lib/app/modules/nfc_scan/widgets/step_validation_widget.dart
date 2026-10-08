@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:digiktp/app/modules/nfc_scan/nfc_scan_controller.dart';
 import 'package:digiktp/app/theme/app_colors.dart';
+import 'package:digiktp/app/utils/app_snackbar.dart';
 
 class StepValidationWidget extends GetView<NfcScanController> {
   const StepValidationWidget({Key? key}) : super(key: key);
@@ -51,10 +52,18 @@ class StepValidationWidget extends GetView<NfcScanController> {
                 Obx(() {
                   final data = controller.verifiedWargaData;
                   final scanned = controller.scannedKtpFields;
-                  
-                  final nama = data['nama_masking'] ?? data['nama_lengkap'] ?? scanned['nama_lengkap'] ?? 'Nama warga';
+
+                  final nama =
+                      data['nama_masking'] ??
+                      data['nama_lengkap'] ??
+                      scanned['nama_lengkap'] ??
+                      'Nama warga';
                   final nik = data['nik'] ?? scanned['nik'] ?? '-';
-                  final alamat = data['wilayah'] ?? data['alamat'] ?? scanned['alamat'] ?? '-';
+                  final alamat =
+                      data['wilayah'] ??
+                      data['alamat'] ??
+                      scanned['alamat'] ??
+                      '-';
 
                   return Row(
                     children: [
@@ -65,7 +74,11 @@ class StepValidationWidget extends GetView<NfcScanController> {
                           color: const Color(0xFFEAF0F8),
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        child: const Icon(Icons.person_rounded, color: AppColors.primary, size: 32),
+                        child: const Icon(
+                          Icons.person_rounded,
+                          color: AppColors.primary,
+                          size: 32,
+                        ),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
@@ -175,25 +188,42 @@ class StepValidationWidget extends GetView<NfcScanController> {
                           child: TextField(
                             controller: customEmailController,
                             keyboardType: TextInputType.emailAddress,
-                            style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
                             decoration: InputDecoration(
                               hintText: 'nama@email.com',
-                              hintStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
-                              prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
+                              hintStyle: GoogleFonts.inter(
+                                color: const Color(0xFF94A3B8),
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.email_outlined,
+                                color: AppColors.primary,
+                              ),
                               filled: true,
                               fillColor: const Color(0xFFF8FAFC),
-                              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 16,
+                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFE2E8F0),
+                                ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFE2E8F0),
+                                ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                                borderSide: const BorderSide(
+                                  color: AppColors.primary,
+                                  width: 2,
+                                ),
                               ),
                             ),
                           ),
@@ -212,23 +242,35 @@ class StepValidationWidget extends GetView<NfcScanController> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.accent,
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               onPressed: () async {
-                if (controller.selectedContact.value == controller.registeredEmails.length && !controller.isEmailValid) {
-                  Get.snackbar(
-                    'Peringatan',
-                    'Masukkan format email aktif yang valid.',
-                    backgroundColor: const Color(0xFFEF4444),
-                    colorText: Colors.white,
+                if (controller.selectedContact.value ==
+                        controller.registeredEmails.length &&
+                    !controller.isEmailValid) {
+                  AppSnackbar.warning(
+                    title: 'Peringatan',
+                    message: 'Masukkan format email aktif yang valid',
                   );
+
                   return;
                 }
-                await controller.requestOtpApi(controller.selectedContact.value);
+                await controller.requestOtpApi(
+                  controller.selectedContact.value,
+                );
               },
               child: Obx(
                 () => controller.isLoading.value
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
+                      )
                     : Text(
                         'Kirim OTP',
                         style: GoogleFonts.inter(
@@ -275,7 +317,9 @@ class StepValidationWidget extends GetView<NfcScanController> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? AppColors.primary : const Color(0xFF94A3B8),
+                  color: isSelected
+                      ? AppColors.primary
+                      : const Color(0xFF94A3B8),
                   width: isSelected ? 6.0 : 1.5,
                 ),
                 color: Colors.white,
@@ -291,7 +335,9 @@ class StepValidationWidget extends GetView<NfcScanController> {
                     style: GoogleFonts.inter(
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
-                      color: isSelected ? const Color(0xFF1E40AF) : const Color(0xFF0F172A),
+                      color: isSelected
+                          ? const Color(0xFF1E40AF)
+                          : const Color(0xFF0F172A),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -299,7 +345,9 @@ class StepValidationWidget extends GetView<NfcScanController> {
                     subtitle,
                     style: GoogleFonts.inter(
                       fontSize: 12,
-                      color: isSelected ? const Color(0xFF3B82F6) : const Color(0xFF64748B),
+                      color: isSelected
+                          ? const Color(0xFF3B82F6)
+                          : const Color(0xFF64748B),
                     ),
                   ),
                 ],

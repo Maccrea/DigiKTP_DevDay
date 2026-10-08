@@ -177,8 +177,8 @@ class NfcScanView extends GetView<NfcScanController> {
                         color: isCompleted
                             ? const Color(0xFF10B981)
                             : (isActive
-                                ? const Color(0xFF030164)
-                                : const Color(0xFFF1F5F9)),
+                                  ? const Color(0xFF030164)
+                                  : const Color(0xFFF1F5F9)),
                         border: isActive
                             ? Border.all(
                                 color: const Color(0xFFDBEAFE),
@@ -193,7 +193,9 @@ class NfcScanView extends GetView<NfcScanController> {
                         boxShadow: isActive
                             ? [
                                 BoxShadow(
-                                  color: const Color(0xFF030164).withOpacity(0.3),
+                                  color: const Color(
+                                    0xFF030164,
+                                  ).withOpacity(0.3),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),

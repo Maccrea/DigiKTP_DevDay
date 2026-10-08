@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../models/petugas_model.dart';
 import '../providers/api_provider.dart';
+import 'package:digiktp/app/utils/app_snackbar.dart';
 
 class AuthService extends GetxService {
   final GetStorage _storage = GetStorage();
@@ -38,10 +39,7 @@ class AuthService extends GetxService {
     }
   }
 
-  Future<bool> login({
-    required String nip,
-    required String password,
-  }) async {
+  Future<bool> login({required String nip, required String password}) async {
     try {
       final apiProvider = _apiProvider;
       if (apiProvider == null) {
@@ -51,7 +49,6 @@ class AuthService extends GetxService {
       final responseData = await apiProvider.loginPetugas(
         nip: nip,
         password: password,
-        // Instansi dan lokasi akan dikirim setelah alur posko disepakati.
       );
 
       final petugas = PetugasModel.fromJson(responseData['petugas']);
@@ -67,7 +64,7 @@ class AuthService extends GetxService {
 
       return true;
     } catch (e) {
-      Get.snackbar('Login Gagal', e.toString());
+      AppSnackbar.error(message: 'Login Gagal');
       return false;
     }
   }
@@ -86,7 +83,7 @@ class AuthService extends GetxService {
 
       return true;
     } catch (e) {
-      Get.snackbar('Gagal Mengubah Lokasi', e.toString());
+      AppSnackbar.error(message: 'Gagal Mengubah Lokasi');
       return false;
     }
   }

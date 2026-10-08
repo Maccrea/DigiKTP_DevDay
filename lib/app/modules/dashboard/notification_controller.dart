@@ -29,41 +29,41 @@ class NotificationController extends GetxController {
     NotificationItem(
       id: '1',
       dateGroup: 'Hari Ini',
-        title: 'Tips pemindaian NFC',
-        subtitle:
+      title: 'Tips pemindaian NFC',
+      subtitle:
           'Lepas case tebal dan tahan e-KTP di area NFC sampai data terkonfirmasi.',
-        time: '08:30',
-        type: NotifType.info,
+      time: '08:30',
+      type: NotifType.info,
       isUnread: true,
     ),
     NotificationItem(
       id: '2',
       dateGroup: 'Hari Ini',
-        title: 'Jadwal pemeliharaan',
-        subtitle:
+      title: 'Jadwal pemeliharaan',
+      subtitle:
           '12 Oktober, 23.00–01.00 WIB. Beberapa layanan mungkin terasa lebih lambat.',
-        time: '07:15',
+      time: '07:15',
       type: NotifType.info,
       isUnread: true,
     ),
     NotificationItem(
       id: '3',
       dateGroup: 'Kemarin',
-        title: 'Pengingat keamanan',
-        subtitle:
+      title: 'Pengingat keamanan',
+      subtitle:
           'Periksa kecocokan data dan status verifikasi sebelum meneruskan layanan.',
-        time: 'Kemarin',
-        type: NotifType.warning,
+      time: 'Kemarin',
+      type: NotifType.warning,
       isUnread: false,
     ),
     NotificationItem(
       id: '4',
       dateGroup: 'Kemarin',
-        title: 'Terima kasih, petugas',
-        subtitle:
+      title: 'Terima kasih, petugas',
+      subtitle:
           'Terima kasih sudah membantu warga mendapatkan layanan yang lebih mudah.',
-        time: 'Kemarin',
-        type: NotifType.success,
+      time: 'Kemarin',
+      type: NotifType.success,
       isUnread: false,
     ),
   ].obs;

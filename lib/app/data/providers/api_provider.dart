@@ -104,24 +104,34 @@ class ApiProvider extends GetxService {
   Future<List<Map<String, dynamic>>> fetchLayananLogs() async {
     final rows = await supabase
         .from('layanan_logs')
-        .select('*, users_warga(nama_lengkap)')
+        .select('*, users_warga(nama_lengkap, link_foto)')
         .order('created_at', ascending: false);
 
     return (rows as List).map((row) {
       final log = Map<String, dynamic>.from(row as Map);
+
       final warga = log['users_warga'] is Map
           ? Map<String, dynamic>.from(log['users_warga'] as Map)
           : <String, dynamic>{};
+
       final status = (log['status_transaksi'] ?? 'PENDING').toString();
 
       return {
         'log_id': log['id_log'] ?? '-',
+
         'name': warga['nama_lengkap'] ?? log['nik_warga'] ?? 'Tanpa Nama',
+
         'nik': log['nik_warga'] ?? '-',
+
         'service': log['jenis_layanan'] ?? 'Layanan Dukcapil',
+
         'status': status,
+
         'isSuccess': status.toUpperCase() == 'SUCCESS',
+
         'time': log['created_at'] ?? '-',
+
+        'photo_path': warga['link_foto'],
       };
     }).toList();
   }
@@ -235,7 +245,9 @@ class ApiProvider extends GetxService {
           ? response.data as Map<String, dynamic>
           : Map<String, dynamic>.from(response.data as Map);
       final nestedData = responseData['data'];
-      final nestedDataKeys = nestedData is Map ? nestedData.keys.join(', ') : 'none';
+      final nestedDataKeys = nestedData is Map
+          ? nestedData.keys.join(', ')
+          : 'none';
 
       print(
         'LOGIN PETUGAS: respons HTTP ${response.status}, '
@@ -246,9 +258,7 @@ class ApiProvider extends GetxService {
 
       if (responseData['petugas'] is! Map ||
           responseData['petugas']['id_petugas'] == null) {
-        throw Exception(
-          'Respons login tidak berisi ID petugas yang valid',
-        );
+        throw Exception('Respons login tidak berisi ID petugas yang valid');
       }
 
       return responseData;
@@ -273,21 +283,27 @@ class ApiProvider extends GetxService {
   }
 
   Future<Map<String, dynamic>> registerWargaBaru({
-    required Map<String, dynamic> formData,
+    required String nfcUid,
+    required String base64Image,
   }) async {
     try {
-      print('📤 MENGIRIM DATA REGISTRASI WARGA: $formData');
+      final requestBody = {
+        'uid_nfc': nfcUid.trim(),
+        'base64_image': base64Image,
+      };
+
+      print('📤 MENGIRIM DATA PROCESS KTP OCR: uid_nfc=${nfcUid.trim()}');
 
       final response = await supabase.functions.invoke(
-        'register-ktp',
-        body: formData,
+        'process-ktp-ocr',
+        body: requestBody,
       );
 
       final responseData = response.data is Map<String, dynamic>
           ? response.data as Map<String, dynamic>
           : Map<String, dynamic>.from(response.data as Map? ?? {});
 
-      print('📥 RESPON REGISTRASI KTP: $responseData');
+      print('📥 RESPON PROCESS KTP OCR: $responseData');
 
       if (responseData.containsKey('error')) {
         throw Exception(responseData['error']);
@@ -295,8 +311,8 @@ class ApiProvider extends GetxService {
 
       return responseData;
     } catch (e) {
-      print('❌ ERROR REGISTRASI KTP: $e');
-      throw Exception('Gagal mendaftarkan KTP: $e');
+      print('❌ ERROR PROCESS KTP OCR: $e');
+      throw Exception('Gagal memproses KTP via OCR: $e');
     }
   }
 }

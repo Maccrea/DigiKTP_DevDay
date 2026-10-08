@@ -13,7 +13,7 @@ class PetugasTabView extends GetView<DashboardController> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

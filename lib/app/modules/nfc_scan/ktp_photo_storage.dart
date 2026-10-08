@@ -31,10 +31,7 @@ class KtpPhotoStorage {
     return activities.map((activity) {
       final logId = (activity['log_id'] ?? activity['id_log'] ?? '').toString();
       final photoPath = paths[logId];
-      return {
-        ...activity,
-        if (photoPath != null) 'photo_path': photoPath,
-      };
+      return {...activity, if (photoPath != null) 'photo_path': photoPath};
     }).toList();
   }
 }

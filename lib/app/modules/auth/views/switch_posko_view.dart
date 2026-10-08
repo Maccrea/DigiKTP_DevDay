@@ -277,7 +277,10 @@ class _NfcReadiness extends StatelessWidget {
           Container(
             width: 8,
             height: 8,
-            decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: statusColor,
+              shape: BoxShape.circle,
+            ),
           ),
         ],
       );
