@@ -375,93 +375,91 @@ class NfcScanController extends GetxController {
     }
   }
 
- Future<void> submitRegistrasiWarga() async {
-  try {
-    isLoading.value = true;
-    update();
-
-    final nfcUid = activeNfcUid;
-    if (nfcUid.isEmpty) {
-      throw Exception(
-        'UID NFC belum tersedia. Silakan scan e-KTP terlebih dahulu.',
-      );
-    }
-
-    final email = newEmailController.text.trim();
-    if (!email.contains('@') || !email.contains('.')) {
-      throw Exception('Email wajib diisi dengan format yang benar.');
-    }
-
-    final photoPath =
-        capturedKtpPhoto?.path ?? verifiedWargaData['photo_path'];
-    if (photoPath == null || photoPath.toString().isEmpty) {
-      throw Exception(
-        'Foto KTP belum tersedia. Silakan ambil foto KTP terlebih dahulu.',
-      );
-    }
-
-    final imageFile = File(photoPath);
-    if (!await imageFile.exists()) {
-      throw Exception('File foto KTP tidak ditemukan di perangkat.');
-    }
-
-    final bytes = await imageFile.readAsBytes();
-    final base64Image = base64Encode(bytes);
-
-    final response = await _apiProvider.registerWargaBaru(
-      nfcUid: nfcUid,
-      base64Image: base64Image,
-    );
-
-    if (response.containsKey('data')) {
-      final responseWarga = response['data'] is Map
-          ? Map<String, dynamic>.from(response['data'] as Map)
-          : <String, dynamic>{};
-      verifiedWargaData.assignAll(responseWarga);
-    } else {
-      verifiedWargaData.assignAll(Map<String, dynamic>.from(response));
-    }
-
-    // Simpan email manual (setelah assignAll, di luar if/else)
-    verifiedWargaData['email'] = email;
+  Future<void> submitRegistrasiWarga() async {
     try {
-      await _apiProvider.supabase
-          .from('users_warga')
-          .update({'email': email})
-          .eq('uid_nfc', nfcUid);
-    } catch (e) {
-      debugPrint('SIMPAN EMAIL GAGAL: $e');
-    }
+      isLoading.value = true;
+      update();
 
-    AppSnackbar.show(
-      message: 'Registrasi & OCR KTP Berhasil!',
-      icon: Icons.check_circle_outline,
-    );
+      final nfcUid = activeNfcUid;
+      if (nfcUid.isEmpty) {
+        throw Exception(
+          'UID NFC belum tersedia. Silakan scan e-KTP terlebih dahulu.',
+        );
+      }
 
-    currentStep.value = ScanStep.validation;
-  } catch (e) {
-    print('❌ ERROR REGISTRASI KTP OCR: $e');
-
-    String errorMessage = e.toString().replaceFirst('Exception: ', '');
-    if (errorMessage.contains('duplicate key') ||
-        errorMessage.contains('already exists')) {
-      // Warga sudah terdaftar: pakai email yang baru diketik kalau ada
       final email = newEmailController.text.trim();
-      if (email.isNotEmpty) verifiedWargaData['email'] = email;
-      currentStep.value = ScanStep.validation;
-      AppSnackbar.show(
-        message:
-            'UID NFC ini sudah terdaftar di sistem. Silakan lanjutkan verifikasi.',
-      );
-      return;
-    }
+      if (!email.contains('@') || !email.contains('.')) {
+        throw Exception('Email wajib diisi dengan format yang benar.');
+      }
 
-    AppSnackbar.show(message: errorMessage);
-  } finally {
-    isLoading.value = false;
-    update();
+      final photoPath =
+          capturedKtpPhoto?.path ?? verifiedWargaData['photo_path'];
+      if (photoPath == null || photoPath.toString().isEmpty) {
+        throw Exception(
+          'Foto KTP belum tersedia. Silakan ambil foto KTP terlebih dahulu.',
+        );
+      }
+
+      final imageFile = File(photoPath);
+      if (!await imageFile.exists()) {
+        throw Exception('File foto KTP tidak ditemukan di perangkat.');
+      }
+
+      final bytes = await imageFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final response = await _apiProvider.registerWargaBaru(
+        nfcUid: nfcUid,
+        base64Image: base64Image,
+      );
+
+      if (response.containsKey('data')) {
+        final responseWarga = response['data'] is Map
+            ? Map<String, dynamic>.from(response['data'] as Map)
+            : <String, dynamic>{};
+        verifiedWargaData.assignAll(responseWarga);
+      } else {
+        verifiedWargaData.assignAll(Map<String, dynamic>.from(response));
+      }
+
+      verifiedWargaData['email'] = email;
+      try {
+        await _apiProvider.supabase
+            .from('users_warga')
+            .update({'email': email})
+            .eq('uid_nfc', nfcUid);
+      } catch (e) {
+        debugPrint('SIMPAN EMAIL GAGAL: $e');
+      }
+
+      AppSnackbar.show(
+        message: 'Registrasi & OCR KTP Berhasil!',
+        icon: Icons.check_circle_outline,
+      );
+
+      currentStep.value = ScanStep.validation;
+    } catch (e) {
+      print('❌ ERROR REGISTRASI KTP OCR: $e');
+
+      String errorMessage = e.toString().replaceFirst('Exception: ', '');
+      if (errorMessage.contains('duplicate key') ||
+          errorMessage.contains('already exists')) {
+        final email = newEmailController.text.trim();
+        if (email.isNotEmpty) verifiedWargaData['email'] = email;
+        currentStep.value = ScanStep.validation;
+        AppSnackbar.show(
+          message:
+              'UID NFC ini sudah terdaftar di sistem. Silakan lanjutkan verifikasi.',
+        );
+        return;
+      }
+
+      AppSnackbar.show(message: errorMessage);
+    } finally {
+      isLoading.value = false;
+      update();
+    }
   }
-}
 
   Future<void> requestOtpApi(int selectedOptionIndex) async {
     try {
@@ -546,19 +544,24 @@ class NfcScanController extends GetxController {
       if (petugas == null || petugas.idPetugas.trim().isEmpty) {
         throw Exception('Sesi petugas tidak ditemukan. Silakan login ulang.');
       }
-      
-      String nikWarga = (verifiedWargaData['nik'] ?? scannedKtpFields['nik'] ?? '').toString().trim();
+
+      String nikWarga =
+          (verifiedWargaData['nik'] ?? scannedKtpFields['nik'] ?? '')
+              .toString()
+              .trim();
       if (nikWarga.isEmpty) {
         throw Exception('NIK warga belum tersedia untuk mencatat layanan.');
       }
 
       debugPrint('📤 MENGIRIM VERIFIKASI OTP PAYLOAD KE API...');
-      
+
       final responseData = await _apiProvider.verifyOtp(
         nfcUid: nfcUid,
         otpCode: enteredOtp,
         nikWarga: nikWarga,
-        idPetugas: petugas.idPetugas.trim().isNotEmpty ? petugas.idPetugas.trim() : defaultPetugasId,
+        idPetugas: petugas.idPetugas.trim().isNotEmpty
+            ? petugas.idPetugas.trim()
+            : defaultPetugasId,
         idInstansi: petugas.idInstansi,
         lokasiTugas: authService.currentLocation.value,
         jenisLayanan: serviceName,
@@ -598,17 +601,17 @@ class NfcScanController extends GetxController {
       currentStep.value = ScanStep.confirmation;
     } catch (e) {
       final rawError = e.toString().replaceFirst('Exception: ', '');
-  debugPrint('❌ ERROR VERIFY OTP: $rawError');
+      debugPrint('❌ ERROR VERIFY OTP: $rawError');
 
-  final otpDitolak = rawError.contains('OTP');
-  if (otpDitolak) clearOtpInput();
+      final otpDitolak = rawError.contains('OTP');
+      if (otpDitolak) clearOtpInput();
 
-  AppSnackbar.error(
-    title: 'Verifikasi Gagal',
-    message: otpDitolak
-        ? 'Kode OTP salah atau sudah dipakai. Kirim ulang OTP untuk kode baru.'
-        : rawError,
-  );
+      AppSnackbar.error(
+        title: 'Verifikasi Gagal',
+        message: otpDitolak
+            ? 'Kode OTP salah atau sudah dipakai. Kirim ulang OTP untuk kode baru.'
+            : rawError,
+      );
     } finally {
       isLoading.value = false;
       update();

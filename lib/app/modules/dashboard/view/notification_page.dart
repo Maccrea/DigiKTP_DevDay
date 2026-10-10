@@ -57,12 +57,7 @@ class NotificationPage extends GetView<NotificationController> {
 
           return ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(
-              20,
-              16,
-              20,
-              28,
-            ),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
             itemCount: controller.notifications.length,
             itemBuilder: (context, index) {
               final item = controller.notifications[index];
@@ -70,21 +65,15 @@ class NotificationPage extends GetView<NotificationController> {
               final showDate =
                   index == 0 ||
                   item.dateGroup !=
-                      controller
-                          .notifications[index - 1]
-                          .dateGroup;
+                      controller.notifications[index - 1].dateGroup;
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (showDate) ...[
-                    if (index > 0)
-                      const SizedBox(height: 18),
+                    if (index > 0) const SizedBox(height: 18),
                     Padding(
-                      padding: const EdgeInsets.only(
-                        left: 2,
-                        bottom: 9,
-                      ),
+                      padding: const EdgeInsets.only(left: 2, bottom: 9),
                       child: Text(
                         item.dateGroup,
                         style: GoogleFonts.nunito(
@@ -212,34 +201,25 @@ class _NotificationCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _NotificationIcon(
-                  icon: icon,
-                  color: color,
-                  isUnread: isUnread,
-                ),
+                _NotificationIcon(icon: icon, color: color, isUnread: isUnread),
                 const SizedBox(width: 13),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             child: Text(
                               item.title,
                               maxLines: 2,
-                              overflow:
-                                  TextOverflow.ellipsis,
+                              overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.nunito(
-                                color:
-                                    AppColors.textPrimary,
+                                color: AppColors.textPrimary,
                                 fontSize: 14,
                                 height: 1.2,
-                                fontWeight:
-                                    FontWeight.w800,
+                                fontWeight: FontWeight.w800,
                               ),
                             ),
                           ),
@@ -248,12 +228,8 @@ class _NotificationCard extends StatelessWidget {
                             Container(
                               width: 7,
                               height: 7,
-                              margin:
-                                  const EdgeInsets.only(
-                                top: 4,
-                              ),
-                              decoration:
-                                  const BoxDecoration(
+                              margin: const EdgeInsets.only(top: 4),
+                              decoration: const BoxDecoration(
                                 color: AppColors.accent,
                                 shape: BoxShape.circle,
                               ),
@@ -265,11 +241,9 @@ class _NotificationCard extends StatelessWidget {
                       Text(
                         item.subtitle,
                         maxLines: 3,
-                        overflow:
-                            TextOverflow.ellipsis,
+                        overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.inter(
-                          color:
-                              AppColors.textSecondary,
+                          color: AppColors.textSecondary,
                           fontSize: 11.5,
                           height: 1.45,
                           fontWeight: FontWeight.w400,
@@ -279,9 +253,7 @@ class _NotificationCard extends StatelessWidget {
                       Text(
                         item.time,
                         style: GoogleFonts.inter(
-                          color:
-                              AppColors.textSecondary
-                                  .withOpacity(0.75),
+                          color: AppColors.textSecondary.withOpacity(0.75),
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
                         ),
@@ -318,16 +290,10 @@ class _NotificationIcon extends StatelessWidget {
           width: 44,
           height: 44,
           decoration: BoxDecoration(
-            color: color.withOpacity(
-              isUnread ? 0.11 : 0.07,
-            ),
+            color: color.withOpacity(isUnread ? 0.11 : 0.07),
             borderRadius: BorderRadius.circular(14),
           ),
-          child: Icon(
-            icon,
-            color: color,
-            size: 22,
-          ),
+          child: Icon(icon, color: color, size: 22),
         ),
         if (isUnread)
           Positioned(
@@ -339,10 +305,7 @@ class _NotificationIcon extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.accent,
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.white,
-                  width: 2,
-                ),
+                border: Border.all(color: Colors.white, width: 2),
               ),
             ),
           ),

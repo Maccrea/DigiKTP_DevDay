@@ -78,21 +78,24 @@ class OnboardingView extends GetView<OnboardingController> {
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: _peach.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: _peach.withOpacity(0.3)),
+                          color: Colors.white.withOpacity(0.15),
+                          shape: BoxShape.circle,
                         ),
-                        child: const Icon(
-                          Icons.contactless_rounded,
-                          color: _peach,
-                          size: 20,
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/nikkita.png',
+                            width: 18,
+                            height: 18,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
+
                       const SizedBox(width: 12),
                       Text(
-                        'NIKita',
+                        'NIKKita',
                         style: GoogleFonts.nunito(
                           color: Colors.white,
                           fontSize: 18,

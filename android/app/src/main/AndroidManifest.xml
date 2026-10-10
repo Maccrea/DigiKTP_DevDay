@@ -11,7 +11,7 @@
         </intent>
     </queries>
     <application
-        android:label="NIKita"
+        android:label="NIKKita"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

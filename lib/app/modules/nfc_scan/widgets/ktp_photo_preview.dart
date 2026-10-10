@@ -60,7 +60,7 @@ class KtpPhotoPreview extends StatelessWidget {
                     ),
                     const SizedBox(width: 7),
                     Text(
-                      'HASIL PEMINDAIAN • NIKita',
+                      'HASIL PEMINDAIAN • NIKKita',
                       style: GoogleFonts.inter(
                         color: Colors.white,
                         fontSize: 9,
@@ -94,7 +94,7 @@ class _NikitaWatermarkPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final label = TextPainter(
       text: const TextSpan(
-        text: 'NIKita  •  SALINAN SCAN',
+        text: 'NIKKita  •  SALINAN SCAN',
         style: TextStyle(
           color: Color(0xBFFFFFFF),
           fontSize: 9,

@@ -388,7 +388,7 @@ class ActivityTile extends StatelessWidget {
               child: IgnorePointer(
                 child: CustomPaint(
                   painter: _WatermarkPainter(
-                    text: 'NIKita • DOKUMEN VERIFIKASI',
+                    text: 'NIKKita • DOKUMEN VERIFIKASI',
                   ),
                 ),
               ),

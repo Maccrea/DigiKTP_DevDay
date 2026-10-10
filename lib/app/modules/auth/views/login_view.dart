@@ -30,24 +30,27 @@ class LoginView extends GetView<AuthController> {
               Row(
                 children: [
                   Container(
-                    width: 44,
-                    height: 44,
+                    padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFEEE8),
-                      borderRadius: BorderRadius.circular(14),
+                      color: Colors.white.withOpacity(0.15),
+                      shape: BoxShape.circle,
                     ),
-                    child: const Icon(
-                      Icons.contactless_rounded,
-                      color: AppColors.accent,
-                      size: 24,
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/nikkita.png',
+                        width: 18,
+                        height: 18,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
+
                   const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'NIKita',
+                        'NIKKita',
                         style: GoogleFonts.nunito(
                           color: AppColors.primary,
                           fontSize: 18,

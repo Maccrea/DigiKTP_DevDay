@@ -9,7 +9,6 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:digiktp/app/modules/dashboard/view/notification_page.dart';
 
-
 List<Map<String, dynamic>> _todayActivities(
   Iterable<Map<String, dynamic>> activities,
 ) {
@@ -262,12 +261,15 @@ class DashboardHeader extends StatelessWidget {
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(10),
+                              shape: BoxShape.circle,
                             ),
-                            child: const Icon(
-                              Icons.contactless_rounded,
-                              color: Colors.white,
-                              size: 18,
+                            child: ClipOval(
+                              child: Image.asset(
+                                'assets/nikkita.png',
+                                width: 18,
+                                height: 18,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -275,7 +277,7 @@ class DashboardHeader extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'NIKita',
+                                'NIKKita',
                                 style: GoogleFonts.nunito(
                                   color: Colors.white,
                                   fontSize: 18,
