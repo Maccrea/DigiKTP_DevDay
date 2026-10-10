@@ -166,63 +166,77 @@ class ApiProvider extends GetxService {
     }
   }
 
-  Future<Map<String, dynamic>> verifyOtp({
-    required String nfcUid,
-    required String otpCode,
-    required String nikWarga,
-    required String idPetugas,
-    required String idInstansi,
-    String? lokasiTugas,
-    String? jenisLayanan,
-    String statusTransaksi = 'SUCCESS',
-  }) async {
-    try {
-      final Map<String, dynamic> requestBody = {
-        'nfc_uid': nfcUid.trim(),
-        'otp_code': otpCode.trim(),
-        'nik_warga': nikWarga.trim(),
-        'id_petugas': idPetugas.trim(),
-        'id_instansi': idInstansi.trim(),
-      };
+Future<Map<String, dynamic>> verifyOtp({
+  required String nfcUid,
+  required String otpCode,
+  required String nikWarga,
+  required String idPetugas,
+  required String idInstansi,
+  String? lokasiTugas,
+  String? jenisLayanan,
+  String statusTransaksi = 'SUCCESS',
+}) async {
+  try {
+    final Map<String, dynamic> requestBody = {
+      'nfc_uid': nfcUid.trim(),
+      'otp_code': otpCode.trim(),
+      'nik_warga': nikWarga.trim(),
+      'id_petugas': idPetugas.trim(),
+      'id_instansi': idInstansi.trim(),
+      'status_transaksi': statusTransaksi.trim(),
+    };
 
-      final cleanLokasiTugas = (lokasiTugas ?? '').trim();
-      final cleanJenisLayanan = (jenisLayanan ?? '').trim();
+    final cleanLokasiTugas = (lokasiTugas ?? '').trim();
+    final cleanJenisLayanan = (jenisLayanan ?? '').trim();
 
-      if (cleanLokasiTugas.isNotEmpty) {
-        requestBody['lokasi_tugas'] = cleanLokasiTugas;
-      }
-      if (cleanJenisLayanan.isNotEmpty) {
-        requestBody['jenis_layanan'] = cleanJenisLayanan;
-      }
-      requestBody['status_transaksi'] = statusTransaksi.trim();
-
-      print('📤 MENGIRIM VERIFIKASI OTP PAYLOAD: $requestBody');
-
-      final response = await supabase.functions.invoke(
-        'verify-otp',
-        body: requestBody,
-      );
-
-      final responseData = response.data is Map<String, dynamic>
-          ? response.data as Map<String, dynamic>
-          : Map<String, dynamic>.from(response.data as Map);
-
-      print('📥 RESPON VERIFY OTP: $responseData');
-
-      if (responseData.containsKey('error')) {
-        throw Exception(responseData['error']);
-      }
-
-      if (responseData['status'] != 'success') {
-        throw Exception('Verifikasi OTP gagal. Silakan coba lagi.');
-      }
-
-      return responseData;
-    } catch (e) {
-      print('❌ DEBUG ERROR VERIFY OTP MENTAH: $e');
-      throw Exception('$e');
+    if (cleanLokasiTugas.isNotEmpty) {
+      requestBody['lokasi_tugas'] = cleanLokasiTugas;
     }
+    if (cleanJenisLayanan.isNotEmpty) {
+      requestBody['jenis_layanan'] = cleanJenisLayanan;
+    }
+
+    print('📤 MENGIRIM VERIFIKASI OTP PAYLOAD: $requestBody');
+
+    final response = await supabase.functions.invoke(
+      'verify-otp',
+      body: requestBody,
+    );
+
+    final raw = response.data;
+    final responseData = raw is Map<String, dynamic>
+        ? raw
+        : Map<String, dynamic>.from((raw as Map?) ?? {});
+
+    print('📥 RESPON VERIFY OTP: $responseData');
+
+    if (responseData['error'] != null) {
+      throw Exception(responseData['error']);
+    }
+
+    if (responseData['status'] != 'success') {
+      throw Exception('Verifikasi OTP gagal. Silakan coba lagi.');
+    }
+
+    return responseData;
+  } on FunctionsHttpException catch (e) {
+    print('❌ VERIFY OTP HTTP ${e.status}: ${e.details}');
+
+    final details = e.details;
+    String message = 'Verifikasi OTP gagal (${e.status})';
+    if (details is Map) {
+      // error utama, plus detail server kalau ada (status 500)
+      message = (details['error'] ?? message).toString();
+      if (details['detail'] != null) {
+        message = '$message: ${details['detail']}';
+      }
+    }
+    throw Exception(message);
+  } catch (e) {
+    print('❌ DEBUG ERROR VERIFY OTP: $e');
+    rethrow;
   }
+}
 
   Future<Map<String, dynamic>> loginPetugas({
     required String nip,
