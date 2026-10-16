@@ -5,107 +5,88 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    status,
+  })
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
-  }
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
   try {
-    const supabaseClient = createClient(
+    const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { 
-      nfc_uid, 
-      otp_code, 
-      id_petugas, 
-      id_instansi, 
-      lokasi_tugas, 
-      jenis_layanan 
-    } = await req.json()
+    const { nfc_uid, otp_code, id_petugas, id_instansi, lokasi_tugas, jenis_layanan } =
+      await req.json()
 
     if (!nfc_uid || !otp_code || !id_petugas || !id_instansi) {
-      return new Response(
-        JSON.stringify({ error: 'Data request tidak lengkap (butuh nfc_uid, otp_code, id_petugas, id_instansi)' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      )
+      return json({ error: 'Data request tidak lengkap' }, 400)
     }
 
-    const { data: otpData, error: otpError } = await supabaseClient
-      .from('otp_requests')
-      .select('*')
-      .eq('citizen_uid', nfc_uid)
-      .eq('otp_code', otp_code)
-      .eq('status', 'pending')
-      .single()
-
-    if (otpError || !otpData) {
-      return new Response(
-        JSON.stringify({ error: 'Kode OTP tidak valid atau sudah kadaluarsa.' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      )
-    }
-
-    await supabaseClient
-      .from('otp_requests')
-      .update({ status: 'verified' })
-      .eq('id', otpData.id)
-
-    const { data: wargaData, error: wargaError } = await supabaseClient
+    const { data: wargaData, error: wargaError } = await supabase
       .from('users_warga')
-      .select('nik, uid_nfc, nama_lengkap, email, no_hp, tempat_tanggal_lahir, jenis_kelamin, alamat, agama')
+      .select('*')
       .eq('uid_nfc', nfc_uid)
-      .single()
+      .maybeSingle()
 
     if (wargaError || !wargaData) {
-      return new Response(
-        JSON.stringify({ error: 'Data warga tidak ditemukan di sistem.' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 }
-      )
+      return json({ error: 'Data warga tidak ditemukan di sistem.' }, 404)
     }
 
-    const randomNum = Math.floor(1000000 + Math.random() * 9000000);
-    const dateCode = new Date().toISOString().slice(5,10).replace('-', '');
-    const generatedLogId = `TX-${randomNum}-${dateCode}-DKI`;
+    // klaim OTP secara atomik + batas 2 menit
+    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString()
+    const { data: claimed, error: claimError } = await supabase
+      .from('otp_requests')
+      .update({ status: 'verified' })
+      .eq('otp_code', String(otp_code).trim())
+      .eq('citizen_uid', nfc_uid)          // <-- sebelumnya wargaData.id (undefined)
+      .eq('status', 'pending')
+      .gte('created_at', twoMinutesAgo)
+      .select()
 
-    const { data: logData, error: logError } = await supabaseClient
+    if (claimError || !claimed || claimed.length === 0) {
+      return json({ error: 'Kode OTP salah, sudah dipakai, atau kadaluarsa.' }, 400)
+    }
+    const otpData = claimed[0]
+
+    const randomNum = Math.floor(1000000 + Math.random() * 9000000)
+    const dateCode = new Date().toISOString().slice(5, 10).replace('-', '')
+    const generatedLogId = `TX-${randomNum}-${dateCode}-DKI`
+
+    const { data: logData, error: logError } = await supabase
       .from('layanan_logs')
       .insert({
         id_log: generatedLogId,
         nik_warga: wargaData.nik,
-        id_petugas: id_petugas,
-        id_instansi: id_instansi,
+        id_petugas,
+        id_instansi,
         lokasi_tugas: lokasi_tugas || 'Lokasi tidak diketahui',
         jenis_layanan: jenis_layanan || 'Pemindaian KTP Digital',
-        status_transaksi: 'SUCCESS'
+        status_transaksi: 'SUCCESS',
       })
       .select()
       .single()
 
     if (logError) {
+      // kembalikan OTP supaya bisa dicoba lagi
+      await supabase.from('otp_requests').update({ status: 'pending' }).eq('id', otpData.id)
       throw new Error(`Gagal mencatat log layanan: ${logError.message}`)
     }
 
-    return new Response(
-      JSON.stringify({
-        status: 'success',
-        message: 'OTP Valid! Data berhasil diambil dan dicatat.',
-        warga: wargaData,
-        log: logData     
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
-    )
-
+    return json({
+      status: 'success',
+      message: 'OTP Valid! Data berhasil diambil dan dicatat.',
+      warga: wargaData,
+      log: logData,
+    })
   } catch (error) {
-    return new Response(
-      JSON.stringify({ 
-        error: 'Terjadi kesalahan pada server backend.', 
-        detail: (error as Error).message 
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+    return json(
+      { error: 'Terjadi kesalahan pada server backend.', detail: (error as Error).message },
+      500
     )
   }
 })

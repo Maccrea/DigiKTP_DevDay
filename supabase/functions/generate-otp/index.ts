@@ -5,11 +5,14 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    status,
+  })
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
-  }
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
   try {
     const supabase = createClient(
@@ -18,64 +21,51 @@ serve(async (req) => {
     )
 
     const { nfc_uid, id_instansi, email_terpilih } = await req.json()
-
     if (!nfc_uid || !email_terpilih) {
-      return new Response(JSON.stringify({ error: 'nfc_uid dan email_terpilih wajib diisi' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 })
+      return json({ error: 'nfc_uid dan email_terpilih wajib diisi' }, 400)
     }
 
     const { data: wargaData, error: wargaError } = await supabase
       .from('users_warga')
-      .select('nama_lengkap, nik')
+      .select('nik, nama_lengkap')
       .eq('uid_nfc', nfc_uid)
-      .single()
+      .maybeSingle()
 
-    if (wargaError || !wargaData) {
-      return new Response(JSON.stringify({ error: 'KTP tidak terdaftar di sistem' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 })
-    }
+    if (wargaError) return json({ error: `DB Error: ${wargaError.message}` }, 500)
+    if (!wargaData) return json({ error: `KTP dengan UID ${nfc_uid} belum diregistrasi.` }, 404)
 
     const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
 
     const { error: insertError } = await supabase
       .from('otp_requests')
       .insert({
-        citizen_uid: nfc_uid,
+        citizen_uid: nfc_uid,              // <-- sebelumnya wargaData.id (undefined)
         instansi_id: id_instansi || null,
         email_tujuan: email_terpilih,
         otp_code: generatedOtp,
-        status: 'pending'
+        status: 'pending',
       })
-
     if (insertError) throw insertError
 
-    const resendApiKey = Deno.env.get('RESEND_API_KEY')
     const emailRes = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${resendApiKey}`
+        'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
       },
       body: JSON.stringify({
-        from: 'Pemerintah Digital <onboarding@resend.dev>',
-        to: email_terpilih, 
+        from: 'Pemerintah Digital <admin@nikkita-bos.id>',
+        to: email_terpilih,
         subject: 'Kode OTP Konfirmasi Data KTP',
-        html: `<p>Halo ${wargaData.nama_lengkap},</p><p>Anda diminta untuk memberikan persetujuan akses data KTP.</p><h2>Kode OTP Anda: ${generatedOtp}</h2><p>Berikan kode ini kepada petugas.</p>`
-      })
+        html: `<p>Halo ${wargaData.nama_lengkap},</p><p>Anda diminta untuk memberikan persetujuan akses data KTP.</p><h2>Kode OTP Anda: ${generatedOtp}</h2><p>Berikan kode ini kepada petugas.</p>`,
+      }),
     })
-
     if (!emailRes.ok) {
-      const emailErr = await emailRes.json()
-      throw new Error(`Gagal mengirim email: ${JSON.stringify(emailErr)}`)
+      throw new Error(`Gagal mengirim email: ${JSON.stringify(await emailRes.json())}`)
     }
 
-    return new Response(
-      JSON.stringify({ success: true, message: `OTP berhasil dibuat dan dikirim ke ${email_terpilih}.` }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
-    )
-
+    return json({ success: true, message: `OTP berhasil dibuat dan dikirim ke ${email_terpilih}.` })
   } catch (err) {
-    return new Response(
-      JSON.stringify({ success: false, error: (err as Error).message }), 
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-    )
+    return json({ success: false, error: (err as Error).message }, 500)
   }
 })
